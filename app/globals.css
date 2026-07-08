@@ -1,10 +1,10 @@
-@config "../tailwind.config.ts";
+/* @config "../tailwind.config.ts"; */
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
     --base: #F4F4F2;
-    --panel: #FFFFFF;
+    --panel: #F4F4F2;
     --cloud: #151519;
     --glass-bg: rgba(11, 11, 13, 0.04);
     --glass-border: rgba(11, 11, 13, 0.12);

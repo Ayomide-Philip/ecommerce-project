@@ -73,7 +73,7 @@ const catalogProducts = [
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-cloud text-panel dark:bg-base dark:text-cloud">
+    <div className="min-h-screen bg-base text-cloud">
       <Navbar />
 
       <main className="mx-auto w-full max-w-7xl space-y-14 px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
@@ -83,7 +83,7 @@ export default function Home() {
           <div className="flex items-end justify-between">
             <h2
               id="recommended-heading"
-              className="font-display text-3xl font-medium text-panel dark:text-cloud"
+              className="font-display text-3xl font-medium text-cloud"
             >
               Recommended for you
             </h2>
@@ -99,7 +99,7 @@ export default function Home() {
         <section aria-labelledby="catalog-heading" className="space-y-6">
           <h2
             id="catalog-heading"
-            className="font-display text-3xl font-medium text-panel dark:text-cloud"
+            className="font-display text-3xl font-medium text-cloud"
           >
             Browse the catalog
           </h2>

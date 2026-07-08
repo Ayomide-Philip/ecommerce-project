@@ -25,7 +25,7 @@ export default function FilterPills({
             className={
               isActive
                 ? "rounded-full bg-accent px-4 py-2 font-mono text-xs uppercase tracking-[0.14em] text-cloud"
-                : "glass rounded-full px-4 py-2 font-mono text-xs uppercase tracking-[0.14em] text-panel/80 transition hover:bg-black/8 dark:text-cloud/80 dark:hover:bg-[rgba(244,244,242,0.08)]"
+                : "glass rounded-full px-4 py-2 font-mono text-xs uppercase tracking-[0.14em] text-cloud/80 transition hover:bg-black/8 dark:hover:bg-[rgba(244,244,242,0.08)]"
             }
           >
             {filter}

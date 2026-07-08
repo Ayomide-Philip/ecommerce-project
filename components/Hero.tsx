@@ -13,11 +13,11 @@ export default function Hero() {
           </p>
           <h1
             id="hero-heading"
-            className="font-display text-4xl font-medium leading-tight text-panel dark:text-cloud md:text-5xl"
+            className="font-display text-4xl font-medium leading-tight text-cloud md:text-5xl"
           >
             Where Ankara heritage meets modern street rhythm.
           </h1>
-          <p className="max-w-xl text-sm text-panel/70 dark:text-cloud/70 md:text-base">
+          <p className="max-w-xl text-sm text-cloud/70 md:text-base">
             Shop statement pieces from rising Nigerian designers and global
             streetwear labels in one premium marketplace.
           </p>
