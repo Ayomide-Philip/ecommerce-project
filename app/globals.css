@@ -1,0 +1,45 @@
+@config "../tailwind.config.ts";
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+    --base: #F4F4F2;
+    --panel: #FFFFFF;
+    --cloud: #151519;
+    --glass-bg: rgba(11, 11, 13, 0.04);
+    --glass-border: rgba(11, 11, 13, 0.12);
+}
+
+.dark {
+    --base: #0B0B0D;
+    --panel: #151519;
+    --cloud: #F4F4F2;
+    --glass-bg: rgba(244, 244, 242, 0.06);
+    --glass-border: rgba(244, 244, 242, 0.12);
+}
+
+@theme inline {
+    --color-base: var(--base);
+    --color-panel: var(--panel);
+    --color-accent: #3D6BFF;
+    --color-cloud: var(--cloud);
+    --font-display: var(--font-display);
+    --font-body: var(--font-body);
+    --font-mono: var(--font-mono);
+}
+
+body {
+    background-color: var(--base);
+    color: var(--cloud);
+}
+
+:focus-visible {
+    outline: 2px solid #3D6BFF;
+    outline-offset: 2px;
+}
+
+.glass {
+    background-color: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(12px);
+}
