@@ -1,5 +1,6 @@
 import { Heart, Search, ShoppingBag, User, LogIn } from "lucide-react";
 import Toggle from "@/components/toggle";
+import Link from "next/link";
 
 const isLoggedIn = false;
 
@@ -57,13 +58,14 @@ export default function Navbar() {
               <User aria-hidden="true" className="h-4 w-4" />
             </button>
           ) : (
-            <button
+            <Link
+              href="/login"
               className={iconButtonClass}
               type="button"
               aria-label="Sign In"
             >
               <LogIn aria-hidden="true" className="h-4 w-4" />
-            </button>
+            </Link>
           )}
         </div>
       </nav>
