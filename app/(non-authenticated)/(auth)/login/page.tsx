@@ -41,12 +41,14 @@ export default function LoginPage() {
         email,
         password,
         redirect: false,
+        callbackUrl: "/",
       });
-      console.log(signingIn);
 
       if (signingIn?.error) {
         return toast.error("Invalid email or password. Please try again.");
       }
+
+      window.location.href = signingIn?.url || "/";
     } catch (err) {
       console.log(err);
       return toast.error("An error occurred during sign-in. Please try again.");
