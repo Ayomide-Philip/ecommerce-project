@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Mail, Lock, Eye, EyeOff, User } from "lucide-react";
+import { toast } from "sonner";
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -65,6 +66,7 @@ export default function RegisterPage() {
       const response = await request.json();
 
       if (!request.ok || response?.error) {
+        toast.error(response?.error || "Registration failed");
         setErrors((prev) => ({
           ...prev,
           [response?.errorType]: response?.error,
@@ -72,9 +74,15 @@ export default function RegisterPage() {
         return;
       }
 
-      window.location.href = "/login";
+      toast.success("Account created successfully!", {
+        description: "Redirecting you to sign in...",
+      });
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 1000);
     } catch (err) {
       console.log(err);
+      toast.error("Something went wrong. Please try again.");
     } finally {
       setIsLoading(false);
     }

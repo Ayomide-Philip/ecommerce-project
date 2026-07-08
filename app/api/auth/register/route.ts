@@ -103,7 +103,6 @@ export const POST = async function POST(req: NextRequest) {
       password: userPassword,
     });
 
-    console.log(newUser);
     return NextResponse.json({
       message: "Account has been created successfully",
       createdAccount: !!newUser,

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Fraunces, IBM_Plex_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import ThemesProviders from "@/components/themesproviders";
+import { Toaster } from "sonner";
 
 const fraunces = Fraunces({
   variable: "--font-display",
@@ -38,7 +39,20 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col bg-base text-cloud font-body">
-        <ThemesProviders>{children}</ThemesProviders>
+        <ThemesProviders>
+          {children}
+          <Toaster
+            position="top-right"
+            richColors
+            closeButton
+            toastOptions={{
+              style: {
+                fontFamily: "var(--font-body)",
+                fontSize: "0.875rem",
+              },
+            }}
+          />
+        </ThemesProviders>
       </body>
     </html>
   );
