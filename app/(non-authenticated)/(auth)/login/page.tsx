@@ -30,7 +30,6 @@ export default function LoginPage() {
       />
 
       <div className="w-full max-w-md relative z-10">
-        {/* Header */}
         <div className="text-center mb-8 sm:mb-10">
           <Link
             href="/"
@@ -48,9 +47,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        {/* Login Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Email Field */}
           <div>
             <label
               htmlFor="email"
@@ -72,7 +69,6 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Password Field */}
           <div>
             <label
               htmlFor="password"
@@ -105,7 +101,6 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Remember me & Forgot password */}
           <div className="flex items-center justify-between text-sm">
             <label className="flex items-center gap-2 cursor-pointer">
               <input
@@ -124,7 +119,6 @@ export default function LoginPage() {
             </Link>
           </div>
 
-          {/* Sign In Button */}
           <button
             type="submit"
             disabled={isLoading}
@@ -144,7 +138,6 @@ export default function LoginPage() {
           </Link>
         </p>
 
-        {/* Terms */}
         <p className="text-center text-[#151519]/50 dark:text-white/50 text-xs mt-6">
           By signing in, you agree to our{" "}
           <Link href="/terms" className="text-accent hover:underline">
