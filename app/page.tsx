@@ -76,7 +76,7 @@ export default function Home() {
     <div className="min-h-screen bg-base text-cloud">
       <Navbar />
 
-      <main className="mx-auto w-full max-w-7xl space-y-14 px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
+      <main className="mx-auto w-full max-w-7xl space-y-14 px-3 py-6 pt-20 sm:px-4 sm:pt-24 md:px-6 lg:px-8 lg:py-12 lg:pt-28">
         <Hero />
 
         <section aria-labelledby="recommended-heading" className="space-y-6">

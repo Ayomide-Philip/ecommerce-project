@@ -21,7 +21,7 @@ const ibmPlexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Adúnní | Modern African Fashion Marketplace",
+  title: "ĒLAN Fashion Rec | Modern African Fashion Marketplace",
   description:
     "Adúnní blends Nigerian traditional wear with modern streetwear for a bold, style-first generation.",
 };

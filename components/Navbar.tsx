@@ -6,19 +6,19 @@ const iconButtonClass =
 
 export default function Navbar() {
   return (
-    <header className="sticky top-4 z-50">
+    <header className="fixed inset-x-3 top-3 z-50 sm:inset-x-4 sm:top-4 lg:inset-x-8 lg:top-6">
       <nav
         aria-label="Main navigation"
-        className="glass mx-auto bg-base/80 backdrop-blur-md flex w-full max-w-6xl items-center gap-3 rounded-[20px] px-4 py-3 sm:px-6 lg:px-8"
+        className="glass mx-auto bg-base/80 backdrop-blur-md flex w-full max-w-6xl items-center gap-2 rounded-[20px] px-3 py-2.5 sm:gap-3 sm:px-4 sm:py-3 lg:px-6"
       >
         <a
           href="#"
-          className="font-display text-2xl font-medium tracking-tight text-cloud"
+          className="font-display text-lg font-medium tracking-tight text-cloud sm:text-2xl"
         >
-          Adúnní
+          Ēlan
         </a>
 
-        <div className="glass ml-2 flex min-w-0 flex-1 items-center gap-2 rounded-full px-4 py-2.5">
+        <div className="glass ml-2 hidden min-w-0 flex-1 items-center gap-2 rounded-full px-3 py-2 sm:flex sm:px-4 sm:py-2.5">
           <Search
             aria-hidden="true"
             className="h-4 w-4 text-cloud/60 dark:text-cloud/70"
@@ -34,7 +34,7 @@ export default function Navbar() {
           />
         </div>
 
-        <div className="ml-auto flex items-center gap-2 sm:ml-0">
+        <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
           <Toggle />
           <button
             className={iconButtonClass}
