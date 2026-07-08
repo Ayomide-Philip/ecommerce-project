@@ -1,4 +1,5 @@
 import { connectToDatabase } from "@/libs/config/database.config";
+import { encryptPassword } from "@/libs/config/encrypt";
 import User from "@/libs/models/users.models";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -87,8 +88,20 @@ export const POST = async function POST(req: NextRequest) {
         },
       );
     }
-    
-    return NextResponse.json({ message: "Hello from the POST handler!" });
+
+    const userPassword = await encryptPassword(password?.trim());
+
+    const newUser = await User.create({
+      name: name?.trim()?.toLowerCase(),
+      email: email?.trim()?.toLowerCase(),
+      password: userPassword,
+    });
+
+    console.log(newUser);
+    return NextResponse.json({
+      message: "Account has been created successfully",
+      createdAccount: !!newUser,
+    });
   } catch (err) {
     console.log(err);
     return NextResponse.json(
