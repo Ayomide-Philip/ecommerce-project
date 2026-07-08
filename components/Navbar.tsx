@@ -14,12 +14,12 @@ export default function Navbar() {
         aria-label="Main navigation"
         className="glass mx-auto bg-base/80 backdrop-blur-md flex w-full max-w-7xl items-center gap-2 rounded-[20px] px-3 py-2.5 sm:gap-3 sm:px-4 sm:py-3 lg:px-6"
       >
-        <a
-          href="#"
+        <Link
+          href="/"
           className="font-display text-lg font-medium tracking-tight text-cloud sm:text-2xl"
         >
           Ēlan
-        </a>
+        </Link>
 
         <div className="glass ml-2 hidden min-w-0 flex-1 items-center gap-2 rounded-full px-3 py-2 sm:flex sm:px-4 sm:py-2.5">
           <Search
