@@ -12,11 +12,72 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const validate = () => {
+    const newErrors: Record<string, string> = {};
+
+    if (!name.trim()) {
+      newErrors.name = "Full name is required";
+    }
+
+    if (name?.trim().length < 5) {
+      newErrors.name = "Full name must be at least 5 characters long";
+    } else if (!name?.trim().includes(" ")) {
+      newErrors.name = "Full name must contain a space";
+    }
+
+    if (!email.trim()) {
+      newErrors.email = "Email address is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+
+    if (!password) {
+      newErrors.password = "Password is required";
+    } else if (password.length < 8) {
+      newErrors.password = "Password must be at least 8 characters";
+    }
+
+    if (!confirmPassword) {
+      newErrors.confirmPassword = "Please confirm your password";
+    } else if (password !== confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validate()) return;
     setIsLoading(true);
-    setTimeout(() => setIsLoading(false), 1000);
+    try {
+      const request = await fetch(`/api/auth/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, email, password }),
+      });
+
+      const response = await request.json();
+
+      if (!request.ok || response?.error) {
+        setErrors((prev) => ({
+          ...prev,
+          [response?.errorType]: response?.error,
+        }));
+        return;
+      }
+
+      window.location.href = "/login";
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -27,7 +88,6 @@ export default function RegisterPage() {
       />
 
       <div className="w-full max-w-md relative z-10">
-        {/* Header */}
         <div className="text-center mb-8 sm:mb-10">
           <Link
             href="/"
@@ -45,9 +105,7 @@ export default function RegisterPage() {
           </p>
         </div>
 
-        {/* Register Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Full Name */}
           <div>
             <label
               htmlFor="name"
@@ -61,15 +119,25 @@ export default function RegisterPage() {
                 id="name"
                 type="text"
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) => {
+                  setName(e.target.value);
+                  if (errors.name) setErrors((prev) => ({ ...prev, name: "" }));
+                }}
                 placeholder="John Doe"
-                required
-                className="w-full pl-10 pr-4 py-3 rounded-xl bg-black/5 dark:bg-white/5 border border-black/12 dark:border-white/12 text-[#151519] dark:text-white placeholder:text-[#151519]/50 dark:placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition"
+                className={`w-full pl-10 pr-4 py-3 rounded-xl bg-black/5 dark:bg-white/5 border text-[#151519] dark:text-white placeholder:text-[#151519]/50 dark:placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition ${
+                  errors.name
+                    ? "border-red-500 dark:border-red-400"
+                    : "border-black/12 dark:border-white/12"
+                }`}
               />
             </div>
+            {errors.name && (
+              <p className="text-red-500 dark:text-red-400 text-xs mt-1.5">
+                {errors.name}
+              </p>
+            )}
           </div>
 
-          {/* Email Field */}
           <div>
             <label
               htmlFor="email"
@@ -83,15 +151,26 @@ export default function RegisterPage() {
                 id="email"
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (errors.email)
+                    setErrors((prev) => ({ ...prev, email: "" }));
+                }}
                 placeholder="you@example.com"
-                required
-                className="w-full pl-10 pr-4 py-3 rounded-xl bg-black/5 dark:bg-white/5 border border-black/12 dark:border-white/12 text-[#151519] dark:text-white placeholder:text-[#151519]/50 dark:placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition"
+                className={`w-full pl-10 pr-4 py-3 rounded-xl bg-black/5 dark:bg-white/5 border text-[#151519] dark:text-white placeholder:text-[#151519]/50 dark:placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition ${
+                  errors.email
+                    ? "border-red-500 dark:border-red-400"
+                    : "border-black/12 dark:border-white/12"
+                }`}
               />
             </div>
+            {errors.email && (
+              <p className="text-red-500 dark:text-red-400 text-xs mt-1.5">
+                {errors.email}
+              </p>
+            )}
           </div>
 
-          {/* Password Field */}
           <div>
             <label
               htmlFor="password"
@@ -105,11 +184,18 @@ export default function RegisterPage() {
                 id="password"
                 type={showPassword ? "text" : "password"}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (errors.password)
+                    setErrors((prev) => ({ ...prev, password: "" }));
+                }}
                 placeholder="••••••••"
-                required
                 minLength={8}
-                className="w-full pl-10 pr-12 py-3 rounded-xl bg-black/5 dark:bg-white/5 border border-black/12 dark:border-white/12 text-[#151519] dark:text-white placeholder:text-[#151519]/50 dark:placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition"
+                className={`w-full pl-10 pr-12 py-3 rounded-xl bg-black/5 dark:bg-white/5 border text-[#151519] dark:text-white placeholder:text-[#151519]/50 dark:placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition ${
+                  errors.password
+                    ? "border-red-500 dark:border-red-400"
+                    : "border-black/12 dark:border-white/12"
+                }`}
               />
               <button
                 type="button"
@@ -123,9 +209,13 @@ export default function RegisterPage() {
                 )}
               </button>
             </div>
+            {errors.password && (
+              <p className="text-red-500 dark:text-red-400 text-xs mt-1.5">
+                {errors.password}
+              </p>
+            )}
           </div>
 
-          {/* Confirm Password */}
           <div>
             <label
               htmlFor="confirmPassword"
@@ -139,10 +229,17 @@ export default function RegisterPage() {
                 id="confirmPassword"
                 type={showConfirm ? "text" : "password"}
                 value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value);
+                  if (errors.confirmPassword)
+                    setErrors((prev) => ({ ...prev, confirmPassword: "" }));
+                }}
                 placeholder="••••••••"
-                required
-                className="w-full pl-10 pr-12 py-3 rounded-xl bg-black/5 dark:bg-white/5 border border-black/12 dark:border-white/12 text-[#151519] dark:text-white placeholder:text-[#151519]/50 dark:placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition"
+                className={`w-full pl-10 pr-12 py-3 rounded-xl bg-black/5 dark:bg-white/5 border text-[#151519] dark:text-white placeholder:text-[#151519]/50 dark:placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition ${
+                  errors.confirmPassword
+                    ? "border-red-500 dark:border-red-400"
+                    : "border-black/12 dark:border-white/12"
+                }`}
               />
               <button
                 type="button"
@@ -156,9 +253,13 @@ export default function RegisterPage() {
                 )}
               </button>
             </div>
+            {errors.confirmPassword && (
+              <p className="text-red-500 dark:text-red-400 text-xs mt-1.5">
+                {errors.confirmPassword}
+              </p>
+            )}
           </div>
 
-          {/* Terms Checkbox */}
           <label className="flex items-start gap-2 cursor-pointer text-sm">
             <input
               type="checkbox"
@@ -177,7 +278,6 @@ export default function RegisterPage() {
             </span>
           </label>
 
-          {/* Create Account Button */}
           <button
             type="submit"
             disabled={isLoading}
@@ -187,7 +287,6 @@ export default function RegisterPage() {
           </button>
         </form>
 
-        {/* Login Link */}
         <p className="text-center text-[#151519]/70 dark:text-white/70 text-sm mt-6">
           Already have an account?{" "}
           <Link
@@ -198,7 +297,6 @@ export default function RegisterPage() {
           </Link>
         </p>
 
-        {/* Terms */}
         <p className="text-center text-[#151519]/50 dark:text-white/50 text-xs mt-6">
           By creating an account, you agree to our{" "}
           <Link href="/terms" className="text-accent hover:underline">

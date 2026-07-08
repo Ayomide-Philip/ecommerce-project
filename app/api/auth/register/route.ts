@@ -21,6 +21,7 @@ export const POST = async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         error: "Name must be at least 5 characters long",
+        errorType: "name",
       },
       {
         status: 400,
@@ -32,6 +33,7 @@ export const POST = async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         error: "Name must contain a space",
+        errorType: "name",
       },
       {
         status: 400,
@@ -43,6 +45,7 @@ export const POST = async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         error: "Email must be at least 5 characters long",
+        errorType: "email",
       },
       {
         status: 400,
@@ -54,6 +57,7 @@ export const POST = async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         error: "Please enter a valid email address",
+        errorType: "email",
       },
       {
         status: 400,
@@ -65,6 +69,7 @@ export const POST = async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         error: "Password must be at least 8 characters long",
+        errorType: "password",
       },
       {
         status: 400,
@@ -82,6 +87,7 @@ export const POST = async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           error: "User with this email already exists",
+          errorType: "email",
         },
         {
           status: 400,
