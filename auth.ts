@@ -2,6 +2,8 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import User from "./libs/models/users.models";
 import { BETTER_AUTH_SECRET } from "./libs/config/config";
+import bcrypt from "bcrypt";
+import { connectToDatabase } from "./libs/config/database.config";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -20,6 +22,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           console.log("Email or password is missing");
           return null;
         }
+        await connectToDatabase();
 
         const user = await User.findOne({ email: email?.trim() }).select(
           "+password",
@@ -30,7 +33,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           return null;
         }
 
-        const isPasswordValid = await user.comparePassword(password);
+        const isPasswordValid = await bcrypt.compare(password, user?.password);
 
         if (!isPasswordValid) {
           console.log("Invalid password");

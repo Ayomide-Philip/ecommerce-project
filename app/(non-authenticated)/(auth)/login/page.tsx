@@ -4,22 +4,55 @@ import { useState } from "react";
 import Link from "next/link";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
+import { signIn } from "next-auth/react";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const validate = () => {
+    const newErrors: Record<string, string> = {};
+
+    if (!email.trim()) {
+      newErrors.email = "Email address is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+
+    if (!password) {
+      newErrors.password = "Password is required";
+    } else if (password.length < 8) {
+      newErrors.password = "Password must be at least 8 characters long";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validate()) return;
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      toast.success("Welcome back!", {
-        description: "You have been signed in successfully.",
+    try {
+      const signingIn = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
       });
-    }, 1000);
+      console.log(signingIn);
+
+      if (signingIn?.error) {
+        return toast.error("Invalid email or password. Please try again.");
+      }
+    } catch (err) {
+      console.log(err);
+      return toast.error("An error occurred during sign-in. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -61,12 +94,24 @@ export default function LoginPage() {
                 id="email"
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (errors.email)
+                    setErrors((prev) => ({ ...prev, email: "" }));
+                }}
                 placeholder="you@example.com"
-                required
-                className="w-full pl-10 pr-4 py-3 rounded-xl bg-black/5 dark:bg-white/5 border border-black/12 dark:border-white/12 text-[#151519] dark:text-white placeholder:text-[#151519]/50 dark:placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition"
+                className={`w-full pl-10 pr-4 py-3 rounded-xl bg-black/5 dark:bg-white/5 border text-[#151519] dark:text-white placeholder:text-[#151519]/50 dark:placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition ${
+                  errors.email
+                    ? "border-red-500 dark:border-red-400"
+                    : "border-black/12 dark:border-white/12"
+                }`}
               />
             </div>
+            {errors.email && (
+              <p className="text-red-500 dark:text-red-400 text-xs mt-1.5">
+                {errors.email}
+              </p>
+            )}
           </div>
 
           <div>
@@ -82,10 +127,17 @@ export default function LoginPage() {
                 id="password"
                 type={showPassword ? "text" : "password"}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (errors.password)
+                    setErrors((prev) => ({ ...prev, password: "" }));
+                }}
                 placeholder="••••••••"
-                required
-                className="w-full pl-10 pr-12 py-3 rounded-xl bg-black/5 dark:bg-white/5 border border-black/12 dark:border-white/12 text-[#151519] dark:text-white placeholder:text-[#151519]/50 dark:placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition "
+                className={`w-full pl-10 pr-12 py-3 rounded-xl bg-black/5 dark:bg-white/5 border text-[#151519] dark:text-white placeholder:text-[#151519]/50 dark:placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition ${
+                  errors.password
+                    ? "border-red-500 dark:border-red-400"
+                    : "border-black/12 dark:border-white/12"
+                }`}
               />
               <button
                 type="button"
@@ -99,6 +151,11 @@ export default function LoginPage() {
                 )}
               </button>
             </div>
+            {errors.password && (
+              <p className="text-red-500 dark:text-red-400 text-xs mt-1.5">
+                {errors.password}
+              </p>
+            )}
           </div>
 
           <div className="flex items-center justify-between text-sm">
