@@ -2,7 +2,7 @@ const footerLinks = ["About", "Shipping", "Returns", "Contact"];
 
 export default function Footer() {
   return (
-    <footer className="glass mt-16 rounded-[20px] px-6 py-8">
+    <footer className="glass mt-16 px-6 py-8">
       <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
         <p className="font-display text-xl text-cloud">Adúnní</p>
 
