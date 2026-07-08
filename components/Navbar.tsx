@@ -1,5 +1,7 @@
-import { Heart, Search, ShoppingBag, User } from "lucide-react";
+import { Heart, Search, ShoppingBag, User, LogIn } from "lucide-react";
 import Toggle from "@/components/toggle";
+
+const isLoggedIn = false;
 
 const iconButtonClass =
   "glass inline-flex h-10 w-10 items-center justify-center rounded-full text-cloud/80 transition hover:bg-black/8 dark:text-cloud/85 dark:hover:bg-[rgba(244,244,242,0.08)] focus-visible:text-accent";
@@ -46,13 +48,23 @@ export default function Navbar() {
           <button className={iconButtonClass} type="button" aria-label="Cart">
             <ShoppingBag aria-hidden="true" className="h-4 w-4" />
           </button>
-          <button
-            className={iconButtonClass}
-            type="button"
-            aria-label="Profile"
-          >
-            <User aria-hidden="true" className="h-4 w-4" />
-          </button>
+          {isLoggedIn ? (
+            <button
+              className={iconButtonClass}
+              type="button"
+              aria-label="Profile"
+            >
+              <User aria-hidden="true" className="h-4 w-4" />
+            </button>
+          ) : (
+            <button
+              className={iconButtonClass}
+              type="button"
+              aria-label="Sign In"
+            >
+              <LogIn aria-hidden="true" className="h-4 w-4" />
+            </button>
+          )}
         </div>
       </nav>
     </header>
