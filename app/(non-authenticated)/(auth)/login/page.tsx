@@ -128,21 +128,6 @@ export default function LoginPage() {
           </button>
         </form>
 
-        {/* <div className="flex items-center gap-3 my-6">
-          <div className="flex-1 h-px bg-black/20 dark:bg-white/20" />
-          <span className="text-black/50 dark:text-white/50 text-sm">or</span>
-          <div className="flex-1 h-px bg-black/20 dark:bg-white/20" />
-        </div>
-
-        <div className="grid grid-cols-2 gap-3">
-          <button className="py-3 rounded-xl bg-black/5 dark:bg-white/5 border border-black/12 dark:border-white/12 hover:bg-black/10 dark:hover:bg-white/10 transition text-[#151519] dark:text-white text-sm font-medium ">
-            Google
-          </button>
-          <button className="py-3 rounded-xl bg-black/5 dark:bg-white/5 border border-black/12 dark:border-white/12 hover:bg-black/10 dark:hover:bg-white/10 transition text-[#151519] dark:text-white text-sm font-medium ">
-            Apple
-          </button>
-        </div> */}
-
         <p className="text-center text-[#151519]/70 dark:text-white/70 text-sm mt-6">
           Don&apos;t have an account?{" "}
           <Link
