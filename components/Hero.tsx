@@ -1,13 +1,60 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+
 const productColors = [
   "bg-blue-400/30",
   "bg-rose-400/30",
   "bg-teal-600/30",
   "bg-amber-400/30",
-  "bg-rose-300/30",
   "bg-orange-300/30",
+  "bg-rose-300/30",
+  "bg-teal-500/30",
 ];
 
+const cardsPerView = { mobile: 1, tablet: 2, desktop: 5 };
+
 export default function Hero() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [visibleCards, setVisibleCards] = useState(cardsPerView.mobile);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setVisibleCards(cardsPerView.desktop);
+      } else if (window.innerWidth >= 640) {
+        setVisibleCards(cardsPerView.tablet);
+      } else {
+        setVisibleCards(cardsPerView.mobile);
+      }
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const maxIndex = Math.max(0, productColors.length - visibleCards);
+
+  useEffect(() => {
+    const autoAdvance = setInterval(() => {
+      setCurrentIndex((prev) => (prev >= maxIndex ? 0 : prev + 1));
+    }, 4000);
+    return () => clearInterval(autoAdvance);
+  }, [maxIndex]);
+
+  const handlePrev = () => {
+    setCurrentIndex((prev) => (prev === 0 ? maxIndex : prev - 1));
+  };
+
+  const handleNext = () => {
+    setCurrentIndex((prev) => (prev >= maxIndex ? 0 : prev + 1));
+  };
+
+  const carouselButtonClass =
+    "glass inline-flex h-10 w-10 items-center justify-center rounded-full text-cloud/80 transition hover:bg-black/8 dark:text-cloud/85 dark:hover:bg-[rgba(244,244,242,0.08)] focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent";
+
   return (
     <section
       aria-labelledby="hero-heading"
@@ -60,19 +107,60 @@ export default function Hero() {
           </div>
         </div>
 
-        <div className="overflow-x-auto scrollbar-hide">
-          <div className="flex gap-4 sm:gap-5 px-4 sm:px-6 lg:px-8 pb-4 justify-center sm:justify-start">
-            {productColors.map((color, index) => (
-              <div
-                key={index}
-                className="shrink-0 w-40 sm:w-48 md:w-56 aspect-3/4 rounded-3xl overflow-hidden glass border border-black/12 dark:border-[rgba(244,244,242,0.12)] shadow-lg transition hover:scale-105 hover:shadow-xl duration-300"
-              >
+        <div className="relative">
+          <div className="overflow-hidden rounded-2xl">
+            <div
+              className="flex gap-4 sm:gap-5 lg:gap-6 transition-transform duration-500 ease-out"
+              style={{
+                transform: `translateX(-${currentIndex * (100 / visibleCards)}%)`,
+              }}
+            >
+              {productColors.map((color, index) => (
                 <div
-                  className={`w-full h-full ${color} relative flex items-center justify-center`}
+                  key={index}
+                  style={{
+                    width: `calc(100% / ${visibleCards})`,
+                    flexShrink: 0,
+                  }}
+                  className="aspect-4/5 rounded-4xl overflow-hidden glass border border-black/12 dark:border-[rgba(244,244,242,0.12)] shadow-lg transition hover:scale-105 hover:shadow-xl duration-300"
                 >
-                  <div className="absolute inset-1 rounded-3xl border border-white/10 pointer-events-none" />
+                  <div
+                    className={`w-full h-full ${color} relative flex items-center justify-center`}
+                  >
+                    <div className="absolute inset-1 rounded-3xl border border-white/10 pointer-events-none" />
+                  </div>
                 </div>
-              </div>
+              ))}
+            </div>
+          </div>
+
+          <button
+            onClick={handlePrev}
+            aria-label="Previous slide"
+            className={`absolute left-2 top-1/2 -translate-y-1/2 z-10 ${carouselButtonClass}`}
+          >
+            <ChevronLeft aria-hidden="true" className="h-5 w-5" />
+          </button>
+          <button
+            onClick={handleNext}
+            aria-label="Next slide"
+            className={`absolute right-2 top-1/2 -translate-y-1/2 z-10 ${carouselButtonClass}`}
+          >
+            <ChevronRight aria-hidden="true" className="h-5 w-5" />
+          </button>
+
+          <div className="flex justify-center gap-2 mt-6">
+            {Array.from({ length: maxIndex + 1 }).map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => setCurrentIndex(idx)}
+                aria-label={`Go to slide ${idx + 1}`}
+                className={`h-2 w-2 rounded-full transition ${
+                  idx === currentIndex
+                    ? "bg-accent w-6"
+                    : "bg-cloud/40 hover:bg-cloud/60"
+                }`}
+              />
             ))}
           </div>
         </div>
