@@ -6,10 +6,10 @@ const iconButtonClass =
 
 export default function Navbar() {
   return (
-    <header className="sticky top-0 z-50 bg-base/80 py-3 backdrop-blur-md">
+    <header className="sticky top-4 z-50">
       <nav
         aria-label="Main navigation"
-        className="glass mx-auto flex w-full max-w-7xl items-center gap-3 rounded-[20px] px-4 py-3 sm:px-6 lg:px-8"
+        className="glass mx-auto bg-base/80 backdrop-blur-md flex w-full max-w-6xl items-center gap-3 rounded-[20px] px-4 py-3 sm:px-6 lg:px-8"
       >
         <a
           href="#"
