@@ -1,12 +1,15 @@
 export default function Hero() {
   return (
-    <section aria-labelledby="hero-heading" className="relative">
+    <section
+      aria-labelledby="hero-heading"
+      className="relative mt-20 sm:mt-24 md:mt-22 lg:mt-22"
+    >
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-1/2 top-10 hidden h-72 w-72 -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(61,107,255,0.08)_0%,rgba(11,11,13,0)_70%)] dark:block"
+        className="pointer-events-none absolute inset-x-1/2 top-10 hidden h-72 w-72 -translate-x-1/2 bg-[radial-gradient(circle,rgba(61,107,255,0.08)_0%,rgba(11,11,13,0)_70%)] dark:block"
       />
 
-      <div className="glass relative z-10 grid gap-8 rounded-3xl p-6 md:grid-cols-2 md:items-center md:p-10 lg:p-12">
+      <div className="glass relative z-10 grid gap-8 p-6 md:grid-cols-2 md:items-center md:p-10 lg:p-12">
         <div className="space-y-5">
           <p className="font-mono text-xs uppercase tracking-[0.25em] text-accent">
             Curated for you
@@ -17,7 +20,7 @@ export default function Hero() {
           >
             Where Ankara heritage meets modern street rhythm.
           </h1>
-          <p className="max-w-xl text-sm text-cloud/70 md:text-base">
+          <p className="max-w-xl text-sm text-black dark:text-cloud/70">
             Shop statement pieces from rising Nigerian designers and global
             streetwear labels in one premium marketplace.
           </p>

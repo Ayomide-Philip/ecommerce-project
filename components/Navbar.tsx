@@ -6,10 +6,10 @@ const iconButtonClass =
 
 export default function Navbar() {
   return (
-    <header className="fixed inset-x-3 top-3 z-50 sm:inset-x-4 sm:top-4 lg:inset-x-8 lg:top-6">
+    <header className="fixed inset-x-3 top-3 z-50 sm:inset-x-4 sm:top-4 lg:inset-x-8 lg:top-2">
       <nav
         aria-label="Main navigation"
-        className="glass mx-auto bg-base/80 backdrop-blur-md flex w-full max-w-6xl items-center gap-2 rounded-[20px] px-3 py-2.5 sm:gap-3 sm:px-4 sm:py-3 lg:px-6"
+        className="glass mx-auto bg-base/80 backdrop-blur-md flex w-full max-w-7xl items-center gap-2 rounded-[20px] px-3 py-2.5 sm:gap-3 sm:px-4 sm:py-3 lg:px-6"
       >
         <a
           href="#"
