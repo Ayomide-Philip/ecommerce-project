@@ -3,7 +3,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { SlidersHorizontal, X } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
-import data from "@/data/articles_sample.json";
 import CatalogFilterSidebar from "./catalog/filterSideBar";
 import {
   ColourGroupName,
@@ -11,8 +10,9 @@ import {
   GraphicalAppearanceName,
   ProductTypeName,
 } from "@/libs/enums/product.enums";
-import Loading from "../loading";
 import { toast } from "sonner";
+import { Product } from "@/libs/models/products.models";
+import Loading from "../loading";
 
 export default function Catalog() {
   const [visibleCount, setVisibleCount] = useState(20);
@@ -22,14 +22,14 @@ export default function Catalog() {
   const [selectedPatterns, setSelectedPatterns] = useState<string[]>([]);
   const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
     async function fetchProducts() {
+      setLoading(true);
       try {
-        setLoading(true);
-        const request = await fetch(`/api/products?limit=${visibleCount}`, {
+        const request = await fetch(`/api/products`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -44,6 +44,7 @@ export default function Catalog() {
               "Failed to fetch products. Please try again later.",
           );
         }
+        setLoading(false);
         setProducts(response?.product || []);
       } catch (err) {
         console.log(err);
@@ -52,7 +53,9 @@ export default function Catalog() {
         setLoading(false);
       }
     }
-  }, [visibleCount]);
+
+    fetchProducts();
+  }, []);
 
   const categories = useMemo(
     () => [...(ProductTypeName as readonly string[])].sort(),
@@ -72,7 +75,7 @@ export default function Catalog() {
   );
 
   const filtered = useMemo(() => {
-    let result = data;
+    let result = products as Product[];
 
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
@@ -113,6 +116,7 @@ export default function Catalog() {
     selectedColors,
     selectedPatterns,
     selectedDepartments,
+    products,
   ]);
 
   const visibleProducts = filtered.slice(0, visibleCount);
@@ -276,12 +280,13 @@ export default function Catalog() {
 
         <div className="flex-1">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            {visibleProducts.map((product, idx) => (
-              <ProductCard key={idx} product={product} />
-            ))}
+            {!loading &&
+              visibleProducts.map((product, idx) => (
+                <ProductCard key={idx} product={product} />
+              ))}
           </div>
 
-          {visibleProducts.length === 0 && (
+          {!loading && visibleProducts.length === 0 && (
             <div className="flex flex-col items-center justify-center py-20 text-center">
               <p className="font-display text-xl text-cloud/40">
                 No products found
