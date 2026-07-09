@@ -22,6 +22,7 @@ const badgeClass =
 const navLinks = [
   { href: "/catalog", label: "Catalog" },
   { href: "/category", label: "Categories" },
+  { href: "/recommendation", label: "Recommendations" },
 ];
 
 export default function Navbar({ session }: { session: Session }) {
@@ -40,17 +41,23 @@ export default function Navbar({ session }: { session: Session }) {
             </span>
           </Link>
 
-          {/* Desktop nav links */}
           <div className="hidden items-center gap-1 sm:flex">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="rounded-full px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-cloud/60 transition hover:bg-[rgba(244,244,242,0.08)] hover:text-cloud"
-              >
-                {link.label}
-              </Link>
-            ))}
+            {navLinks.map((link) => {
+              if (
+                (!session || !session?.user) &&
+                link?.label === "Recommendations"
+              )
+                return null;
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="rounded-full px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-cloud/60 transition hover:bg-[rgba(244,244,242,0.08)] hover:text-cloud"
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
           </div>
 
           <div className="glass mx-auto hidden min-w-0 flex-1 items-center gap-2 rounded-full border border-black/8 px-4 py-2 sm:flex lg:max-w-lg dark:border-[rgba(244,244,242,0.08)]">
@@ -70,7 +77,6 @@ export default function Navbar({ session }: { session: Session }) {
           </div>
 
           <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
-            {/* Mobile hamburger */}
             <button
               type="button"
               className={iconButtonClass + " sm:hidden"}
@@ -139,20 +145,26 @@ export default function Navbar({ session }: { session: Session }) {
           </div>
         </nav>
 
-        {/* Mobile menu */}
         {mobileOpen && (
           <div className="mt-2 rounded-2xl border border-black/10 bg-white/95 p-3 shadow-lg backdrop-blur-md dark:border-[rgba(244,244,242,0.08)] dark:bg-base/95 sm:hidden">
             <div className="flex flex-col gap-1">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setMobileOpen(false)}
-                  className="rounded-xl px-4 py-3 font-mono text-xs uppercase tracking-[0.14em] text-cloud/70 transition hover:bg-[rgba(244,244,242,0.08)] hover:text-cloud"
-                >
-                  {link.label}
-                </Link>
-              ))}
+              {navLinks.map((link, idx) => {
+                if (
+                  (!session || !session?.user) &&
+                  link?.label === "Recommendations"
+                )
+                  return null;
+                return (
+                  <Link
+                    key={idx}
+                    href={link.href}
+                    onClick={() => setMobileOpen(false)}
+                    className="rounded-xl px-4 py-3 font-mono text-xs uppercase tracking-[0.14em] text-cloud/70 transition hover:bg-[rgba(244,244,242,0.08)] hover:text-cloud"
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
             </div>
           </div>
         )}

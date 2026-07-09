@@ -6,7 +6,7 @@ import { ChevronDown, ChevronUp, RotateCcw } from "lucide-react";
 function FilterSection({
   label,
   children,
-  defaultOpen = true,
+  defaultOpen = false,
 }: {
   label: string;
   children: React.ReactNode;
