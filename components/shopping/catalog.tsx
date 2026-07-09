@@ -42,7 +42,7 @@ export default function Catalog() {
               setVisibleCount(20);
             }}
             placeholder="Search products or categories…"
-            className="w-full rounded-xl border border-[rgba(244,244,242,0.12)] bg-panel py-3 pl-11 pr-4 font-mono text-sm text-cloud placeholder:text-cloud/30 transition focus:outline-none focus:ring-2 focus:ring-accent/60 sm:w-72 sm:focus:w-96"
+            className="w-full rounded-xl border border-black/12 bg-panel py-3 pl-11 pr-4 font-mono text-sm text-cloud placeholder:text-cloud/30 transition focus:outline-none focus:ring-2 focus:ring-accent/60 dark:border-[rgba(244,244,242,0.12)] sm:w-72 sm:focus:w-96"
           />
           <svg
             aria-hidden="true"
