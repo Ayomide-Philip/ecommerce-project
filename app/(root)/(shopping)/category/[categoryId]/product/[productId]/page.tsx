@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useParams } from "next/navigation";
@@ -57,10 +58,8 @@ export default function ProductPage() {
       </Link>
 
       <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
-        {/* Image section */}
         <div className="space-y-4">
-          <div className="relative aspect-[4/5] overflow-hidden rounded-3xl border border-black/12 bg-panel dark:border-[rgba(244,244,242,0.12)]">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
+          <div className="relative aspect-4/5 overflow-hidden rounded-3xl border border-black/12 bg-panel dark:border-[rgba(244,244,242,0.12)]">
             <img
               src={imgSrc}
               alt={product.prod_name}
