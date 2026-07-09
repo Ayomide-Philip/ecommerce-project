@@ -5,7 +5,6 @@ import Link from "next/link";
 import data from "@/data/articles_sample.json";
 import ProductCard from "@/components/ProductCard";
 
-// Build a reverse map: slug → product_type_name
 const slugToCategory = [...new Set(data.map((i) => i?.product_type_name))]
   .filter(Boolean)
   .reduce<Record<string, string>>((acc, name) => {
@@ -42,11 +41,10 @@ export default function Page() {
   }
 
   return (
-    <main className="mx-auto w-full max-w-7xl space-y-8 px-3 py-8 sm:px-4 md:px-6 lg:px-8">
-      {/* Header */}
+    <main className="mx-auto w-full max-w-7xl space-y-8 px-3 py-8 sm:px-4 md:px-6 lg:px-8 mt-15 sm:mt-20 lg:mt-22">
       <div className="flex items-center gap-4">
         <Link
-          href="/"
+          href="/category"
           className="glass inline-flex h-10 w-10 items-center justify-center rounded-full text-cloud/60 transition hover:text-cloud"
         >
           <ArrowLeft aria-hidden="true" className="h-5 w-5" />

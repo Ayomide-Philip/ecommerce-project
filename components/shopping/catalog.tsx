@@ -1,40 +1,56 @@
 "use client";
 
 import { useState } from "react";
-import FilterPills from "@/components/FilterPills";
+import { Search } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
 import data from "@/data/articles_sample.json";
 
 export default function Catalog() {
   const [visibleCount, setVisibleCount] = useState(20);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const catalogFilters = [
-    "All",
-    "Streetwear",
-    "Traditional",
-    "Bridal",
-    "Sneakers",
-    "Sportswear",
-  ];
+  const filtered = searchQuery
+    ? data.filter(
+        (item) =>
+          item.prod_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.product_type_name
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()),
+      )
+    : data;
 
-  const visibleProducts = data.slice(0, visibleCount);
-  const hasMore = visibleCount < data.length;
+  const visibleProducts = filtered.slice(0, visibleCount);
+  const hasMore = visibleCount < filtered.length;
 
   return (
     <section aria-labelledby="catalog-heading" className="space-y-6">
-      <div className="flex items-end justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h2
             id="catalog-heading"
-            className="font-display text-3xl font-medium text-cloud"
+            className="font-display text-2xl font-medium text-cloud sm:text-3xl"
           >
             Browse the catalog
           </h2>
           <p className="mt-1 text-sm text-cloud/55">Discover your next fit</p>
         </div>
+        <div className="relative w-full sm:w-auto">
+          <Search
+            aria-hidden="true"
+            className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-accent/60"
+          />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setVisibleCount(20);
+            }}
+            placeholder="Search products or categories…"
+            className="glass w-full rounded-xl py-3 pl-11 pr-4 font-mono text-sm text-cloud placeholder:text-cloud/30 transition focus:outline-none focus:ring-2 focus:ring-accent/60 sm:w-72 sm:focus:w-96"
+          />
+        </div>
       </div>
-
-      <FilterPills filters={catalogFilters} activeFilter="All" />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {visibleProducts.map((product, idx) => (
@@ -51,7 +67,7 @@ export default function Catalog() {
           >
             See More
           </button>
-        </div>  
+        </div>
       )}
     </section>
   );
