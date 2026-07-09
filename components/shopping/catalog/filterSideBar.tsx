@@ -98,6 +98,9 @@ export default function CatalogFilterSidebar({
   patterns,
   selectedPatterns,
   setSelectedPatterns,
+  departments,
+  selectedDepartments,
+  setSelectedDepartments,
   toggleFilter,
 }: {
   hasActiveFilters: boolean;
@@ -111,6 +114,9 @@ export default function CatalogFilterSidebar({
   patterns: string[];
   selectedPatterns: string[];
   setSelectedPatterns: (patterns: string[]) => void;
+  departments: string[];
+  selectedDepartments: string[];
+  setSelectedDepartments: (departments: string[]) => void;
   toggleFilter: (
     selected: string[],
     setSelected: (items: string[]) => void,
@@ -215,6 +221,32 @@ export default function CatalogFilterSidebar({
               </svg>
             </button>
           ))}
+          {selectedDepartments.map((dept) => (
+            <button
+              key={dept}
+              type="button"
+              onClick={() =>
+                toggleFilter(selectedDepartments, setSelectedDepartments, dept)
+              }
+              className="inline-flex items-center gap-1 rounded-full bg-accent/10 px-2.5 py-1 font-mono text-[9px] uppercase tracking-widest text-accent transition hover:bg-accent/20"
+            >
+              {dept}
+              <svg
+                aria-hidden="true"
+                className="h-3 w-3"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          ))}
         </div>
       )}
 
@@ -252,6 +284,19 @@ export default function CatalogFilterSidebar({
             checked={selectedPatterns.includes(pattern)}
             onChange={() =>
               toggleFilter(selectedPatterns, setSelectedPatterns, pattern)
+            }
+          />
+        ))}
+      </FilterSection>
+
+      <FilterSection label="Department">
+        {departments.map((dept) => (
+          <FilterCheckbox
+            key={dept}
+            label={dept}
+            checked={selectedDepartments.includes(dept)}
+            onChange={() =>
+              toggleFilter(selectedDepartments, setSelectedDepartments, dept)
             }
           />
         ))}

@@ -5,6 +5,12 @@ import { SlidersHorizontal, X } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
 import data from "@/data/articles_sample.json";
 import CatalogFilterSidebar from "./catalog/filterSideBar";
+import {
+  ColourGroupName,
+  DepartmentName,
+  GraphicalAppearanceName,
+  ProductTypeName,
+} from "@/libs/enums/product.enums";
 
 export default function Catalog() {
   const [visibleCount, setVisibleCount] = useState(20);
@@ -12,18 +18,23 @@ export default function Catalog() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [selectedPatterns, setSelectedPatterns] = useState<string[]>([]);
+  const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   const categories = useMemo(
-    () => [...new Set(data.map((i) => i.product_type_name))].sort(),
+    () => [...(ProductTypeName as readonly string[])].sort(),
     [],
   );
   const colors = useMemo(
-    () => [...new Set(data.map((i) => i.colour_group_name))].sort(),
+    () => [...(ColourGroupName as readonly string[])].sort(),
     [],
   );
   const patterns = useMemo(
-    () => [...new Set(data.map((i) => i.graphical_appearance_name))].sort(),
+    () => [...(GraphicalAppearanceName as readonly string[])].sort(),
+    [],
+  );
+  const departments = useMemo(
+    () => [...(DepartmentName as readonly string[])].sort(),
     [],
   );
 
@@ -53,9 +64,20 @@ export default function Catalog() {
         selectedPatterns.includes(item.graphical_appearance_name),
       );
     }
+    if (selectedDepartments.length > 0) {
+      result = result.filter((item) =>
+        selectedDepartments.includes(item.department_name),
+      );
+    }
 
     return result;
-  }, [searchQuery, selectedCategories, selectedColors, selectedPatterns]);
+  }, [
+    searchQuery,
+    selectedCategories,
+    selectedColors,
+    selectedPatterns,
+    selectedDepartments,
+  ]);
 
   const visibleProducts = filtered.slice(0, visibleCount);
   const hasMore = visibleCount < filtered.length;
@@ -75,6 +97,7 @@ export default function Catalog() {
     setSelectedCategories([]);
     setSelectedColors([]);
     setSelectedPatterns([]);
+    setSelectedDepartments([]);
     setSearchQuery("");
     setVisibleCount(20);
   };
@@ -82,10 +105,14 @@ export default function Catalog() {
   const hasActiveFilters =
     selectedCategories.length > 0 ||
     selectedColors.length > 0 ||
-    selectedPatterns.length > 0;
+    selectedPatterns.length > 0 ||
+    selectedDepartments.length > 0;
 
   const activeCount =
-    selectedCategories.length + selectedColors.length + selectedPatterns.length;
+    selectedCategories.length +
+    selectedColors.length +
+    selectedPatterns.length +
+    selectedDepartments.length;
 
   return (
     <section aria-labelledby="catalog-heading" className="space-y-6">
@@ -161,6 +188,9 @@ export default function Catalog() {
               patterns={patterns}
               selectedPatterns={selectedPatterns}
               setSelectedPatterns={setSelectedPatterns}
+              departments={departments}
+              selectedDepartments={selectedDepartments}
+              setSelectedDepartments={setSelectedDepartments}
               toggleFilter={toggleFilter}
             />
           </div>
@@ -197,6 +227,9 @@ export default function Catalog() {
                 patterns={patterns}
                 selectedPatterns={selectedPatterns}
                 setSelectedPatterns={setSelectedPatterns}
+                departments={departments}
+                selectedDepartments={selectedDepartments}
+                setSelectedDepartments={setSelectedDepartments}
                 toggleFilter={toggleFilter}
               />
             </div>
