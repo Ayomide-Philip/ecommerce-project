@@ -4,6 +4,9 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import data from "@/data/articles_sample.json";
 import ProductCard from "@/components/ProductCard";
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
+import { Product } from "@/libs/models/products.models";
 
 const slugToCategory = [...new Set(data.map((i) => i?.product_type_name))]
   .filter(Boolean)
@@ -16,14 +19,35 @@ const slugToCategory = [...new Set(data.map((i) => i?.product_type_name))]
 export default function Page() {
   const params = useParams();
   const { categoryId } = params;
+  const [category, setCategory] = useState<Product[] | null>(null);
+
+  useEffect(() => {
+    if (!categoryId) return;
+    async function fetchCategory() {
+      try {
+        const request = await fetch(`/api/categories/${categoryId}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        const response = await request.json();
+        if (!request?.ok || response?.error) {
+          return toast.error("Failed to fetch category");
+        }
+
+        setCategory(response?.category || null);
+      } catch (err) {
+        console.log(err);
+        return toast.error("Unstable connection. Please try again later.");
+      }
+    }
+
+    fetchCategory();
+  }, [categoryId]);
+
   const categoryName = slugToCategory[categoryId as string] || null;
-  const products = categoryName
-    ? data.filter(
-        (item) =>
-          item?.product_type_name?.toLowerCase() ===
-          categoryName?.toLowerCase(),
-      )
-    : [];
 
   if (!categoryName) {
     return (
@@ -54,19 +78,15 @@ export default function Page() {
             {categoryName}
           </h1>
           <p className="mt-1 text-sm text-cloud/55">
-            {products.length} {products.length === 1 ? "item" : "items"}{" "}
+            {category?.length} {category?.length === 1 ? "item" : "items"}{" "}
             available
           </p>
         </div>
       </div>
 
-      {/* Product grid */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {products.map((product) => (
-          <ProductCard
-            key={product.prod_name + product.price}
-            product={product}
-          />
+        {category?.map((product: Product, idx: number) => (
+          <ProductCard key={idx} product={product} />
         ))}
       </div>
     </main>
