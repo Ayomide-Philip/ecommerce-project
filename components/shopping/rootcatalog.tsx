@@ -1,18 +1,9 @@
-"use client";
-
-import { useState } from "react";
 import { ArrowUpRight } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
 import data from "@/data/articles_sample.json";
 
-const INITIAL_COUNT = 20;
-const LOAD_MORE = 20;
-
-export default function LandingCatalog() {
-  const [visibleCount, setVisibleCount] = useState(INITIAL_COUNT);
-
-  const visibleProducts = data.slice(0, visibleCount);
-  const hasMore = visibleCount < data.length;
+export default async function LandingCatalog() {
+  const visibleProducts = data.slice(0, 20);
 
   return (
     <section aria-labelledby="landing-catalog-heading" className="space-y-6">
@@ -40,18 +31,6 @@ export default function LandingCatalog() {
           <ProductCard key={idx} product={product} />
         ))}
       </div>
-
-      {hasMore && (
-        <div className="flex justify-center pt-2">
-          <button
-            type="button"
-            onClick={() => setVisibleCount((prev) => prev + LOAD_MORE)}
-            className="glass inline-flex items-center gap-2 rounded-full px-8 py-3 font-mono text-xs uppercase tracking-[0.16em] text-cloud/70 transition hover:bg-[rgba(244,244,242,0.12)] hover:text-cloud"
-          >
-            See More ({data.length - visibleCount} left)
-          </button>
-        </div>
-      )}
     </section>
   );
 }
