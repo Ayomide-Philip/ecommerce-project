@@ -7,6 +7,7 @@ import ProductCard from "@/components/ProductCard";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Product } from "@/libs/models/products.models";
+import Loading from "@/components/loading";
 
 const slugToCategory = [...new Set(data.map((i) => i?.product_type_name))]
   .filter(Boolean)
@@ -20,10 +21,12 @@ export default function Page() {
   const params = useParams();
   const { categoryId } = params;
   const [category, setCategory] = useState<Product[] | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     if (!categoryId) return;
     async function fetchCategory() {
+      setLoading(true);
       try {
         const request = await fetch(`/api/categories/${categoryId}`, {
           method: "GET",
@@ -34,13 +37,19 @@ export default function Page() {
 
         const response = await request.json();
         if (!request?.ok || response?.error) {
-          return toast.error("Failed to fetch category");
+          setCategory(null);
+          setLoading(false);
+          return toast.error(response?.error || "Failed to fetch category");
         }
 
         setCategory(response?.category || null);
+        setLoading(false);
       } catch (err) {
         console.log(err);
+        setLoading(false);
         return toast.error("Unstable connection. Please try again later.");
+      } finally {
+        setLoading(false);
       }
     }
 
@@ -48,6 +57,8 @@ export default function Page() {
   }, [categoryId]);
 
   const categoryName = slugToCategory[categoryId as string] || null;
+
+  if (loading) return <Loading />;
 
   if (!categoryName) {
     return (
