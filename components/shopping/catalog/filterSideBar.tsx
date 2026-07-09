@@ -195,16 +195,17 @@ export default function CatalogFilterSidebar({
               </svg>
             </button>
           ))}
-          {selectedPatterns.map((pattern) => (
+
+          {selectedDepartments.map((dept) => (
             <button
-              key={pattern}
+              key={dept}
               type="button"
               onClick={() =>
-                toggleFilter(selectedPatterns, setSelectedPatterns, pattern)
+                toggleFilter(selectedDepartments, setSelectedDepartments, dept)
               }
               className="inline-flex items-center gap-1 rounded-full bg-accent/10 px-2.5 py-1 font-mono text-[9px] uppercase tracking-widest text-accent transition hover:bg-accent/20"
             >
-              {pattern}
+              {dept}
               <svg
                 aria-hidden="true"
                 className="h-3 w-3"
@@ -221,16 +222,17 @@ export default function CatalogFilterSidebar({
               </svg>
             </button>
           ))}
-          {selectedDepartments.map((dept) => (
+
+          {selectedPatterns.map((pattern) => (
             <button
-              key={dept}
+              key={pattern}
               type="button"
               onClick={() =>
-                toggleFilter(selectedDepartments, setSelectedDepartments, dept)
+                toggleFilter(selectedPatterns, setSelectedPatterns, pattern)
               }
               className="inline-flex items-center gap-1 rounded-full bg-accent/10 px-2.5 py-1 font-mono text-[9px] uppercase tracking-widest text-accent transition hover:bg-accent/20"
             >
-              {dept}
+              {pattern}
               <svg
                 aria-hidden="true"
                 className="h-3 w-3"
@@ -276,19 +278,6 @@ export default function CatalogFilterSidebar({
         ))}
       </FilterSection>
 
-      <FilterSection label="Pattern">
-        {patterns.map((pattern) => (
-          <FilterCheckbox
-            key={pattern}
-            label={pattern}
-            checked={selectedPatterns.includes(pattern)}
-            onChange={() =>
-              toggleFilter(selectedPatterns, setSelectedPatterns, pattern)
-            }
-          />
-        ))}
-      </FilterSection>
-
       <FilterSection label="Department">
         {departments.map((dept) => (
           <FilterCheckbox
@@ -297,6 +286,19 @@ export default function CatalogFilterSidebar({
             checked={selectedDepartments.includes(dept)}
             onChange={() =>
               toggleFilter(selectedDepartments, setSelectedDepartments, dept)
+            }
+          />
+        ))}
+      </FilterSection>
+
+      <FilterSection label="Pattern">
+        {patterns.map((pattern) => (
+          <FilterCheckbox
+            key={pattern}
+            label={pattern}
+            checked={selectedPatterns.includes(pattern)}
+            onChange={() =>
+              toggleFilter(selectedPatterns, setSelectedPatterns, pattern)
             }
           />
         ))}

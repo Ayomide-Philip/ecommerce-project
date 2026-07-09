@@ -45,16 +45,16 @@ export default function Catalog() {
       const q = searchQuery.toLowerCase();
       result = result.filter(
         (item) =>
-          item.prod_name.toLowerCase().includes(q) ||
-          item.product_type_name.toLowerCase().includes(q) ||
-          item.colour_group_name.toLowerCase().includes(q) ||
-          item.graphical_appearance_name.toLowerCase().includes(q) ||
-          item.department_name.toLowerCase().includes(q),
+          item?.prod_name?.toLowerCase()?.includes(q) ||
+          item?.product_type_name?.toLowerCase()?.includes(q) ||
+          item?.colour_group_name?.toLowerCase()?.includes(q) ||
+          item?.graphical_appearance_name?.toLowerCase()?.includes(q) ||
+          item?.department_name?.toLowerCase()?.includes(q),
       );
     }
     if (selectedCategories.length > 0) {
       result = result.filter((item) =>
-        selectedCategories.includes(item.product_type_name),
+        selectedCategories?.includes(item.product_type_name),
       );
     }
     if (selectedColors.length > 0) {
