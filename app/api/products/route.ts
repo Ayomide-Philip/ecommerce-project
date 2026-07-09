@@ -226,12 +226,25 @@ export const POST = auth(async function POST(req: NextRequest) {
     );
   }
 
-  return NextResponse.json(
-    {
-      message: "Added a new product",
-    },
-    {
-      status: 200,
-    },
-  );
+  try {
+    await connectToDatabase();
+    return NextResponse.json(
+      {
+        message: "Added a new product",
+      },
+      {
+        status: 200,
+      },
+    );
+  } catch (err) {
+    console.log(err);
+    return NextResponse.json(
+      {
+        error: "Unable to add a new product",
+      },
+      {
+        status: 500,
+      },
+    );
+  }
 });
