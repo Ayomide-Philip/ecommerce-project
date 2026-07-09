@@ -1,4 +1,13 @@
 import { InferSchemaType, model, models, Schema } from "mongoose";
+import {
+  ProductTypeName,
+  GraphicalAppearanceName,
+  ColourGroupName,
+  PerceivedColourValueName,
+  PerceivedColourMasterName,
+  DepartmentName,
+  IndexName,
+} from "../enums/product.enums";
 
 const productSchema = new Schema(
   {
@@ -11,36 +20,43 @@ const productSchema = new Schema(
       type: String,
       required: true,
       lowercase: true,
+      enum: ProductTypeName,
     },
     graphical_appearance_name: {
       type: String,
       required: true,
       lowercase: true,
+      enum: GraphicalAppearanceName,
     },
     colour_group_name: {
       type: String,
       required: true,
       lowercase: true,
+      enum: ColourGroupName,
     },
     perceived_colour_value_name: {
       type: String,
       required: true,
       lowercase: true,
+      enum: PerceivedColourValueName,
     },
     perceived_colour_master_name: {
       type: String,
       required: true,
       lowercase: true,
+      enum: PerceivedColourMasterName,
     },
     department_name: {
       type: String,
       required: true,
       lowercase: true,
+      enum: DepartmentName,
     },
     index_name: {
       type: String,
       required: true,
       lowercase: true,
+      enum: IndexName,
     },
     detail_desc: {
       type: String,
