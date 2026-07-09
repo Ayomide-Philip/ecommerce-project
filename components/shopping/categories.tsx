@@ -23,7 +23,7 @@ const imageMap: Record<string, string> = {
   Blazer: "blazer",
   Tie: "tie",
   Scarf: "scarf",
-  "Cap/peaked": "cap-peaked",
+  Cap: "cap",
   Watch: "watch",
   Gloves: "gloves",
   Hoodie: "hoodie",

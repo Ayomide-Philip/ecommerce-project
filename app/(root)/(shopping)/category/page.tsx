@@ -22,7 +22,7 @@ const imageMap: Record<string, string> = {
   Blazer: "blazer",
   Tie: "tie",
   Scarf: "scarf",
-  "Cap/peaked": "cap-peaked",
+  Cap: "cap",
   Watch: "watch",
   Gloves: "gloves",
   Hoodie: "hoodie",
@@ -67,7 +67,7 @@ export default function Page() {
           {categories.map((cat) => (
             <a
               key={cat.name}
-              href="#"
+              href={`/category/${cat.name.toLowerCase().replace(/\s+/g, "-")}`}
               className="group relative aspect-4/5 overflow-hidden rounded-[20px] border border-[rgba(244,244,242,0.08)] bg-panel transition duration-300 hover:border-[rgba(244,244,242,0.18)]"
             >
               <div
