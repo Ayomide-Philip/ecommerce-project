@@ -51,6 +51,7 @@ export default function Categories() {
   }, {});
 
   const categories = [...new Set(data.map((i) => i?.product_type_name))]
+    .slice(0, 5)
     .filter(Boolean)
     .map((name, idx) => ({
       name,
@@ -64,12 +65,12 @@ export default function Categories() {
       <div className="flex items-end justify-between">
         <h2
           id="categories-heading"
-          className="font-display text-3xl font-medium text-cloud"
+          className="font-display text-3xl font-medium text-cloud text-center sm:text-3xl lg:text-4xl"
         >
           Shop by Category
         </h2>
         <a
-          href="#"
+          href="/category"
           className="hidden items-center gap-1 font-mono text-xs uppercase tracking-[0.16em] text-cloud/60 transition hover:text-accent sm:inline-flex"
         >
           View All
@@ -81,7 +82,7 @@ export default function Categories() {
         {categories.map((cat) => (
           <a
             key={cat.name}
-            href="#"
+            href={`/category/${cat.name.toLowerCase().replace(/\s+/g, "-")}`}
             className="group relative aspect-4/5 overflow-hidden rounded-[20px] border border-[rgba(244,244,242,0.08)] bg-panel transition duration-300 hover:border-[rgba(244,244,242,0.18)]"
           >
             <div
