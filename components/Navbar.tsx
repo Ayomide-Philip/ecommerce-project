@@ -1,7 +1,17 @@
-import { Heart, Search, ShoppingCart, ChevronDown, LogIn } from "lucide-react";
+"use client";
+import {
+  Heart,
+  Search,
+  ShoppingCart,
+  ChevronDown,
+  LogIn,
+  Menu,
+  X,
+} from "lucide-react";
 import Toggle from "@/components/toggle";
 import Link from "next/link";
 import { Session } from "next-auth";
+import { useState } from "react";
 
 const iconButtonClass =
   "glass inline-flex h-9 w-9 items-center justify-center rounded-full text-cloud/80 transition hover:bg-black/8 dark:text-cloud/85 dark:hover:bg-[rgba(244,244,242,0.08)] focus-visible:text-accent";
@@ -9,7 +19,14 @@ const iconButtonClass =
 const badgeClass =
   "absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 font-mono text-[9px] font-medium leading-none text-white";
 
+const navLinks = [
+  { href: "/catalog", label: "Catalog" },
+  { href: "/category", label: "Categories" },
+];
+
 export default function Navbar({ session }: { session: Session }) {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   return (
     <header className="fixed inset-x-3 top-3 z-50 sm:inset-x-4 sm:top-4 lg:inset-x-8 lg:top-2">
       <div className="mx-auto w-full max-w-7xl">
@@ -22,6 +39,19 @@ export default function Navbar({ session }: { session: Session }) {
               Ēlan
             </span>
           </Link>
+
+          {/* Desktop nav links */}
+          <div className="hidden items-center gap-1 sm:flex">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="rounded-full px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-cloud/60 transition hover:bg-[rgba(244,244,242,0.08)] hover:text-cloud"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
 
           <div className="glass mx-auto hidden min-w-0 flex-1 items-center gap-2 rounded-full border border-black/8 px-4 py-2 sm:flex lg:max-w-lg dark:border-[rgba(244,244,242,0.08)]">
             <Search
@@ -40,6 +70,20 @@ export default function Navbar({ session }: { session: Session }) {
           </div>
 
           <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
+            {/* Mobile hamburger */}
+            <button
+              type="button"
+              className={iconButtonClass + " sm:hidden"}
+              aria-label={mobileOpen ? "Close menu" : "Open menu"}
+              onClick={() => setMobileOpen(!mobileOpen)}
+            >
+              {mobileOpen ? (
+                <X aria-hidden="true" className="h-4 w-4" />
+              ) : (
+                <Menu aria-hidden="true" className="h-4 w-4" />
+              )}
+            </button>
+
             <button
               className="relative"
               type="button"
@@ -94,6 +138,24 @@ export default function Navbar({ session }: { session: Session }) {
             )}
           </div>
         </nav>
+
+        {/* Mobile menu */}
+        {mobileOpen && (
+          <div className="mt-2 rounded-2xl border border-black/10 bg-white/95 p-3 shadow-lg backdrop-blur-md dark:border-[rgba(244,244,242,0.08)] dark:bg-base/95 sm:hidden">
+            <div className="flex flex-col gap-1">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMobileOpen(false)}
+                  className="rounded-xl px-4 py-3 font-mono text-xs uppercase tracking-[0.14em] text-cloud/70 transition hover:bg-[rgba(244,244,242,0.08)] hover:text-cloud"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </header>
   );
