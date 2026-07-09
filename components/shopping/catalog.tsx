@@ -1,7 +1,13 @@
+"use client";
+
+import { useState } from "react";
 import FilterPills from "@/components/FilterPills";
 import ProductCard from "@/components/ProductCard";
+import data from "@/data/articles_sample.json";
 
 export default function Catalog() {
+  const [visibleCount, setVisibleCount] = useState(20);
+
   const catalogFilters = [
     "All",
     "Streetwear",
@@ -11,36 +17,8 @@ export default function Catalog() {
     "Sportswear",
   ];
 
-  const catalogProducts = [
-    {
-      prod_name: "Structured Bridal Lace",
-      product_type_name: "Bridal",
-      price: 180.0,
-      detail_desc:
-        "Intricate lace overlay with a fitted bodice and a sweeping train — made for the aisle.",
-    },
-    {
-      prod_name: "Retro Court Sneakers",
-      product_type_name: "Sneakers",
-      price: 84.5,
-      detail_desc:
-        "Vintage-inspired court sneakers with a clean leather upper and gum sole.",
-    },
-    {
-      prod_name: "Cropped Sport Windbreaker",
-      product_type_name: "Sportswear",
-      price: 49.0,
-      detail_desc:
-        "Lightweight water-repellent windbreaker with a cropped cut and reflective accents.",
-    },
-    {
-      prod_name: "Monochrome Senator Set",
-      product_type_name: "Traditional",
-      price: 77.9,
-      detail_desc:
-        "A minimalist senator set in monochrome — clean lines, premium fabric, effortless style.",
-    },
-  ];
+  const visibleProducts = data.slice(0, visibleCount);
+  const hasMore = visibleCount < data.length;
 
   return (
     <section aria-labelledby="catalog-heading" className="space-y-6">
@@ -59,10 +37,22 @@ export default function Catalog() {
       <FilterPills filters={catalogFilters} activeFilter="All" />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {catalogProducts.map((product) => (
-          <ProductCard key={product.prod_name} product={product} />
+        {visibleProducts.map((product, idx) => (
+          <ProductCard key={idx} product={product} />
         ))}
       </div>
+
+      {hasMore && (
+        <div className="flex justify-center pt-2">
+          <button
+            type="button"
+            onClick={() => setVisibleCount((prev) => prev + 12)}
+            className="glass inline-flex items-center gap-2 rounded-full px-8 py-3 font-mono text-xs uppercase tracking-[0.16em] text-cloud/70 transition hover:bg-[rgba(244,244,242,0.12)] hover:text-cloud"
+          >
+            See More
+          </button>
+        </div>
+      )}
     </section>
   );
 }
