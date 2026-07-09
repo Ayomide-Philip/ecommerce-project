@@ -11,8 +11,12 @@ import {
   ProductTypeName,
 } from "@/libs/enums/product.enums";
 import { toast } from "sonner";
-import { Product } from "@/libs/models/products.models";
 import Loading from "../loading";
+import { Product } from "@/libs/models/products.models";
+
+type ProductExtend = Product & {
+  _id: string;
+};
 
 export default function Catalog() {
   const [visibleCount, setVisibleCount] = useState(20);
@@ -23,7 +27,7 @@ export default function Catalog() {
   const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [loading, setLoading] = useState<boolean>(true);
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<ProductExtend[]>([]);
 
   useEffect(() => {
     async function fetchProducts() {
@@ -281,7 +285,7 @@ export default function Catalog() {
         <div className="flex-1">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {!loading &&
-              visibleProducts.map((product, idx) => (
+              visibleProducts.map((product: Product, idx) => (
                 <ProductCard key={idx} product={product} />
               ))}
           </div>

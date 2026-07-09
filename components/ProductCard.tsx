@@ -8,18 +8,19 @@ type Product = {
   product_type_name: string;
   price: number;
   detail_desc?: string;
+  _id: string;
 };
 
 type ProductCardProps = {
-  product: Product;
+  product: ProductExtend;
 };
 
 export default function ProductCard({ product }: ProductCardProps) {
   const imgSrc = `/images/${imageMap[product?.product_type_name] || product?.product_type_name?.toLowerCase()?.replace(/\s+/g, "-")}.jpg`;
-  const productSlug = product?.prod_name
-    ?.toLowerCase()
-    ?.replace(/\s+/g, "-")
-    ?.replace(/\//g, "-");
+  // const productSlug = product?.prod_name
+  //   ?.toLowerCase()
+  //   ?.replace(/\s+/g, "-")
+  //   ?.replace(/\//g, "-");
   const categorySlug = product?.product_type_name
     ?.toLowerCase()
     ?.replace(/\s+/g, "-")
@@ -27,7 +28,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   return (
     <article className="group glass relative overflow-hidden rounded-[20px] p-4 transition duration-300 hover:bg-[rgba(244,244,242,0.1)]">
-      <Link href={`/category/${categorySlug}/product/${productSlug}`}>
+      <Link href={`/category/${categorySlug}/product/${product?._id}`}>
         <div className="relative mb-4 h-52 overflow-hidden rounded-2xl border border-black/12 bg-panel dark:border-[rgba(244,244,242,0.12)]">
           <img
             src={imgSrc}
