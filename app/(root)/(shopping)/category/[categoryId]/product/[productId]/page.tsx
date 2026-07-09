@@ -8,15 +8,18 @@ import { imageMap } from "@/components/static/imagemap";
 import { useEffect, useState } from "react";
 import { Product } from "@/libs/models/products.models";
 import { toast } from "sonner";
+import Loading from "@/components/loading";
 
 export default function ProductPage() {
   const params = useParams();
   const { categoryId, productId } = params;
   const [product, setProducts] = useState<Product | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     if (!categoryId || !productId) return redirect("/catalog");
     async function fetchProduct() {
+      setLoading(true);
       try {
         const request = await fetch(`/api/products/${productId}`, {
           method: "GET",
@@ -32,10 +35,14 @@ export default function ProductPage() {
       } catch (err) {
         console.log(err);
         return toast.error("Unstable connection. Please try again later.");
+      } finally {
+        setLoading(false);
       }
     }
     fetchProduct();
   }, [categoryId, productId]);
+
+  if (loading) return <Loading />;
 
   if (!product) {
     return (
@@ -71,22 +78,22 @@ export default function ProductPage() {
           <div className="space-y-8">
             <div className="space-y-3">
               <span className="inline-block rounded-full border border-accent/20 bg-accent/5 px-4 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-accent">
-                {product.product_type_name}
+                {product?.product_type_name}
               </span>
               <h1 className="font-display text-3xl font-medium text-cloud sm:text-4xl lg:text-5xl">
-                {product.prod_name}
+                {product?.prod_name}
               </h1>
             </div>
 
             <div>
               <p className="font-display text-4xl font-medium text-accent sm:text-5xl">
-                ${product.price.toFixed(2)}
+                ${product?.price?.toFixed(2)}
               </p>
             </div>
 
             <div className="border-t border-[rgba(244,244,242,0.08)] pt-6">
               <p className="text-sm leading-relaxed text-cloud/60">
-                {product.detail_desc}
+                {product?.detail_desc}
               </p>
             </div>
 
@@ -96,30 +103,30 @@ export default function ProductPage() {
               </p>
               <div className="flex flex-wrap gap-2">
                 {[
-                  { label: "Type", value: product.product_type_name },
-                  { label: "Department", value: product.department_name },
-                  { label: "Index", value: product.index_name },
-                  { label: "Colour", value: product.colour_group_name },
+                  { label: "Type", value: product?.product_type_name },
+                  { label: "Department", value: product?.department_name },
+                  { label: "Index", value: product?.index_name },
+                  { label: "Colour", value: product?.colour_group_name },
                   {
                     label: "Colour Value",
-                    value: product.perceived_colour_value_name,
+                    value: product?.perceived_colour_value_name,
                   },
                   {
                     label: "Colour Family",
-                    value: product.perceived_colour_master_name,
+                    value: product?.perceived_colour_master_name,
                   },
                   {
                     label: "Pattern",
-                    value: product.graphical_appearance_name,
+                    value: product?.graphical_appearance_name,
                   },
                 ].map(
                   (attr) =>
-                    attr.value && (
+                    attr?.value && (
                       <span
-                        key={attr.label}
+                        key={attr?.label}
                         className="glass rounded-full px-4 py-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-cloud/70"
                       >
-                        {attr.label}: {attr.value}
+                        {attr?.label}: {attr?.value}
                       </span>
                     ),
                 )}
@@ -131,7 +138,7 @@ export default function ProductPage() {
               className="inline-flex w-full items-center justify-center gap-3 rounded-full bg-accent px-10 py-4 font-mono text-xs uppercase tracking-[0.16em] text-cloud transition hover:brightness-110 focus-visible:ring-2 focus-visible:ring-accent sm:w-auto"
             >
               <ShoppingCart aria-hidden="true" className="h-4 w-4" />
-              Add to Cart — ${product.price.toFixed(2)}
+              Add to Cart — ${product?.price?.toFixed(2)}
             </button>
           </div>
         </div>
