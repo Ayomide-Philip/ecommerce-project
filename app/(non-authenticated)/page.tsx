@@ -2,6 +2,7 @@ import { ArrowUpRight, Sparkles } from "lucide-react";
 import FilterPills from "@/components/FilterPills";
 import Hero from "@/components/Hero";
 import ProductCard from "@/components/ProductCard";
+import Categories from "@/components/shopping/categories";
 
 const recommendedProducts = [
   {
@@ -70,89 +71,13 @@ const catalogProducts = [
   },
 ];
 
-const categories = [
-  {
-    name: "Streetwear",
-    count: "124 items",
-    gradient: "from-blue-500/20 to-cyan-500/10",
-    accent: "bg-blue-500/20",
-  },
-  {
-    name: "Traditional",
-    count: "86 items",
-    gradient: "from-amber-500/20 to-orange-500/10",
-    accent: "bg-amber-500/20",
-  },
-  {
-    name: "Bridal",
-    count: "42 items",
-    gradient: "from-rose-400/20 to-pink-500/10",
-    accent: "bg-rose-400/20",
-  },
-  {
-    name: "Sneakers",
-    count: "68 items",
-    gradient: "from-teal-500/20 to-emerald-500/10",
-    accent: "bg-teal-500/20",
-  },
-  {
-    name: "Sportswear",
-    count: "53 items",
-    gradient: "from-violet-500/20 to-purple-500/10",
-    accent: "bg-violet-500/20",
-  },
-];
-
 export default function Home() {
   return (
     <>
       <Hero />
 
       <main className="mx-auto w-full max-w-7xl space-y-20 px-3 py-6 pt-20 sm:px-4 sm:pt-24 md:px-6 lg:px-8 lg:py-12 lg:pt-28">
-        <section aria-labelledby="categories-heading" className="space-y-6">
-          <div className="flex items-end justify-between">
-            <h2
-              id="categories-heading"
-              className="font-display text-3xl font-medium text-cloud"
-            >
-              Shop by Category
-            </h2>
-            <a
-              href="#"
-              className="hidden items-center gap-1 font-mono text-xs uppercase tracking-[0.16em] text-cloud/60 transition hover:text-accent sm:inline-flex"
-            >
-              View All
-              <ArrowUpRight aria-hidden="true" className="h-3 w-3" />
-            </a>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-            {categories.map((cat) => (
-              <a
-                key={cat.name}
-                href="#"
-                className="group relative overflow-hidden rounded-[20px] border border-[rgba(244,244,242,0.08)] bg-panel/50 p-5 transition duration-300 hover:border-[rgba(244,244,242,0.18)] hover:bg-panel/80"
-              >
-                <div
-                  aria-hidden="true"
-                  className={`absolute inset-0 bg-linear-to-b ${cat.gradient} opacity-60 transition-opacity duration-300 group-hover:opacity-100`}
-                />
-                <div className="relative z-10">
-                  <span
-                    aria-hidden="true"
-                    className={`inline-block rounded-full ${cat.accent} px-3 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-cloud/80`}
-                  >
-                    {cat.count}
-                  </span>
-                  <h3 className="mt-4 font-display text-xl font-medium text-cloud">
-                    {cat.name}
-                  </h3>
-                </div>
-              </a>
-            ))}
-          </div>
-        </section>
-
+        <Categories />
         <section aria-labelledby="recommended-heading" className="space-y-6">
           <div className="flex items-end justify-between">
             <div>
