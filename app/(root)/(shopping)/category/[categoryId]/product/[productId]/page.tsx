@@ -1,41 +1,48 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useParams } from "next/navigation";
+import { redirect, useParams } from "next/navigation";
 import { ArrowLeft, ShoppingCart } from "lucide-react";
 import Link from "next/link";
-import data from "@/data/articles_sample.json";
 import { imageMap } from "@/components/static/imagemap";
-
-const slugify = (s: string) =>
-  s.toLowerCase().replace(/\s+/g, "-").replace(/\//g, "-");
-
-const slugToCategory = [...new Set(data.map((i) => i?.product_type_name))]
-  .filter(Boolean)
-  .reduce<Record<string, string>>((acc, name) => {
-    acc[slugify(name!)] = name!;
-    return acc;
-  }, {});
+import { useEffect, useState } from "react";
+import { Product } from "@/libs/models/products.models";
+import { toast } from "sonner";
 
 export default function ProductPage() {
   const params = useParams();
   const { categoryId, productId } = params;
+  const [product, setProducts] = useState<Product | null>(null);
 
-  const categoryName = slugToCategory[categoryId as string] || null;
-  const product = categoryName
-    ? data.find(
-        (item) =>
-          item.product_type_name === categoryName &&
-          slugify(item.prod_name) === productId,
-      )
-    : null;
+  useEffect(() => {
+    if (!categoryId || !productId) return redirect("/catalog");
+    async function fetchProduct() {
+      try {
+        const request = await fetch(`/api/products/${productId}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const response = await request.json();
+        if (!request.ok || response?.error) {
+          return toast.error("Failed to fetch product.");
+        }
+        setProducts(response?.product);
+      } catch (err) {
+        console.log(err);
+        return toast.error("Unstable connection. Please try again later.");
+      }
+    }
+    fetchProduct();
+  }, [categoryId, productId]);
 
   if (!product) {
     return (
       <div className="flex h-screen w-full flex-col items-center justify-center gap-4">
         <h1 className="text-4xl font-bold text-cloud">Product not found</h1>
         <Link
-          href="/"
+          href="/catalog"
           className="glass inline-flex items-center gap-2 rounded-full px-6 py-3 font-mono text-xs uppercase tracking-[0.16em] text-cloud/70 transition hover:text-cloud"
         >
           <ArrowLeft aria-hidden="true" className="h-4 w-4" />
@@ -77,7 +84,6 @@ export default function ProductPage() {
               </p>
             </div>
 
-            {/* Description */}
             <div className="border-t border-[rgba(244,244,242,0.08)] pt-6">
               <p className="text-sm leading-relaxed text-cloud/60">
                 {product.detail_desc}
