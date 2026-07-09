@@ -84,14 +84,24 @@ export default function ProductPage() {
               </p>
             </div>
 
-            {/* Attributes */}
             <div className="space-y-3">
               <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-cloud/40">
                 Details
               </p>
               <div className="flex flex-wrap gap-2">
                 {[
+                  { label: "Type", value: product.product_type_name },
+                  { label: "Department", value: product.department_name },
+                  { label: "Index", value: product.index_name },
                   { label: "Colour", value: product.colour_group_name },
+                  {
+                    label: "Colour Value",
+                    value: product.perceived_colour_value_name,
+                  },
+                  {
+                    label: "Colour Family",
+                    value: product.perceived_colour_master_name,
+                  },
                   {
                     label: "Pattern",
                     value: product.graphical_appearance_name,
@@ -110,7 +120,6 @@ export default function ProductPage() {
               </div>
             </div>
 
-            {/* Add to Cart */}
             <button
               type="button"
               className="inline-flex w-full items-center justify-center gap-3 rounded-full bg-accent px-10 py-4 font-mono text-xs uppercase tracking-[0.16em] text-cloud transition hover:brightness-110 focus-visible:ring-2 focus-visible:ring-accent sm:w-auto"
