@@ -1,6 +1,6 @@
 export default function Footer() {
   return (
-    <footer className="border-t border-[rgba(244,244,242,0.08)] bg-panel/50">
+    <footer className="border-t border-black/8 bg-[rgba(11,11,13,0.02)] dark:border-[rgba(244,244,242,0.08)] dark:bg-panel/50">
       <div className="mx-auto max-w-7xl px-3 py-12 sm:px-4 md:px-6 lg:px-8">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-3">

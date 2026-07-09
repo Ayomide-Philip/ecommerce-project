@@ -48,7 +48,7 @@ export default function ProductPage() {
   const imgSrc = `/images/${imageMap[product.product_type_name] || product.product_type_name.toLowerCase().replace(/\s+/g, "-")}.jpg`;
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-3 py-8 sm:px-4 md:px-6 lg:px-8">
+    <main className="mx-auto w-full max-w-7xl space-y-20 px-3 py-8 sm:px-4 md:px-6 lg:px-8">
       <Link
         href={`/category/${categoryId}`}
         className="mb-6 inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.16em] text-cloud/60 transition hover:text-accent"
@@ -59,7 +59,7 @@ export default function ProductPage() {
 
       <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
         <div className="space-y-4">
-          <div className="relative aspect-4/5 overflow-hidden rounded-3xl border border-black/12 bg-panel dark:border-[rgba(244,244,242,0.12)]">
+          <div className="relative aspect-3/4 overflow-hidden rounded-3xl border border-black/12 bg-panel dark:border-[rgba(244,244,242,0.12)] sm:aspect-5/4 lg:aspect-4/3">
             <img
               src={imgSrc}
               alt={product.prod_name}
@@ -68,10 +68,8 @@ export default function ProductPage() {
           </div>
         </div>
 
-        {/* Details section */}
         <div className="flex flex-col justify-center lg:py-12">
           <div className="space-y-8">
-            {/* Category & Name */}
             <div className="space-y-3">
               <span className="inline-block rounded-full border border-accent/20 bg-accent/5 px-4 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-accent">
                 {product.product_type_name}
@@ -81,7 +79,6 @@ export default function ProductPage() {
               </h1>
             </div>
 
-            {/* Price */}
             <div>
               <p className="font-display text-4xl font-medium text-accent sm:text-5xl">
                 ${product.price.toFixed(2)}
