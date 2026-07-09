@@ -1,3 +1,5 @@
+import { connectToDatabase } from "@/libs/config/database.config";
+import Products from "@/libs/models/products.models";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
@@ -17,6 +19,32 @@ export async function GET(
   }
 
   try {
+    await connectToDatabase();
+
+    const formattedSlug = slug.replace(/-/g, " ");
+
+    const category = await Products.find({
+      product_type_name: { $in: [formattedSlug, slug] },
+    }).lean();
+
+    if (!category || category.length === 0) {
+      return NextResponse.json(
+        {
+          error: "Category not found",
+        },
+        {
+          status: 404,
+        },
+      );
+    }
+    return NextResponse.json(
+      {
+        category,
+      },
+      {
+        status: 200,
+      },
+    );
   } catch (err) {
     console.log(err);
     return NextResponse.json(
