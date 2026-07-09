@@ -228,9 +228,37 @@ export const POST = auth(async function POST(req: NextRequest) {
 
   try {
     await connectToDatabase();
+    const existingProduct = await Products.findOne({
+      prod_name: prod_name?.trim(),
+      detail_desc: detail_desc?.trim(),
+    });
+
+    if (existingProduct) {
+      return NextResponse.json(
+        {
+          error: "A product with the same name and description already exists",
+        },
+        {
+          status: 400,
+        },
+      );
+    }
+    const newProduct = await Products.create({
+      prod_name: prod_name?.trim(),
+      product_type_name: product_type_name?.trim(),
+      graphical_appearance_name: graphical_appearance_name?.trim(),
+      colour_group_name: colour_group_name?.trim(),
+      perceived_colour_value_name: perceived_colour_value_name?.trim(),
+      perceived_colour_master_name: perceived_colour_master_name?.trim(),
+      department_name: department_name?.trim(),
+      index_name: index_name?.trim(),
+      detail_desc: detail_desc?.trim(),
+      price,
+    });
     return NextResponse.json(
       {
         message: "Added a new product",
+        product: !!newProduct,
       },
       {
         status: 200,
