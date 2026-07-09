@@ -90,23 +90,23 @@ export default function Navbar({ session }: { session: Session }) {
               )}
             </button>
 
-            <button
+            <Link
               className="relative"
-              type="button"
               aria-label="Wishlist (3)"
+              href="/wishlist"
             >
               <span className={iconButtonClass}>
                 <Heart aria-hidden="true" className="h-4 w-4" />
               </span>
               <span className={badgeClass}>3</span>
-            </button>
+            </Link>
 
-            <button className="relative" type="button" aria-label="Cart (20)">
+            <Link className="relative" href="/cart" aria-label="Cart (20)">
               <span className={iconButtonClass}>
                 <ShoppingCart aria-hidden="true" className="h-4 w-4" />
               </span>
               <span className={badgeClass}>20</span>
-            </button>
+            </Link>
 
             <Toggle />
 
