@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { fallbackColors } from "@/components/static/fallbackcolours";
 import { ProductTypeName } from "@/libs/enums/product.enums";
+import Link from "next/link";
 
 export default function Page() {
   const categories = (ProductTypeName as readonly string[])
@@ -19,7 +20,7 @@ export default function Page() {
         </h1>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
           {categories.map((cat) => (
-            <a
+            <Link
               key={cat.name}
               href={`/category/${cat.name.toLowerCase()?.replace(/\s+/g, "-")}`}
               className="group relative aspect-4/5 overflow-hidden rounded-[20px] border border-[rgba(244,244,242,0.08)] bg-panel transition duration-300 hover:border-[rgba(244,244,242,0.18)]"
@@ -40,7 +41,7 @@ export default function Page() {
                   {cat?.name}
                 </h3>
               </div>
-            </a>
+            </Link>
           ))}
         </div>
       </div>
