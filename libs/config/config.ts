@@ -1,1 +1,1 @@
-export const { BETTER_AUTH_SECRET, DATABASE_URL } = process.env;
+export const { BETTER_AUTH_SECRET, DATABASE_URL, BASE_URL } = process.env;
