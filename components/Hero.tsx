@@ -3,14 +3,14 @@
 import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-const productColors = [
-  "bg-blue-400/30",
-  "bg-rose-400/30",
-  "bg-teal-600/30",
-  "bg-amber-400/30",
-  "bg-orange-300/30",
-  "bg-rose-300/30",
-  "bg-teal-500/30",
+const slides = [
+  { img: "/images/dress.jpg", label: "Dresses" },
+  { img: "/images/jacket.jpg", label: "Jackets" },
+  { img: "/images/sneakers.jpg", label: "Sneakers" },
+  { img: "/images/t-shirt.jpg", label: "T-Shirts" },
+  { img: "/images/trousers.jpg", label: "Trousers" },
+  { img: "/images/hoodie.jpg", label: "Hoodies" },
+  { img: "/images/watch.jpg", label: "Accessories" },
 ];
 
 const cardsPerView = { mobile: 1, tablet: 2, desktop: 5 };
@@ -35,7 +35,7 @@ export default function Hero() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const maxIndex = Math.max(0, productColors.length - visibleCards);
+  const maxIndex = Math.max(0, slides.length - visibleCards);
 
   useEffect(() => {
     const autoAdvance = setInterval(() => {
@@ -115,19 +115,26 @@ export default function Hero() {
                 transform: `translateX(-${currentIndex * (100 / visibleCards)}%)`,
               }}
             >
-              {productColors.map((color, index) => (
+              {slides.map((slide, index) => (
                 <div
                   key={index}
                   style={{
                     width: `calc(100% / ${visibleCards})`,
                     flexShrink: 0,
                   }}
-                  className="aspect-4/5 rounded-4xl overflow-hidden glass border border-black/12 dark:border-[rgba(244,244,242,0.12)] shadow-lg transition hover:scale-105 hover:shadow-xl duration-300"
+                  className="group aspect-4/5 rounded-4xl overflow-hidden glass border border-black/12 dark:border-[rgba(244,244,242,0.12)] shadow-lg transition hover:scale-105 hover:shadow-xl duration-300"
                 >
-                  <div
-                    className={`w-full h-full ${color} relative flex items-center justify-center`}
-                  >
-                    <div className="absolute inset-1 rounded-3xl border border-white/10 pointer-events-none" />
+                  <div className="relative h-full w-full">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={slide.img}
+                      alt={slide.label}
+                      className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent" />
+                    <span className="absolute bottom-3 left-3 font-display text-lg font-medium text-white">
+                      {slide.label}
+                    </span>
                   </div>
                 </div>
               ))}
