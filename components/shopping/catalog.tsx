@@ -1,28 +1,248 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { SlidersHorizontal, X } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
 import data from "@/data/articles_sample.json";
+
+const priceRanges = [
+  { label: "Under $50", min: 0, max: 50 },
+  { label: "$50 – $100", min: 50, max: 100 },
+  { label: "$100 – $200", min: 100, max: 200 },
+  { label: "$200+", min: 200, max: Infinity },
+];
 
 export default function Catalog() {
   const [visibleCount, setVisibleCount] = useState(20);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedColors, setSelectedColors] = useState<string[]>([]);
+  const [selectedPatterns, setSelectedPatterns] = useState<string[]>([]);
+  const [priceRange, setPriceRange] = useState<{
+    min: number;
+    max: number;
+  } | null>(null);
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
-  const filtered = searchQuery
-    ? data.filter(
+  const categories = useMemo(
+    () => [...new Set(data.map((i) => i.product_type_name))].sort(),
+    [],
+  );
+  const colors = useMemo(
+    () => [...new Set(data.map((i) => i.colour_group_name))].sort(),
+    [],
+  );
+  const patterns = useMemo(
+    () => [...new Set(data.map((i) => i.graphical_appearance_name))].sort(),
+    [],
+  );
+
+  // Filter logic
+  const filtered = useMemo(() => {
+    let result = data;
+
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(
         (item) =>
-          item.prod_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          item.product_type_name
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase()),
-      )
-    : data;
+          item.prod_name.toLowerCase().includes(q) ||
+          item.product_type_name.toLowerCase().includes(q),
+      );
+    }
+    if (selectedCategories.length > 0) {
+      result = result.filter((item) =>
+        selectedCategories.includes(item.product_type_name),
+      );
+    }
+    if (selectedColors.length > 0) {
+      result = result.filter((item) =>
+        selectedColors.includes(item.colour_group_name),
+      );
+    }
+    if (selectedPatterns.length > 0) {
+      result = result.filter((item) =>
+        selectedPatterns.includes(item.graphical_appearance_name),
+      );
+    }
+    if (priceRange) {
+      result = result.filter(
+        (item) => item.price >= priceRange.min && item.price < priceRange.max,
+      );
+    }
+    return result;
+  }, [
+    searchQuery,
+    selectedCategories,
+    selectedColors,
+    selectedPatterns,
+    priceRange,
+  ]);
 
   const visibleProducts = filtered.slice(0, visibleCount);
   const hasMore = visibleCount < filtered.length;
 
+  const toggleFilter = (
+    arr: string[],
+    setter: (v: string[]) => void,
+    value: string,
+  ) => {
+    setter(
+      arr.includes(value) ? arr.filter((v) => v !== value) : [...arr, value],
+    );
+    setVisibleCount(20);
+  };
+
+  const clearAllFilters = () => {
+    setSelectedCategories([]);
+    setSelectedColors([]);
+    setSelectedPatterns([]);
+    setPriceRange(null);
+    setSearchQuery("");
+    setVisibleCount(20);
+  };
+
+  const hasActiveFilters =
+    selectedCategories.length > 0 ||
+    selectedColors.length > 0 ||
+    selectedPatterns.length > 0 ||
+    priceRange !== null;
+
+  const activeCount =
+    selectedCategories.length +
+    selectedColors.length +
+    selectedPatterns.length +
+    (priceRange ? 1 : 0);
+
+  const FilterSidebar = () => (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-cloud/40">
+          Filters
+        </p>
+        {hasActiveFilters && (
+          <button
+            type="button"
+            onClick={clearAllFilters}
+            className="font-mono text-[10px] uppercase tracking-[0.12em] text-accent hover:text-accent/80"
+          >
+            Clear all
+          </button>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-cloud/60">
+          Category
+        </p>
+        <div className="space-y-1">
+          {categories.map((cat) => (
+            <label
+              key={cat}
+              className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 transition hover:bg-[rgba(244,244,242,0.06)]"
+            >
+              <input
+                type="checkbox"
+                checked={selectedCategories.includes(cat)}
+                onChange={() =>
+                  toggleFilter(selectedCategories, setSelectedCategories, cat)
+                }
+                className="h-4 w-4 rounded border-cloud/30 accent-accent"
+              />
+              <span className="text-sm text-cloud/70">{cat}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* Colour */}
+      <div className="space-y-2">
+        <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-cloud/60">
+          Colour
+        </p>
+        <div className="space-y-1">
+          {colors.map((color) => (
+            <label
+              key={color}
+              className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 transition hover:bg-[rgba(244,244,242,0.06)]"
+            >
+              <input
+                type="checkbox"
+                checked={selectedColors.includes(color)}
+                onChange={() =>
+                  toggleFilter(selectedColors, setSelectedColors, color)
+                }
+                className="h-4 w-4 rounded border-cloud/30 accent-accent"
+              />
+              <span className="text-sm text-cloud/70">{color}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* Pattern */}
+      <div className="space-y-2">
+        <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-cloud/60">
+          Pattern
+        </p>
+        <div className="space-y-1">
+          {patterns.map((pattern) => (
+            <label
+              key={pattern}
+              className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 transition hover:bg-[rgba(244,244,242,0.06)]"
+            >
+              <input
+                type="checkbox"
+                checked={selectedPatterns.includes(pattern)}
+                onChange={() =>
+                  toggleFilter(selectedPatterns, setSelectedPatterns, pattern)
+                }
+                className="h-4 w-4 rounded border-cloud/30 accent-accent"
+              />
+              <span className="text-sm text-cloud/70">{pattern}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* Price */}
+      <div className="space-y-2">
+        <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-cloud/60">
+          Price
+        </p>
+        <div className="space-y-1">
+          {priceRanges.map((range) => (
+            <label
+              key={range.label}
+              className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 transition hover:bg-[rgba(244,244,242,0.06)]"
+            >
+              <input
+                type="radio"
+                name="price"
+                checked={
+                  priceRange?.min === range.min && priceRange?.max === range.max
+                }
+                onChange={() => {
+                  setPriceRange(
+                    priceRange?.min === range.min &&
+                      priceRange?.max === range.max
+                      ? null
+                      : { min: range.min, max: range.max },
+                  );
+                  setVisibleCount(20);
+                }}
+                className="h-4 w-4 border-cloud/30 accent-accent"
+              />
+              <span className="text-sm text-cloud/70">{range.label}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <section aria-labelledby="catalog-heading" className="space-y-6">
+      {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h2
@@ -31,53 +251,131 @@ export default function Catalog() {
           >
             Browse the catalog
           </h2>
-          <p className="mt-1 text-sm text-cloud/55">Discover your next fit</p>
+          <p className="mt-1 text-sm text-cloud/55">
+            {filtered.length} {filtered.length === 1 ? "product" : "products"}{" "}
+            found
+          </p>
         </div>
-        <div className="relative w-full sm:w-auto">
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-              setVisibleCount(20);
-            }}
-            placeholder="Search products or categories…"
-            className="w-full rounded-xl border border-black/12 bg-panel py-3 pl-11 pr-4 font-mono text-sm text-cloud placeholder:text-cloud/30 transition focus:outline-none focus:ring-2 focus:ring-accent/60 dark:border-[rgba(244,244,242,0.12)] sm:w-72 sm:focus:w-96"
-          />
-          <svg
-            aria-hidden="true"
-            className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-accent/60"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"
-            />
-          </svg>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {visibleProducts.map((product, idx) => (
-          <ProductCard key={idx} product={product} />
-        ))}
-      </div>
-
-      {hasMore && (
-        <div className="flex justify-center pt-2">
+        <div className="flex items-center gap-3">
+          {/* Mobile filter toggle */}
           <button
             type="button"
-            onClick={() => setVisibleCount((prev) => prev + 12)}
-            className="glass inline-flex items-center gap-2 rounded-full px-8 py-3 font-mono text-xs uppercase tracking-[0.16em] text-cloud/70 transition hover:bg-[rgba(244,244,242,0.12)] hover:text-cloud"
+            onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
+            className="glass relative inline-flex items-center gap-2 rounded-full px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.14em] text-cloud/70 transition hover:bg-[rgba(244,244,242,0.12)] lg:hidden"
           >
-            See More
+            <SlidersHorizontal aria-hidden="true" className="h-4 w-4" />
+            Filters
+            {activeCount > 0 && (
+              <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 font-mono text-[9px] text-cloud">
+                {activeCount}
+              </span>
+            )}
           </button>
+
+          {/* Search */}
+          <div className="relative w-full sm:w-auto">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setVisibleCount(20);
+              }}
+              placeholder="Search…"
+              className="w-full rounded-xl border border-black/12 bg-panel py-3 pl-11 pr-4 font-mono text-sm text-cloud placeholder:text-cloud/30 transition focus:outline-none focus:ring-2 focus:ring-accent/60 dark:border-[rgba(244,244,242,0.12)] sm:w-48 sm:focus:w-64"
+            />
+            <svg
+              aria-hidden="true"
+              className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-accent/60"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"
+              />
+            </svg>
+          </div>
         </div>
-      )}
+      </div>
+
+      <div className="flex gap-8">
+        {/* Desktop sidebar */}
+        <aside className="hidden w-56 shrink-0 lg:block">
+          <div className="sticky top-28 space-y-6 rounded-2xl border border-[rgba(244,244,242,0.08)] bg-panel/50 p-5">
+            <FilterSidebar />
+          </div>
+        </aside>
+
+        {/* Mobile filter overlay */}
+        {mobileFiltersOpen && (
+          <div className="fixed inset-0 z-40 lg:hidden">
+            <div
+              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+              onClick={() => setMobileFiltersOpen(false)}
+            />
+            <div className="absolute bottom-0 left-0 right-0 max-h-[80vh] overflow-y-auto rounded-t-3xl border-t border-[rgba(244,244,242,0.08)] bg-base p-6">
+              <div className="mb-4 flex items-center justify-between">
+                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-cloud/40">
+                  Filters
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setMobileFiltersOpen(false)}
+                  className="glass inline-flex h-8 w-8 items-center justify-center rounded-full"
+                >
+                  <X aria-hidden="true" className="h-4 w-4" />
+                </button>
+              </div>
+              <FilterSidebar />
+            </div>
+          </div>
+        )}
+
+        {/* Product grid */}
+        <div className="flex-1">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {visibleProducts.map((product, idx) => (
+              <ProductCard key={idx} product={product} />
+            ))}
+          </div>
+
+          {visibleProducts.length === 0 && (
+            <div className="flex flex-col items-center justify-center py-20 text-center">
+              <p className="font-display text-xl text-cloud/40">
+                No products found
+              </p>
+              <p className="mt-1 text-sm text-cloud/30">
+                Try adjusting your filters
+              </p>
+              {hasActiveFilters && (
+                <button
+                  type="button"
+                  onClick={clearAllFilters}
+                  className="mt-4 glass inline-flex items-center gap-2 rounded-full px-6 py-2.5 font-mono text-xs uppercase tracking-[0.14em] text-cloud/60 transition hover:text-cloud"
+                >
+                  Clear Filters
+                </button>
+              )}
+            </div>
+          )}
+
+          {hasMore && (
+            <div className="flex justify-center pt-8">
+              <button
+                type="button"
+                onClick={() => setVisibleCount((prev) => prev + 12)}
+                className="glass inline-flex items-center gap-2 rounded-full px-8 py-3 font-mono text-xs uppercase tracking-[0.16em] text-cloud/70 transition hover:bg-[rgba(244,244,242,0.12)] hover:text-cloud"
+              >
+                See More ({filtered.length - visibleCount} left)
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
     </section>
   );
 }

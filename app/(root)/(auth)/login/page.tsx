@@ -41,7 +41,7 @@ export default function LoginPage() {
         email,
         password,
         redirect: false,
-        callbackUrl: "/",
+        callbackUrl: "/catalog",
       });
 
       if (signingIn?.error) {
