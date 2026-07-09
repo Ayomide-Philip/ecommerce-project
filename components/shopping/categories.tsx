@@ -2,7 +2,6 @@
 import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { ProductTypeName } from "@/libs/enums/product.enums";
-import { imageMap } from "../static/imagemap";
 import { fallbackColors } from "../static/fallbackcolours";
 
 export default function Categories() {
@@ -11,8 +10,8 @@ export default function Categories() {
     .filter(Boolean)
     .map((name, idx) => ({
       name,
-      img: `/images/${imageMap[name!] || name!.toLowerCase().replace(/\s+/g, "-")}.jpg`,
-      fallback: fallbackColors[idx % fallbackColors.length],
+      img: `/images/${name!.toLowerCase()?.replace(/\s+/g, "-")}.jpg`,
+      fallback: fallbackColors[idx % fallbackColors?.length],
     }));
 
   return (
@@ -36,24 +35,24 @@ export default function Categories() {
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
         {categories.map((cat) => (
           <Link
-            key={cat.name}
-            href={`/category/${cat.name.toLowerCase().replace(/\s+/g, "-")}`}
+            key={cat?.name}
+            href={`/category/${cat?.name.toLowerCase()?.replace(/\s+/g, "-")}`}
             className="group relative aspect-4/5 overflow-hidden rounded-[20px] border border-[rgba(244,244,242,0.08)] bg-panel transition duration-300 hover:border-[rgba(244,244,242,0.18)]"
           >
             <div
               aria-hidden="true"
-              className={`absolute inset-0 bg-linear-to-br ${cat.fallback}`}
+              className={`absolute inset-0 bg-linear-to-br ${cat?.fallback}`}
             />
             <img
-              src={cat.img}
-              alt={cat.name}
+              src={cat?.img}
+              alt={cat?.name}
               loading="lazy"
               className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-110"
             />
             <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent" />
             <div className="absolute bottom-0 left-0 right-0 p-4">
               <h3 className="mt-0.5 font-display text-lg font-medium text-white">
-                {cat.name}
+                {cat?.name}
               </h3>
             </div>
           </Link>
