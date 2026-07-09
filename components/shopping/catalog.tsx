@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { SlidersHorizontal, X } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
 import data from "@/data/articles_sample.json";
@@ -11,6 +11,8 @@ import {
   GraphicalAppearanceName,
   ProductTypeName,
 } from "@/libs/enums/product.enums";
+import Loading from "../loading";
+import { toast } from "sonner";
 
 export default function Catalog() {
   const [visibleCount, setVisibleCount] = useState(20);
@@ -20,6 +22,37 @@ export default function Catalog() {
   const [selectedPatterns, setSelectedPatterns] = useState<string[]>([]);
   const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        setLoading(true);
+        const request = await fetch(`/api/products?limit=${visibleCount}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          cache: "default",
+        });
+
+        const response = await request.json();
+        if (!request.ok || response?.error) {
+          return toast.error(
+            response?.error ||
+              "Failed to fetch products. Please try again later.",
+          );
+        }
+        setProducts(response?.product || []);
+      } catch (err) {
+        console.log(err);
+        return toast.error("Failed to fetch products. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    }
+  }, [visibleCount]);
 
   const categories = useMemo(
     () => [...(ProductTypeName as readonly string[])].sort(),
@@ -116,6 +149,8 @@ export default function Catalog() {
     selectedColors.length +
     selectedPatterns.length +
     selectedDepartments.length;
+
+  if (loading) return <Loading />;
 
   return (
     <section aria-labelledby="catalog-heading" className="space-y-6">
