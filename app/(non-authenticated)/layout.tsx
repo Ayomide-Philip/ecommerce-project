@@ -1,9 +1,16 @@
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
-export default function Layout({ children }: { children: React.ReactNode }) {
+import { auth } from "@/auth";
+import { Session } from "next-auth";
+export default async function Layout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const session: Session | null = await auth();
   return (
     <div className="min-h-screen bg-base text-cloud">
-      <Navbar />
+      <Navbar session={session!} />
       {children}
       <Footer />
     </div>

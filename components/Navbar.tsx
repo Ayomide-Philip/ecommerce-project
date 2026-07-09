@@ -1,8 +1,7 @@
 import { Heart, Search, ShoppingCart, ChevronDown, LogIn } from "lucide-react";
 import Toggle from "@/components/toggle";
 import Link from "next/link";
-
-const isUserLoggedIn = false;
+import { Session } from "next-auth";
 
 const iconButtonClass =
   "glass inline-flex h-9 w-9 items-center justify-center rounded-full text-cloud/80 transition hover:bg-black/8 dark:text-cloud/85 dark:hover:bg-[rgba(244,244,242,0.08)] focus-visible:text-accent";
@@ -10,7 +9,7 @@ const iconButtonClass =
 const badgeClass =
   "absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 font-mono text-[9px] font-medium leading-none text-white";
 
-export default function Navbar() {
+export default function Navbar({ session }: { session: Session }) {
   return (
     <header className="fixed inset-x-3 top-3 z-50 sm:inset-x-4 sm:top-4 lg:inset-x-8 lg:top-2">
       <div className="mx-auto w-full max-w-7xl">
@@ -40,7 +39,7 @@ export default function Navbar() {
             />
           </div>
 
-          <div className="flex items-center gap-1.5 sm:gap-2">
+          <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
             <button
               className="relative"
               type="button"
@@ -61,21 +60,22 @@ export default function Navbar() {
 
             <Toggle />
 
-            {isUserLoggedIn ? (
+            {session && session?.user ? (
               <button
                 className="flex items-center gap-2 rounded-full p-1 pr-3 transition hover:bg-black/5 dark:hover:bg-[rgba(244,244,242,0.06)]"
                 type="button"
                 aria-label="Account"
               >
                 <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent font-mono text-xs font-medium text-cloud">
-                  AR
+                  {session?.user?.name?.charAt(0)?.toUpperCase() ||
+                    session?.user?.email?.charAt(0)?.toUpperCase()}
                 </span>
                 <span className="hidden text-left leading-tight lg:block">
                   <span className="block font-mono text-[10px] text-cloud/50">
                     Welcome Back!
                   </span>
-                  <span className="block text-sm font-medium text-cloud">
-                    Abdel Rahman
+                  <span className="block text-sm font-medium text-cloud capitalize">
+                    {session?.user?.name || session?.user?.email}
                   </span>
                 </span>
                 <ChevronDown
@@ -86,10 +86,10 @@ export default function Navbar() {
             ) : (
               <Link
                 href="/login"
-                className="inline-flex items-center gap-2 rounded-full bg-accent px-4 py-2 font-mono text-xs uppercase tracking-[0.14em] text-cloud transition hover:brightness-110 focus-visible:ring-2 focus-visible:ring-accent"
+                className="inline-flex items-center gap-2 rounded-full bg-accent p-2 font-mono text-xs uppercase tracking-[0.14em] text-cloud transition hover:brightness-110 focus-visible:ring-2 focus-visible:ring-accent sm:px-4 sm:py-2"
               >
                 <LogIn aria-hidden="true" className="h-3.5 w-3.5" />
-                Sign In
+                <span className="hidden sm:inline">Sign In</span>
               </Link>
             )}
           </div>
