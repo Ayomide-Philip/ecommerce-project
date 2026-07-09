@@ -29,7 +29,7 @@ export default function Explainer() {
           id="explainer-heading"
           className="font-display text-2xl font-medium text-cloud sm:text-3xl"
         >
-          How Adúnní Learns Your Style
+          How Ēlan Learns Your Style
         </h2>
         <p className="mt-2 text-sm text-cloud/50">
           Three steps from discovery to your next favourite fit.

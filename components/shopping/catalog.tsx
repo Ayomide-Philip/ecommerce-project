@@ -51,7 +51,7 @@ export default function Catalog() {
           >
             See More
           </button>
-        </div>
+        </div>  
       )}
     </section>
   );
