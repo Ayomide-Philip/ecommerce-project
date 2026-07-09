@@ -2,7 +2,7 @@ import Hero from "@/components/Hero";
 import Categories from "@/components/shopping/categories";
 import Explainer from "@/components/Explainer";
 import Recommended from "@/components/shopping/recommended";
-import Catalog from "@/components/shopping/catalog";
+import LandingCatalog from "@/components/shopping/rootcatalog";
 
 export default function Home() {
   return (
@@ -13,7 +13,7 @@ export default function Home() {
         <Categories />
         <Explainer />
         <Recommended />
-        <Catalog />
+        <LandingCatalog />
       </main>
     </>
   );
