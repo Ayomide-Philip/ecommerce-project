@@ -38,7 +38,18 @@ export async function GET(req: NextRequest) {
   }
 }
 
-export const POST = auth(async function POST(req: NextRequest) {
+export const POST = auth(async function POST(req) {
+  if (!req?.auth || !req?.auth?.user) {
+    return NextResponse.json(
+      {
+        error: "You are not authenticated",
+      },
+      {
+        status: 401,
+      },
+    );
+  }
+
   const {
     prod_name,
     product_type_name,
