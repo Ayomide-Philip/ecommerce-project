@@ -3,6 +3,7 @@ import ProductCard from "@/components/ProductCard";
 import { BASE_URL } from "@/libs/config/config";
 import { Product } from "@/libs/models/products.models";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 
 export default async function LandingCatalog() {
   const request = await fetch(`${BASE_URL}/api/products?limit=20`, {
@@ -29,13 +30,13 @@ export default async function LandingCatalog() {
           </h2>
           <p className="mt-1 text-sm text-cloud/55">Discover your next fit</p>
         </div>
-        <a
+        <Link
           href="/catalog"
           className="flex items-center gap-1 font-mono text-xs uppercase tracking-[0.16em] text-cloud/60 transition hover:text-accent"
         >
           View All
           <ArrowUpRight aria-hidden="true" className="h-3 w-3" />
-        </a>
+        </Link>
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
