@@ -48,18 +48,10 @@ export default function ProductPage() {
   const imgSrc = `/images/${imageMap[product.product_type_name] || product.product_type_name.toLowerCase().replace(/\s+/g, "-")}.jpg`;
 
   return (
-    <main className="mx-auto w-full max-w-7xl space-y-20 px-3 py-8 sm:px-4 md:px-6 lg:px-8">
-      <Link
-        href={`/category/${categoryId}`}
-        className="mb-6 inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.16em] text-cloud/60 transition hover:text-accent"
-      >
-        <ArrowLeft aria-hidden="true" className="h-4 w-4" />
-        Back to {categoryName}
-      </Link>
-
+    <main className="mx-auto w-full max-w-7xl space-y-20 px-3 py-8 sm:px-4 md:px-6 lg:px-8 mt-15 sm:mt-16 lg:mt-18">
       <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
-        <div className="space-y-4">
-          <div className="relative aspect-3/4 overflow-hidden rounded-3xl border border-black/12 bg-panel dark:border-[rgba(244,244,242,0.12)] sm:aspect-5/4 lg:aspect-4/3">
+        <div className="flex items-center justify-center">
+          <div className="relative aspect-3/4 w-full max-w-md overflow-hidden rounded-3xl border border-black/12 bg-panel dark:border-[rgba(244,244,242,0.12)] sm:aspect-5/4 lg:aspect-4/3">
             <img
               src={imgSrc}
               alt={product.prod_name}
