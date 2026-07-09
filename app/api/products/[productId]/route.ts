@@ -9,6 +9,16 @@ export async function GET(
 ) {
   const { productId } = await params;
 
+  if (!mongoose.Types.ObjectId.isValid(productId)) {
+    return NextResponse.json(
+      {
+        error: "Invalid parameters",
+      },
+      {
+        status: 400,
+      },
+    );
+  }
   try {
     await connectToDatabase();
     const product = await Products.findById(
