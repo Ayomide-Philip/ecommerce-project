@@ -2,54 +2,32 @@
 import { ArrowUpRight } from "lucide-react";
 import data from "@/data/articles_sample.json";
 
-const categoryImage: Record<string, string> = {
-  Skirt:
-    "https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=400&h=500&fit=crop",
-  Blouse:
-    "https://images.unsplash.com/photo-1608236415057-4f2ca7b6e302?w=400&h=500&fit=crop",
-  Sweater:
-    "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=400&h=500&fit=crop",
-  Coat: "https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=400&h=500&fit=crop",
-  Trousers:
-    "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=400&h=500&fit=crop",
-  Shorts:
-    "https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=400&h=500&fit=crop",
-  "T-shirt":
-    "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=500&fit=crop",
-  "Vest top":
-    "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=400&h=500&fit=crop",
-  Dress:
-    "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400&h=500&fit=crop",
-  Top: "https://images.unsplash.com/photo-1582412467521-1c3c36a20499?w=400&h=500&fit=crop",
-  Shirt:
-    "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=400&h=500&fit=crop",
-  Jacket:
-    "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400&h=500&fit=crop",
-  Cardigan:
-    "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=400&h=500&fit=crop",
-  "Underwear bottom":
-    "https://images.unsplash.com/photo-1623091411395-4d94b467b8f3?w=400&h=500&fit=crop",
-  Sneakers:
-    "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=500&fit=crop",
-  Socks:
-    "https://images.unsplash.com/photo-1586350977771-b3b0abd50c82?w=400&h=500&fit=crop",
-  "Polo shirt":
-    "https://images.unsplash.com/photo-1594938328870-9623159f8dd4?w=400&h=500&fit=crop",
-  Blazer:
-    "https://images.unsplash.com/photo-1593030761757-71fae45fa0e7?w=400&h=500&fit=crop",
-  Tie: "https://images.unsplash.com/photo-1599894012840-92e6b2d79376?w=400&h=500&fit=crop",
-  Scarf:
-    "https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=400&h=500&fit=crop",
-  "Cap/peaked":
-    "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=400&h=500&fit=crop",
-  Watch:
-    "https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=400&h=500&fit=crop",
-  Gloves:
-    "https://images.unsplash.com/photo-1556147660-3e8f5f8db1f2?w=400&h=500&fit=crop",
-  Hoodie:
-    "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400&h=500&fit=crop",
-  Slippers:
-    "https://images.unsplash.com/photo-1600166898405-da2545205e29?w=400&h=500&fit=crop",
+const imageMap: Record<string, string> = {
+  Skirt: "skirt",
+  Blouse: "blouse",
+  Sweater: "sweater",
+  Coat: "coat",
+  Trousers: "trousers",
+  Shorts: "shorts",
+  "T-shirt": "t-shirt",
+  "Vest top": "vest-top",
+  Dress: "dress",
+  Top: "top",
+  Shirt: "shirt",
+  Jacket: "jacket",
+  Cardigan: "cardigan",
+  "Underwear bottom": "underwear-bottom",
+  Sneakers: "sneakers",
+  Socks: "socks",
+  "Polo shirt": "polo-shirt",
+  Blazer: "blazer",
+  Tie: "tie",
+  Scarf: "scarf",
+  "Cap/peaked": "cap-peaked",
+  Watch: "watch",
+  Gloves: "gloves",
+  Hoodie: "hoodie",
+  Slippers: "slippers",
 };
 
 const fallbackColors = [
@@ -77,8 +55,7 @@ export default function Categories() {
     .map((name, idx) => ({
       name,
       count: productCounts[name!],
-      img:
-        categoryImage[name!] || `https://picsum.photos/seed/${name!}/400/500`,
+      img: `/images/${imageMap[name!] || name!.toLowerCase().replace(/\s+/g, "-")}.jpg`,
       fallback: fallbackColors[idx % fallbackColors.length],
     }));
 
