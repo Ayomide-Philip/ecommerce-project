@@ -23,7 +23,6 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({
       message: "Successfully fetch all products",
-      limit,
       product,
     });
   } catch (err) {
