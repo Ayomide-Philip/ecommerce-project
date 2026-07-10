@@ -186,24 +186,21 @@ export const POST = auth(async function POST(req: NextAuthRequest) {
 });
 
 export const PUT = auth(async function PUT(req: NextAuthRequest) {
-  // if (!req?.auth || !req?.auth?.user) {
-  //   return NextResponse.json(
-  //     {
-  //       error: "Unauthorized Access",
-  //     },
-  //     {
-  //       status: 401,
-  //     },
-  //   );
-  // }
+  if (!req?.auth || !req?.auth?.user) {
+    return NextResponse.json(
+      {
+        error: "Unauthorized Access",
+      },
+      {
+        status: 401,
+      },
+    );
+  }
 
-  // const userId = req?.auth?.user?.id;
+  const userId = req?.auth?.user?.id;
 
-  const {
-    productId,
-    quantity,
-    userId,
-  }: { productId: string; quantity: number; userId: string } = await req.json();
+  const { productId, quantity }: { productId: string; quantity: number } =
+    await req.json();
 
   if (!productId?.trim() || !quantity || !userId?.trim()) {
     return NextResponse.json(
