@@ -36,9 +36,9 @@ export default function Navbar({ session }: { session: Session }) {
   const [totalCartItems, setTotalCartItems] = useState(0);
   const accountRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     if (!accountOpen) return;
+
     function handleClick(e: MouseEvent) {
       if (
         accountRef.current &&
@@ -47,11 +47,12 @@ export default function Navbar({ session }: { session: Session }) {
         setAccountOpen(false);
       }
     }
-    // Delay attaching to avoid the same click that opened it from closing it
+
     const timer = setTimeout(
       () => document.addEventListener("click", handleClick),
       0,
     );
+
     return () => {
       clearTimeout(timer);
       document.removeEventListener("click", handleClick);
@@ -180,11 +181,10 @@ export default function Navbar({ session }: { session: Session }) {
                   />
                 </button>
 
-                {/* Dropdown menu */}
                 {accountOpen && (
                   <div className="absolute right-0 top-full z-50 mt-2 w-56 overflow-hidden rounded-2xl border border-black/10 bg-panel py-1.5 shadow-lg dark:border-[rgba(244,244,242,0.12)]">
                     <div className="border-b border-black/8 px-4 pb-2 pt-2 dark:border-[rgba(244,244,242,0.08)]">
-                      <p className="truncate font-display text-sm font-medium text-cloud">
+                      <p className="truncate capitalize font-display text-sm font-medium text-cloud">
                         {session?.user?.name || "User"}
                       </p>
                       <p className="truncate font-mono text-[10px] text-cloud/40">
