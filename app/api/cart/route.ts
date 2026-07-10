@@ -11,7 +11,7 @@ export const GET = auth(async function GET(req: NextAuthRequest) {
   if (!req?.auth || !req?.auth?.user) {
     return NextResponse.json(
       {
-        error: "Unauthorized Access",
+        error: "Unauthorized Access, please log in to view your cart.",
       },
       {
         status: 401,

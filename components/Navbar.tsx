@@ -1,6 +1,5 @@
 "use client";
 import {
-  Heart,
   Search,
   ShoppingCart,
   ChevronDown,
@@ -89,17 +88,6 @@ export default function Navbar({ session }: { session: Session }) {
                 <Menu aria-hidden="true" className="h-4 w-4" />
               )}
             </button>
-
-            <Link
-              className="relative"
-              aria-label="Wishlist (3)"
-              href="/wishlist"
-            >
-              <span className={iconButtonClass}>
-                <Heart aria-hidden="true" className="h-4 w-4" />
-              </span>
-              <span className={badgeClass}>3</span>
-            </Link>
 
             <Link className="relative" href="/cart" aria-label="Cart (20)">
               <span className={iconButtonClass}>
