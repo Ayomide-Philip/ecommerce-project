@@ -123,7 +123,7 @@ export default function Hero() {
                       width: `calc(100% / ${visibleCards})`,
                       flexShrink: 0,
                     }}
-                    className="group aspect-4/5 rounded-4xl overflow-hidden glass border border-black/12 dark:border-[rgba(244,244,242,0.12)] shadow-lg transition hover:scale-105 hover:shadow-xl duration-300"
+                    className="group aspect-3/2 sm:aspect-4/5 rounded-4xl overflow-hidden glass border border-black/12 dark:border-[rgba(244,244,242,0.12)] shadow-lg transition hover:scale-105 hover:shadow-xl duration-300"
                   >
                     <div className="relative h-full w-full">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
