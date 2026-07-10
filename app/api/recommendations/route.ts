@@ -31,7 +31,7 @@ export const GET = auth(async function GET(req: NextAuthRequest) {
     const topNParam = req.nextUrl.searchParams.get("topN");
     const topN = topNParam
       ? Math.min(Math.max(parseInt(topNParam, 10) || 8, 1), 20)
-      : 8;
+      : 20;
 
     const recommendations = await getRecommendations(userId, topN);
 

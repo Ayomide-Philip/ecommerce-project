@@ -23,7 +23,7 @@ export default function RecommendationPage() {
     async function fetchProducts() {
       setLoading(true);
       try {
-        const res = await fetch("/api/products?limit=50", {
+        const res = await fetch("/api/recommendations?topN=32", {
           method: "GET",
           headers: { "Content-Type": "application/json" },
           cache: "default",
@@ -32,7 +32,7 @@ export default function RecommendationPage() {
         if (!res.ok || data?.error) {
           return toast.error(data?.error || "Failed to load recommendations.");
         }
-        setAllProducts(data?.product || []);
+        setAllProducts(data?.recommendations || []);
       } catch {
         toast.error("Failed to load recommendations.");
       } finally {
@@ -42,7 +42,6 @@ export default function RecommendationPage() {
     fetchProducts();
   }, []);
 
-  // Shuffle and pick 8 random products whenever the source list changes
   useEffect(() => {
     if (allProducts.length > 0) {
       shuffleProducts();
