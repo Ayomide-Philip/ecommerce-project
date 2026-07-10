@@ -14,7 +14,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 type CartItem = {
-  id: number;
+  _id: string;
   productId: Product & {
     _id: string;
   };
@@ -79,18 +79,56 @@ export default function CartPage() {
     }
   }
 
+  async function updateQty(id: string, delta: number) {
+    const currentItem = items.find((i) => i?.productId?._id === id);
+    const newQty = Math.max(1, (currentItem?.quantity ?? 1) + delta);
 
-  const updateQty = (id: string, delta: number) => {
     setItems((prev) =>
       prev
         .map((item) =>
-          item?.productId?._id === id
-            ? { ...item, quantity: Math.max(1, item?.quantity + delta) }
-            : item,
+          item?.productId?._id === id ? { ...item, quantity: newQty } : item,
         )
         .filter((item) => item?.quantity > 0),
     );
-  };
+
+    try {
+      const request = await fetch("/api/cart", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ productId: id, quantity: newQty }),
+        credentials: "include",
+      });
+
+      const response = await request.json();
+      if (!request.ok || response?.error) {
+        setItems((prev) =>
+          prev
+            .map((item) =>
+              item?.productId?._id === id
+                ? { ...item, quantity: newQty - delta }
+                : item,
+            )
+            .filter((item) => item?.quantity > 0),
+        );
+        return toast.error(
+          response?.error || "Failed to update quantity. Please try again.",
+        );
+      }
+    } catch {
+      setItems((prev) =>
+        prev
+          .map((item) =>
+            item?.productId?._id === id
+              ? { ...item, quantity: newQty - delta }
+              : item,
+          )
+          .filter((item) => item?.quantity > 0),
+      );
+      return toast.error("Failed to update quantity. Please try again.");
+    }
+  }
 
   const subtotal = items.reduce(
     (sum, item) => sum + item?.productId?.price * item?.quantity,
