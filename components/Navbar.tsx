@@ -6,8 +6,8 @@ import {
   LogIn,
   LogOut,
   Menu,
-  User,
-  Settings,
+  // User,
+  // Settings,
   Package,
   X,
 } from "lucide-react";

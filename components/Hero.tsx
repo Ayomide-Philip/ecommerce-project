@@ -17,7 +17,7 @@ const cardsPerView = { mobile: 1, tablet: 2, desktop: 5 };
 
 export default function Hero() {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [visibleCards, setVisibleCards] = useState(cardsPerView.mobile);
+  const [visibleCards, setVisibleCards] = useState(0);
 
   useEffect(() => {
     const handleResize = () => {
@@ -108,68 +108,76 @@ export default function Hero() {
         </div>
 
         <div className="relative">
-          <div className="overflow-hidden rounded-2xl">
-            <div
-              className="flex gap-4 sm:gap-5 lg:gap-6 transition-transform duration-500 ease-out"
-              style={{
-                transform: `translateX(-${currentIndex * (100 / visibleCards)}%)`,
-              }}
-            >
-              {slides.map((slide, index) => (
-                <div
-                  key={index}
-                  style={{
-                    width: `calc(100% / ${visibleCards})`,
-                    flexShrink: 0,
-                  }}
-                  className="group aspect-4/5 rounded-4xl overflow-hidden glass border border-black/12 dark:border-[rgba(244,244,242,0.12)] shadow-lg transition hover:scale-105 hover:shadow-xl duration-300"
-                >
-                  <div className="relative h-full w-full">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={slide.img}
-                      alt={slide.label}
-                      className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent" />
-                    <span className="absolute bottom-3 left-3 font-display text-lg font-medium text-white">
-                      {slide.label}
-                    </span>
+          {visibleCards > 0 && (
+            <div className="overflow-hidden rounded-2xl">
+              <div
+                className="flex gap-4 sm:gap-5 lg:gap-6 transition-transform duration-500 ease-out"
+                style={{
+                  transform: `translateX(-${currentIndex * (100 / visibleCards)}%)`,
+                }}
+              >
+                {slides.map((slide, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      width: `calc(100% / ${visibleCards})`,
+                      flexShrink: 0,
+                    }}
+                    className="group aspect-4/5 rounded-4xl overflow-hidden glass border border-black/12 dark:border-[rgba(244,244,242,0.12)] shadow-lg transition hover:scale-105 hover:shadow-xl duration-300"
+                  >
+                    <div className="relative h-full w-full">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={slide.img}
+                        alt={slide.label}
+                        className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent" />
+                      <span className="absolute bottom-3 left-3 font-display text-lg font-medium text-white">
+                        {slide.label}
+                      </span>
+                    </div>
                   </div>
-                </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {visibleCards > 0 && (
+            <>
+              <button
+                onClick={handlePrev}
+                aria-label="Previous slide"
+                className={`absolute left-2 top-1/2 -translate-y-1/2 z-10 ${carouselButtonClass}`}
+              >
+                <ChevronLeft aria-hidden="true" className="h-5 w-5" />
+              </button>
+              <button
+                onClick={handleNext}
+                aria-label="Next slide"
+                className={`absolute right-2 top-1/2 -translate-y-1/2 z-10 ${carouselButtonClass}`}
+              >
+                <ChevronRight aria-hidden="true" className="h-5 w-5" />
+              </button>
+            </>
+          )}
+
+          {visibleCards > 0 && (
+            <div className="flex justify-center gap-2 mt-6">
+              {Array.from({ length: maxIndex + 1 }).map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setCurrentIndex(idx)}
+                  aria-label={`Go to slide ${idx + 1}`}
+                  className={`h-2 w-2 rounded-full transition ${
+                    idx === currentIndex
+                      ? "bg-accent w-6"
+                      : "bg-cloud/40 hover:bg-cloud/60"
+                  }`}
+                />
               ))}
             </div>
-          </div>
-
-          <button
-            onClick={handlePrev}
-            aria-label="Previous slide"
-            className={`absolute left-2 top-1/2 -translate-y-1/2 z-10 ${carouselButtonClass}`}
-          >
-            <ChevronLeft aria-hidden="true" className="h-5 w-5" />
-          </button>
-          <button
-            onClick={handleNext}
-            aria-label="Next slide"
-            className={`absolute right-2 top-1/2 -translate-y-1/2 z-10 ${carouselButtonClass}`}
-          >
-            <ChevronRight aria-hidden="true" className="h-5 w-5" />
-          </button>
-
-          <div className="flex justify-center gap-2 mt-6">
-            {Array.from({ length: maxIndex + 1 }).map((_, idx) => (
-              <button
-                key={idx}
-                onClick={() => setCurrentIndex(idx)}
-                aria-label={`Go to slide ${idx + 1}`}
-                className={`h-2 w-2 rounded-full transition ${
-                  idx === currentIndex
-                    ? "bg-accent w-6"
-                    : "bg-cloud/40 hover:bg-cloud/60"
-                }`}
-              />
-            ))}
-          </div>
+          )}
         </div>
       </div>
     </section>
