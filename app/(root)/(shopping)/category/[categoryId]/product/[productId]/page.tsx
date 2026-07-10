@@ -76,6 +76,27 @@ export default function ProductPage() {
     fetchProduct();
   }, [categoryId, productId]);
 
+  useEffect(() => {
+    async function trackEvent() {
+      try {
+        const request = await fetch(`/api/track-event`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ productId, eventType: "view" }),
+        });
+        const response = await request.json();
+        if (!request?.ok || response?.error) {
+          console.log("Failed to track event:", response.error);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    }
+    trackEvent();
+  }, [productId]);
+
   if (loading) return <Loading />;
 
   if (!product) {

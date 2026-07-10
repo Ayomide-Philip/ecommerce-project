@@ -56,9 +56,37 @@ export default function ProductCard({ product }: ProductCardProps) {
     ?.replace(/\s+/g, "-")
     ?.replace(/\//g, "-");
 
+  async function hadleInteractions(
+    productId: string = product?._id,
+    eventType: string = "click",
+  ) {
+    try {
+      const request = await fetch(`/api/track-event`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ productId, eventType }),
+      });
+      const response = await request.json();
+      if (!request.ok || response?.error) {
+        console.log("Failed to track event:", response?.error);
+      }
+      window.location.href = `/category/${categorySlug}/product/${product?._id}`;
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   return (
     <article className="group glass relative overflow-hidden rounded-[20px] p-4 transition duration-300 hover:bg-[rgba(244,244,242,0.1)]">
-      <Link href={`/category/${categorySlug}/product/${product?._id}`}>
+      <Link
+        href=""
+        onClick={(e) => {
+          e.preventDefault();
+          hadleInteractions();
+        }}
+      >
         <div className="relative mb-4 h-52 overflow-hidden rounded-2xl border border-black/12 bg-panel dark:border-[rgba(244,244,242,0.12)]">
           <img
             src={imgSrc}

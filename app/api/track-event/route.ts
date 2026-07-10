@@ -8,7 +8,19 @@ import User from "@/libs/models/users.models";
 import Products from "@/libs/models/products.models";
 
 export const POST = auth(async function POST(req: NextAuthRequest) {
-  const { userId, productId, eventType } = await req.json();
+  if (!req?.auth || !req?.auth?.user) {
+    return NextResponse.json(
+      {
+        error: " Unauthorized Access",
+      },
+      {
+        status: 401,
+      },
+    );
+  }
+  const userId = req?.auth?.user?.id;
+
+  const { productId, eventType } = await req.json();
 
   if (!userId?.trim() || !productId?.trim() || !eventType.trim()) {
     return NextResponse.json(
