@@ -1,10 +1,11 @@
-import { Lock, ShieldCheck } from "lucide-react";
+import { Lock, Loader, ShieldCheck } from "lucide-react";
 
 export default function RightOrderSummary({
   sampleItems,
   subtotal,
   shipping,
   total,
+  placing,
   handlePlaceOrder,
 }: {
   sampleItems: {
@@ -16,6 +17,7 @@ export default function RightOrderSummary({
   subtotal: number;
   shipping: number;
   total: number;
+  placing: boolean;
   handlePlaceOrder: () => void;
 }) {
   return (
@@ -73,11 +75,16 @@ export default function RightOrderSummary({
 
         <button
           type="button"
+          disabled={placing}
           onClick={handlePlaceOrder}
-          className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-accent py-3.5 font-mono text-[11px] uppercase tracking-[0.14em] text-white transition hover:bg-accent/90"
+          className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-accent py-3.5 font-mono text-[11px] uppercase tracking-[0.14em] text-white transition hover:bg-accent/90 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          <Lock aria-hidden="true" className="h-4 w-4" />
-          Place Order — ${total.toFixed(2)}
+          {placing ? (
+            <Loader aria-hidden="true" className="h-4 w-4 animate-spin" />
+          ) : (
+            <Lock aria-hidden="true" className="h-4 w-4" />
+          )}
+          {placing ? "Processing…" : `Place Order — $${total.toFixed(2)}`}
         </button>
 
         <div className="mt-4 flex items-center justify-center gap-2 text-[10px] text-cloud/30">

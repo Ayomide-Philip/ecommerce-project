@@ -35,6 +35,7 @@ export default function CheckoutPage() {
   const [subtotal, setSubtotal] = useState(0);
   const [total, setTotal] = useState(0);
   const [shipping, setShipping] = useState(0);
+  const [placing, setPlacing] = useState(false);
 
   useEffect(() => {
     async function fetchCart() {
@@ -88,7 +89,7 @@ export default function CheckoutPage() {
     }
 
     fetchCart();
-  }, []);
+  }, [subtotal]);
 
   function updateField(key: FieldKey, value: string) {
     setFields((prev) => ({ ...prev, [key]: value }));
@@ -128,9 +129,35 @@ export default function CheckoutPage() {
     return Object.keys(newErrors).length === 0;
   }
 
-  function handlePlaceOrder() {
-    if (validate()) {
-      alert("Order placed successfully! (Demo)");
+  async function handlePlaceOrder() {
+    if (!validate() || placing) return;
+    setPlacing(true);
+
+    try {
+      const request = await fetch("/api/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+
+      const response = await request.json();
+
+      if (!request.ok || response?.error) {
+        return toast.error(
+          response?.error || "Failed to place order. Please try again.",
+        );
+      }
+
+      toast.success(response?.message || "Order placed successfully!");
+      // Redirect to orders page after successful checkout
+      window.location.href = "/orders";
+    } catch (err) {
+      console.log(err);
+      return toast.error("Failed to place order. Please try again.");
+    } finally {
+      setPlacing(false);
     }
   }
 
@@ -171,6 +198,7 @@ export default function CheckoutPage() {
           subtotal={subtotal}
           shipping={shipping || 0}
           total={total || 0}
+          placing={placing}
           handlePlaceOrder={handlePlaceOrder}
         />
       </div>
