@@ -10,7 +10,8 @@ import {
 import Toggle from "@/components/toggle";
 import Link from "next/link";
 import { Session } from "next-auth";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 const iconButtonClass =
   "glass inline-flex h-9 w-9 items-center justify-center rounded-full text-cloud/80 transition hover:bg-black/8 dark:text-cloud/85 dark:hover:bg-[rgba(244,244,242,0.08)] focus-visible:text-accent";
@@ -26,6 +27,30 @@ const navLinks = [
 
 export default function Navbar({ session }: { session: Session }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [totalCartItems, setTotalCartItems] = useState(0);
+
+  useEffect(() => {
+    async function fetchCartItems() {
+      try {
+        const request = await fetch("/api/cart", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        });
+        const response = await request.json();
+        if (!request.ok || response?.error) {
+          return toast.error("Failed to fetch cart items. Please try again.");
+        }
+        setTotalCartItems(response?.cart?.length || 0);
+      } catch (err) {
+        console.log(err);
+        return toast.error("Failed to fetch cart items. Please try again.");
+      }
+    }
+    fetchCartItems();
+  }, []);
 
   return (
     <header className="fixed inset-x-3 top-3 z-50 sm:inset-x-4 sm:top-4 lg:inset-x-8 lg:top-2">
@@ -93,7 +118,7 @@ export default function Navbar({ session }: { session: Session }) {
               <span className={iconButtonClass}>
                 <ShoppingCart aria-hidden="true" className="h-4 w-4" />
               </span>
-              <span className={badgeClass}>20</span>
+              <span className={badgeClass}>{totalCartItems}</span>
             </Link>
 
             <Toggle />
