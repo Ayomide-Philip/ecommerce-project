@@ -15,6 +15,7 @@ import Toggle from "@/components/toggle";
 import Link from "next/link";
 import { Session } from "next-auth";
 import { signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -31,9 +32,11 @@ const navLinks = [
 ];
 
 export default function Navbar({ session }: { session: Session }) {
+  const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const [totalCartItems, setTotalCartItems] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
   const accountRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -125,6 +128,15 @@ export default function Navbar({ session }: { session: Session }) {
             <input
               id="nav-search"
               type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && searchQuery.trim()) {
+                  router.push(
+                    `/catalog?q=${encodeURIComponent(searchQuery.trim())}`,
+                  );
+                }
+              }}
               placeholder="What are you looking for?"
               className="w-full bg-transparent text-sm text-cloud placeholder:text-cloud/40 focus:outline-none"
             />
