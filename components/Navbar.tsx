@@ -41,7 +41,7 @@ export default function Navbar({ session }: { session: Session }) {
         });
         const response = await request.json();
         if (!request.ok || response?.error) {
-          return toast.error("Failed to fetch cart items. Please try again.");
+          console.log("Failed to fetch cart items:", response?.error);
         }
         setTotalCartItems(response?.cart?.length || 0);
       } catch (err) {

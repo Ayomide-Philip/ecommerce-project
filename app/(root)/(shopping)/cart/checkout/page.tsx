@@ -7,13 +7,6 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
-// const subtotal = sampleItems.reduce(
-//   (sum, item) => sum + item.price * item.quantity,
-//   0,
-// );
-// const shipping = subtotal >= 100 ? 0 : 15.99;
-// const total = subtotal + shipping;
-
 type FieldKey =
   | "fullName"
   | "address"
@@ -22,22 +15,23 @@ type FieldKey =
   | "cardNumber"
   | "expiry"
   | "cvv";
+
 type Errors = Partial<Record<FieldKey, string>>;
 
-const initialFields: Record<FieldKey, string> = {
-  fullName: "John Doe",
-  address: "123 Fashion Street",
-  city: "New York",
-  zip: "10001",
-  cardNumber: "",
-  expiry: "",
-  cvv: "",
-};
-
 export default function CheckoutPage() {
-  const [fields, setFields] = useState(initialFields);
+  const [fields, setFields] = useState<Record<FieldKey, string>>({
+    fullName: "",
+    address: "",
+    city: "",
+    zip: "",
+    cardNumber: "",
+    expiry: "",
+    cvv: "",
+  });
   const [errors, setErrors] = useState<Errors>({});
-  const [productItems, setProductItems] = useState([]);
+  const [productItems, setProductItems] = useState<
+    { name: string; type: string; price: number; quantity: number }[]
+  >([]);
   const [subtotal, setSubtotal] = useState(0);
   const [total, setTotal] = useState(0);
   const [shipping, setShipping] = useState(0);
