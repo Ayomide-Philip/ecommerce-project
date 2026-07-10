@@ -1,4 +1,4 @@
-import { Schema, models, model } from "mongoose";
+import { InferSchemaType, Schema, models, model } from "mongoose";
 
 const cartSchema = new Schema(
   {
@@ -20,11 +20,16 @@ const cartSchema = new Schema(
     },
     hasPurchased: {
       type: Boolean,
-      required: true,
+      default: false,
     },
   },
   { timestamps: true },
 );
+
+cartSchema.index({ userId: 1, productId: 1 }, { unique: true });
+cartSchema.index({ userId: 1, hasPurchased: 1 });
+
+export type Cart = InferSchemaType<typeof cartSchema>;
 
 const Carts = models.Carts || model("Carts", cartSchema);
 export default Carts;
