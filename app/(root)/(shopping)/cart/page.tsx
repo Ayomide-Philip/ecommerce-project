@@ -230,7 +230,7 @@ export default function CartPage() {
                 </div>
 
                 <div className="min-w-0 flex-1">
-                  <h3 className="truncate font-display font-medium text-base text-cloud sm:text-lg">
+                  <h3 className="truncate font-display font-medium text-cloud dark:text-cloud sm:text-lg">
                     {item?.productId?.prod_name}
                   </h3>
                   <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-cloud/50">
@@ -329,7 +329,7 @@ export default function CartPage() {
                     <span className="text-sm font-medium text-cloud">
                       Total
                     </span>
-                    <span className="font-mono font-medium text-base text-cloud">
+                    <span className="font-mono font-medium text-cloud dark:text-cloud">
                       ${total?.toFixed(2)}
                     </span>
                   </div>

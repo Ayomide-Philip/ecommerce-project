@@ -90,24 +90,47 @@ A web-based fashion e-commerce platform that uses a content-based AI recommendat
 // Index: { userId: 1, createdAt: -1 }
 ```
 
+### `orders`
+
+```ts
+{
+  _id: ObjectId,
+  userId: ObjectId,       // ref: "User"
+  items: [{
+    productId: ObjectId,  // ref: "Products"
+    quantity: number,
+    priceAtPurchase: number
+  }],
+  totalAmount: number,
+  status: "paid",
+  paymentMethod: string,  // "dummy-card"
+  createdAt: Date,
+  updatedAt: Date
+}
+// Index: { userId: 1, createdAt: -1 }
+```
+
 ---
 
 ## 4. API Routes
 
-| Route                     | Method | Access        | Purpose                                           |
-| ------------------------- | ------ | ------------- | ------------------------------------------------- |
-| `/api/auth/[...nextauth]` | —      | Public        | Login/session handling via Auth.js                |
-| `/api/auth/register`      | POST   | Public        | Register a new user                               |
-| `/api/products`           | GET    | Public        | List all products (with optional `?limit=`)       |
-| `/api/products/[id]`      | GET    | Public        | Get single product details                        |
-| `/api/products`           | POST   | Admin only    | Create a new product                              |
-| `/api/categories/[slug]`  | GET    | Public        | Get products by category slug                     |
-| `/api/cart`               | GET    | Authenticated | Fetch user's cart (populated with product data)   |
-| `/api/cart`               | POST   | Authenticated | Add item to cart                                  |
-| `/api/cart`               | PUT    | Authenticated | Update cart item quantity                         |
-| `/api/cart`               | DELETE | Authenticated | Remove item from cart                             |
-| `/api/recommendations`    | GET    | Authenticated | Return personalized (or fallback) recommendations |
-| `/api/recommended`        | GET    | Public        | Random product sample (for testing)               |
+| Route                     | Method | Access        | Purpose                                             |
+| ------------------------- | ------ | ------------- | --------------------------------------------------- |
+| `/api/auth/[...nextauth]` | —      | Public        | Login/session handling via Auth.js                  |
+| `/api/auth/register`      | POST   | Public        | Register a new user                                 |
+| `/api/products`           | GET    | Public        | List all products (with optional `?limit=`)         |
+| `/api/products/[id]`      | GET    | Public        | Get single product details                          |
+| `/api/products`           | POST   | Admin only    | Create a new product                                |
+| `/api/categories/[slug]`  | GET    | Public        | Get products by category slug                       |
+| `/api/cart`               | GET    | Authenticated | Fetch user's cart (populated with product data)     |
+| `/api/cart`               | POST   | Authenticated | Add item to cart                                    |
+| `/api/cart`               | PUT    | Authenticated | Update cart item quantity                           |
+| `/api/cart`               | DELETE | Authenticated | Remove item from cart                               |
+| `/api/recommendations`    | GET    | Authenticated | Return personalized (or fallback) recommendations   |
+| `/api/recommended`        | GET    | Public        | Random product sample (for testing)                 |
+| `/api/track-event`        | POST   | Authenticated | Log a click/view/purchase interaction               |
+| `/api/checkout`           | POST   | Authenticated | Create order, log purchase interactions, clear cart |
+| `/api/orders`             | GET    | Authenticated | Fetch order history (sorted newest first)           |
 
 ---
 
@@ -170,15 +193,15 @@ If a user has zero interactions:
 
 ## 7. Dummy Payment Page (Checkout Flow)
 
-Since real payment integration is out of scope, simulate it:
+Since real payment integration is out of scope, it is simulated:
 
-1. User adds items to cart (client-side state, no DB needed unless you want persistence).
-2. User goes to `/checkout` page — a simple form (card number placeholder, "Pay Now" button). No real validation, no external payment gateway.
-3. On submit, call `/api/checkout`:
-   - Create an `orders` document with `status: "paid"` (always succeeds — it's a simulation).
-   - Log a `purchase` interaction for each item in the order (feeds the recommendation engine).
-   - Trigger a cache-relevant nothing (products aren't changed, just interactions — no need to invalidate the similarity cache here).
-4. Redirect to a `/order-confirmation` page showing a fake receipt.
+1. User adds items to cart via the ProductCard or product detail page.
+2. User goes to `/cart/checkout` — a form with shipping address and dummy card fields (validated client-side).
+3. On submit, `POST /api/checkout` is called:
+   - Creates an `orders` document with `status: "paid"` (always succeeds — simulation).
+   - Logs a `purchase` interaction for each item (feeds the recommendation engine).
+   - Clears the user's cart.
+4. User is redirected to `/orders` to view their order history.
 
 > Clearly label this in your report as a **simulated payment flow for demonstration purposes**, explicitly out of scope per your Chapter 1 scope statement.
 
@@ -186,22 +209,23 @@ Since real payment integration is out of scope, simulate it:
 
 ## 8. Build Status
 
-| Phase                                                                                         | Status       |
-| --------------------------------------------------------------------------------------------- | ------------ |
-| **Project setup** — Next.js + TypeScript + MongoDB (Mongoose) + Auth.js                       | ✅ Done      |
-| **Schemas** — `User`, `Product`, `Interaction`, `Cart`                                        | ✅ Done      |
-| **Auth** — registration, login                                                                | ✅ Done      |
-| **Product catalog** — listing, filtering, search, detail page                                 | ✅ Done      |
-| **Cart** — full CRUD API + frontend with optimistic updates                                   | ✅ Done      |
-| **Recommendation engine** — TF-IDF + cosine similarity + caching + cold-start fallback        | ✅ Done      |
-| **Recommendations API route**                                                                 | ✅ Done      |
-| **Frontend pages** — Catalog, Product Detail, Cart, Recommendations, Category, Login/Register | ✅ Done      |
-| **Admin CRUD** — product creation only (PATCH/DELETE missing)                                 | ⏳ Partial   |
-| **Track-event route** — interaction logging from frontend                                     | ❌ Not built |
-| **Checkout flow** — dummy payment + order creation                                            | ❌ Not built |
-| **Seed data script** — automated product seeding                                              | ❌ Not built |
-| **Simulated interaction data** — fake user histories for testing                              | ❌ Not built |
-| **Evaluation** — Precision@K, Recall@K, MAP                                                   | ❌ Not built |
+| Phase                                                                                       | Status       |
+| ------------------------------------------------------------------------------------------- | ------------ |
+| **Project setup** — Next.js + TypeScript + MongoDB (Mongoose) + Auth.js                     | ✅ Done      |
+| **Schemas** — `User`, `Product`, `Interaction`, `Cart`, `Order`                             | ✅ Done      |
+| **Auth** — registration, login                                                              | ✅ Done      |
+| **Product catalog** — listing, filtering, search, detail page                               | ✅ Done      |
+| **Cart** — full CRUD API + frontend with optimistic updates                                 | ✅ Done      |
+| **Recommendation engine** — TF-IDF + cosine similarity + caching + cold-start fallback      | ✅ Done      |
+| **Recommendations API route**                                                               | ✅ Done      |
+| **Checkout flow** — `POST /api/checkout`, order creation, cart clear, purchase interactions | ✅ Done      |
+| **Order history** — `GET /api/orders` + `/orders` page with loading/empty states            | ✅ Done      |
+| **Frontend pages** — Catalog, Product Detail, Cart, Checkout, Orders, Recommendations, ...  | ✅ Done      |
+| **Admin CRUD** — product creation only (PATCH/DELETE missing)                               | ⏳ Partial   |
+| **Track-event route** — interaction logging from frontend                                     | ✅ Done      |
+| **Seed data script** — automated product seeding                                            | ❌ Not built |
+| **Simulated interaction data** — fake user histories for testing                            | ❌ Not built |
+| **Evaluation** — Precision@K, Recall@K, MAP                                                 | ❌ Not built |
 
 ---
 

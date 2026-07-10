@@ -151,7 +151,6 @@ export default function CheckoutPage() {
       }
 
       toast.success(response?.message || "Order placed successfully!");
-      // Redirect to orders page after successful checkout
       window.location.href = "/orders";
     } catch (err) {
       console.log(err);
