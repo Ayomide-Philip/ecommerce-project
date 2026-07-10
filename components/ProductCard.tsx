@@ -1,6 +1,8 @@
+"use client";
 import { imageMap } from "./static/imagemap";
 import Link from "next/link";
-import { ShoppingCart } from "lucide-react";
+import { Minus, Plus, ShoppingCart } from "lucide-react";
+import { useState } from "react";
 
 /* eslint-disable @next/next/no-img-element */
 type Product = {
@@ -16,6 +18,12 @@ type ProductCardProps = {
 };
 
 export default function ProductCard({ product }: ProductCardProps) {
+  const [quantity, setQuantity] = useState(1);
+
+  function handleAddToCart(productId: string, qty: number) {
+    console.log("Add to cart:", { productId, qty });
+  }
+
   const imgSrc = `/images/${imageMap[product?.product_type_name] || product?.product_type_name?.toLowerCase()?.replace(/\s+/g, "-")}.jpg`;
   const categorySlug = product?.product_type_name
     ?.toLowerCase()
@@ -51,10 +59,34 @@ export default function ProductCard({ product }: ProductCardProps) {
         </div>
       </Link>
 
-      <div className="mt-3">
+      <div className="mt-3 flex items-center gap-2">
+        {/* Quantity stepper */}
+        <div className="glass flex items-center gap-1 rounded-full px-1 py-1">
+          <button
+            type="button"
+            onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+            className="flex h-7 w-7 items-center justify-center rounded-full transition hover:bg-[rgba(244,244,242,0.12)]"
+            aria-label="Decrease quantity"
+          >
+            <Minus aria-hidden="true" className="h-3 w-3 text-cloud/70" />
+          </button>
+          <span className="flex h-7 min-w-6 items-center justify-center font-mono text-xs text-cloud">
+            {quantity}
+          </span>
+          <button
+            type="button"
+            onClick={() => setQuantity((q) => Math.min(99, q + 1))}
+            className="flex h-7 w-7 items-center justify-center rounded-full transition hover:bg-[rgba(244,244,242,0.12)]"
+            aria-label="Increase quantity"
+          >
+            <Plus aria-hidden="true" className="h-3 w-3 text-cloud/70" />
+          </button>
+        </div>
+
         <button
           type="button"
-          className="flex w-full items-center justify-center gap-2 rounded-full bg-accent/10 py-2.5 font-mono text-[11px] uppercase tracking-[0.14em] text-accent transition hover:bg-accent/20"
+          onClick={() => handleAddToCart(product._id, quantity)}
+          className="flex flex-1 items-center justify-center gap-2 rounded-full bg-accent/10 py-2.5 font-mono text-[11px] uppercase tracking-[0.14em] text-accent transition hover:bg-accent/20"
         >
           <ShoppingCart aria-hidden="true" className="h-3.5 w-3.5" />
           Add to Cart

@@ -2,7 +2,7 @@
 "use client";
 
 import { redirect, useParams } from "next/navigation";
-import { ArrowLeft, ShoppingCart } from "lucide-react";
+import { ArrowLeft, Minus, Plus, ShoppingCart } from "lucide-react";
 import Link from "next/link";
 import { imageMap } from "@/components/static/imagemap";
 import { useEffect, useState } from "react";
@@ -15,6 +15,12 @@ export default function ProductPage() {
   const { categoryId, productId } = params;
   const [product, setProducts] = useState<Product | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [quantity, setQuantity] = useState(1);
+
+  function handleAddToCart(productId: string, qty: number) {
+    // TODO: Connect to backend cart API
+    console.log("Add to cart:", { productId, qty });
+  }
 
   useEffect(() => {
     if (!categoryId || !productId) return redirect("/catalog");
@@ -133,13 +139,39 @@ export default function ProductPage() {
               </div>
             </div>
 
-            <button
-              type="button"
-              className="inline-flex w-full items-center justify-center gap-3 rounded-full bg-accent px-10 py-4 font-mono text-xs uppercase tracking-[0.16em] text-cloud transition hover:brightness-110 focus-visible:ring-2 focus-visible:ring-accent sm:w-auto"
-            >
-              <ShoppingCart aria-hidden="true" className="h-4 w-4" />
-              Add to Cart — ${product?.price?.toFixed(2)}
-            </button>
+            <div className="flex items-center gap-3">
+              {/* Quantity stepper */}
+              <div className="glass flex items-center gap-1 rounded-full px-2 py-2">
+                <button
+                  type="button"
+                  onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                  className="flex h-9 w-9 items-center justify-center rounded-full transition hover:bg-[rgba(244,244,242,0.12)]"
+                  aria-label="Decrease quantity"
+                >
+                  <Minus aria-hidden="true" className="h-4 w-4 text-cloud/70" />
+                </button>
+                <span className="flex h-9 min-w-8 items-center justify-center font-mono text-sm text-cloud">
+                  {quantity}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setQuantity((q) => Math.min(99, q + 1))}
+                  className="flex h-9 w-9 items-center justify-center rounded-full transition hover:bg-[rgba(244,244,242,0.12)]"
+                  aria-label="Increase quantity"
+                >
+                  <Plus aria-hidden="true" className="h-4 w-4 text-cloud/70" />
+                </button>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => handleAddToCart(product?._id, quantity)}
+                className="inline-flex w-full items-center justify-center gap-3 rounded-full bg-accent px-10 py-4 font-mono text-xs uppercase tracking-[0.16em] text-cloud transition hover:brightness-110 focus-visible:ring-2 focus-visible:ring-accent sm:w-auto"
+              >
+                <ShoppingCart aria-hidden="true" className="h-4 w-4" />
+                Add to Cart — ${(product?.price * quantity).toFixed(2)}
+              </button>
+            </div>
           </div>
         </div>
       </div>
