@@ -79,15 +79,16 @@ export default function ProductCard({ product }: ProductCardProps) {
   }
 
   return (
-    <article className="group glass relative overflow-hidden rounded-[20px] p-4 transition duration-300 hover:bg-[rgba(244,244,242,0.1)]">
+    <article className="group glass flex flex-col overflow-hidden rounded-[20px] p-4 transition duration-300 hover:bg-[rgba(244,244,242,0.1)]">
       <Link
         href=""
         onClick={(e) => {
           e.preventDefault();
           hadleInteractions();
         }}
+        className="flex flex-1 flex-col"
       >
-        <div className="relative mb-4 h-52 overflow-hidden rounded-2xl border border-black/12 bg-panel dark:border-[rgba(244,244,242,0.12)]">
+        <div className="relative mb-4 h-52 shrink-0 overflow-hidden rounded-2xl border border-black/12 bg-panel dark:border-[rgba(244,244,242,0.12)]">
           <img
             src={imgSrc}
             alt={product.prod_name}
@@ -96,18 +97,20 @@ export default function ProductCard({ product }: ProductCardProps) {
           />
         </div>
 
-        <h3 className="font-display text-lg font-medium text-cloud">
+        <h3 className="truncate font-display text-lg font-medium text-cloud">
           {product?.prod_name}
         </h3>
-        <p className="mt-1 text-sm leading-relaxed text-cloud/50 line-clamp-2">
-          {product?.detail_desc}
-        </p>
+        <div className="mt-1 flex-1">
+          <p className="text-sm leading-relaxed text-cloud/50 line-clamp-2">
+            {product?.detail_desc}
+          </p>
+        </div>
 
         <div className="mt-4 flex items-center justify-between gap-3">
           <p className="font-mono text-sm text-accent">
             ${product?.price.toFixed(2)}
           </p>
-          <span className="glass rounded-full px-3 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-cloud/80">
+          <span className="shrink-0 glass rounded-full px-3 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-cloud/80">
             {product?.product_type_name}
           </span>
         </div>

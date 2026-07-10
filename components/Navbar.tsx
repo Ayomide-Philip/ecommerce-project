@@ -193,14 +193,14 @@ export default function Navbar({ session }: { session: Session }) {
                     </div>
 
                     <div className="py-1">
-                      <Link
+                      {/* <Link
                         href="/profile"
                         onClick={() => setAccountOpen(false)}
                         className="flex items-center gap-3 px-4 py-2.5 font-mono text-[11px] uppercase tracking-widest text-cloud/70 transition hover:bg-[rgba(244,244,242,0.08)] hover:text-cloud"
                       >
                         <User aria-hidden="true" className="h-3.5 w-3.5" />
                         Profile
-                      </Link>
+                      </Link> */}
                       <Link
                         href="/orders"
                         onClick={() => setAccountOpen(false)}
@@ -209,14 +209,14 @@ export default function Navbar({ session }: { session: Session }) {
                         <Package aria-hidden="true" className="h-3.5 w-3.5" />
                         My Orders
                       </Link>
-                      <Link
+                      {/* <Link
                         href="/settings"
                         onClick={() => setAccountOpen(false)}
                         className="flex items-center gap-3 px-4 py-2.5 font-mono text-[11px] uppercase tracking-widest text-cloud/70 transition hover:bg-[rgba(244,244,242,0.08)] hover:text-cloud"
                       >
                         <Settings aria-hidden="true" className="h-3.5 w-3.5" />
                         Settings
-                      </Link>
+                      </Link> */}
                     </div>
 
                     <div className="border-t border-black/8 pt-1 dark:border-[rgba(244,244,242,0.08)]">
