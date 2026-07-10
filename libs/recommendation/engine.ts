@@ -92,22 +92,6 @@ export async function invalidateCache(): Promise<void> {
 }
 
 // ---------------------------------------------------------------------------
-// getRandomProducts (internal helper)
-// ---------------------------------------------------------------------------
-
-/**
- * Returns a random subset of products from the cache.
- * Used as a last-resort fallback when both the user has no history AND the
- * Interactions collection is empty (e.g. a brand-new deployment).
- */
-function getRandomProducts(topN: number): Product[] {
-  if (!cache || cache.products.length === 0) return [];
-
-  const shuffled = [...cache.products].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, topN);
-}
-
-// ---------------------------------------------------------------------------
 // getRecommendations (public API)
 // ---------------------------------------------------------------------------
 
@@ -142,14 +126,7 @@ export async function getRecommendations(
   // Step 3: Cold start — no interaction history, use popularity fallback
   if (!userPreferenceText) {
     const popular = await getPopularityFallback(topN);
-    if (popular.length > 0) return popular;
-
-    // TODO — REMOVE THIS RANDOM FALLBACK LATER
-    // If the Interactions collection is also empty (brand-new app / no
-    // personality data yet), this returns random products so the UI isn't
-    // blank during testing. Remove the block below once real interaction
-    // data exists — an empty array should be returned instead.
-    return getRandomProducts(topN);
+    return popular;
   }
 
   // Safety check — cache is guaranteed non-null after buildCache()

@@ -82,6 +82,25 @@ export const POST = auth(async function POST(req: NextAuthRequest) {
       );
     }
 
+    const existingInteraction = await Interactions.findOne({
+      userId: new mongoose.Types.ObjectId(userId?.trim()),
+      productId: new mongoose.Types.ObjectId(productId?.trim()),
+      eventType: eventType?.trim(),
+    })
+      .select("_id")
+      .lean();
+
+    if (existingInteraction) {
+      return NextResponse.json(
+        {
+          message: "Event already tracked",
+        },
+        {
+          status: 200,
+        },
+      );
+    }
+
     const newInteraction = await Interactions.create({
       userId: new mongoose.Types.ObjectId(userId?.trim()),
       productId: new mongoose.Types.ObjectId(productId?.trim()),
