@@ -20,9 +20,34 @@ export default function ProductPage() {
   const [product, setProducts] = useState<ProductExtend | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [quantity, setQuantity] = useState(1);
+  const [adding, setAdding] = useState<boolean>(false);
 
-  function handleAddToCart(productId: string, qty: number) {
-    console.log("Add to cart:", { productId, qty });
+  async function handleAddToCart(productId: string, qty: number) {
+    if (adding) return;
+    setAdding(true);
+    try {
+      const request = await fetch("/api/cart", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ productId, quantity: qty }),
+        credentials: "include",
+      });
+
+      const response = await request.json();
+      if (!request.ok || response?.error) {
+        return toast.error(
+          response?.error || "Failed to add item to cart. Please try again.",
+        );
+      }
+      toast.success(response?.message || "Item added to cart successfully.");
+    } catch (err) {
+      console.log(err);
+      toast.error("Failed to add item to cart. Please try again.");
+    } finally {
+      setAdding(false);
+    }
   }
 
   useEffect(() => {

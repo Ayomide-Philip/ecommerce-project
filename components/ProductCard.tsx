@@ -90,7 +90,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           <button
             type="button"
             onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-            className="flex h-7 w-7 items-center justify-center rounded-full transition hover:bg-[rgba(244,244,242,0.12)]"
+            className="flex h-7 w-7 items-center cursor-pointer justify-center rounded-full transition hover:bg-[rgba(244,244,242,0.12)]"
             aria-label="Decrease quantity"
           >
             <Minus aria-hidden="true" className="h-3 w-3 text-cloud/70" />
@@ -101,7 +101,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           <button
             type="button"
             onClick={() => setQuantity((q) => Math.min(99, q + 1))}
-            className="flex h-7 w-7 items-center justify-center rounded-full transition hover:bg-[rgba(244,244,242,0.12)]"
+            className="flex h-7 w-7 items-center cursor-pointer justify-center rounded-full transition hover:bg-[rgba(244,244,242,0.12)]"
             aria-label="Increase quantity"
           >
             <Plus aria-hidden="true" className="h-3 w-3 text-cloud/70" />
