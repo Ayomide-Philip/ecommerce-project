@@ -12,15 +12,11 @@ type Product = {
 };
 
 type ProductCardProps = {
-  product: ProductExtend;
+  product: Product;
 };
 
 export default function ProductCard({ product }: ProductCardProps) {
   const imgSrc = `/images/${imageMap[product?.product_type_name] || product?.product_type_name?.toLowerCase()?.replace(/\s+/g, "-")}.jpg`;
-  // const productSlug = product?.prod_name
-  //   ?.toLowerCase()
-  //   ?.replace(/\s+/g, "-")
-  //   ?.replace(/\//g, "-");
   const categorySlug = product?.product_type_name
     ?.toLowerCase()
     ?.replace(/\s+/g, "-")
