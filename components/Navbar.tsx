@@ -114,11 +114,11 @@ export default function Navbar({ session }: { session: Session }) {
               )}
             </button>
 
-            <Link className="relative" href="/cart" aria-label="Cart (20)">
+            <Link className="relative" href="/cart" aria-label="Cart">
               <span className={iconButtonClass}>
                 <ShoppingCart aria-hidden="true" className="h-4 w-4" />
               </span>
-              <span className={badgeClass}>{totalCartItems}</span>
+              {totalCartItems > 0 && <span className={badgeClass}></span>}
             </Link>
 
             <Toggle />
