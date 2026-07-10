@@ -8,6 +8,7 @@ import {
   Plus,
   ArrowLeft,
   ShieldCheck,
+  Loader,
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -23,9 +24,12 @@ type CartItem = {
 
 export default function CartPage() {
   const [items, setItems] = useState<CartItem[]>([]);
+  const [pageLoading, setPageLoading] = useState(true);
+  const [updatingIds, setUpdatingIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     async function fetchCartItems() {
+      setPageLoading(true);
       try {
         const request = await fetch("/api/cart", {
           method: "GET",
@@ -45,12 +49,15 @@ export default function CartPage() {
       } catch (err) {
         console.log(err);
         return toast.error("Failed to load cart items. Please try again.");
+      } finally {
+        setPageLoading(false);
       }
     }
     fetchCartItems();
   }, []);
 
   async function removeItemFromCart(productId: string) {
+    setUpdatingIds((prev) => new Set(prev).add(productId));
     try {
       const request = await fetch("/api/cart", {
         method: "DELETE",
@@ -75,7 +82,13 @@ export default function CartPage() {
       );
     } catch (err) {
       console.log(err);
-      return toast.error("Failed to remove item from cart. Please try again.");
+      toast.error("Failed to remove item from cart. Please try again.");
+    } finally {
+      setUpdatingIds((prev) => {
+        const next = new Set(prev);
+        next.delete(productId);
+        return next;
+      });
     }
   }
 
@@ -83,6 +96,9 @@ export default function CartPage() {
     const currentItem = items.find((i) => i?.productId?._id === id);
     const newQty = Math.max(1, (currentItem?.quantity ?? 1) + delta);
 
+    setUpdatingIds((prev) => new Set(prev).add(id));
+
+    // Optimistically update the UI
     setItems((prev) =>
       prev
         .map((item) =>
@@ -103,6 +119,7 @@ export default function CartPage() {
 
       const response = await request.json();
       if (!request.ok || response?.error) {
+        // Revert on failure
         setItems((prev) =>
           prev
             .map((item) =>
@@ -117,6 +134,7 @@ export default function CartPage() {
         );
       }
     } catch {
+      // Revert on failure
       setItems((prev) =>
         prev
           .map((item) =>
@@ -126,7 +144,13 @@ export default function CartPage() {
           )
           .filter((item) => item?.quantity > 0),
       );
-      return toast.error("Failed to update quantity. Please try again.");
+      toast.error("Failed to update quantity. Please try again.");
+    } finally {
+      setUpdatingIds((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
     }
   }
 
@@ -149,7 +173,7 @@ export default function CartPage() {
               Shopping Cart
             </h1>
             <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-cloud/40">
-              {items.length} {items.length === 1 ? "item" : "items"}
+              {items?.length} {items?.length === 1 ? "item" : "items"}
             </p>
           </div>
         </div>
@@ -162,7 +186,17 @@ export default function CartPage() {
         </Link>
       </div>
 
-      {items.length === 0 ? (
+      {pageLoading ? (
+        <div className="glass flex flex-col items-center justify-center rounded-[20px] py-20 text-center">
+          <Loader
+            aria-hidden="true"
+            className="h-8 w-8 animate-spin text-cloud/30"
+          />
+          <p className="mt-4 font-mono text-[11px] uppercase tracking-[0.2em] text-cloud/40">
+            Loading your cart…
+          </p>
+        </div>
+      ) : items?.length === 0 ? (
         <div className="glass flex flex-col items-center justify-center rounded-[20px] py-20 text-center">
           <ShoppingCart
             aria-hidden="true"
@@ -203,26 +237,35 @@ export default function CartPage() {
                     {item?.productId?.product_type_name}
                   </p>
                   <p className="mt-1 font-mono text-sm text-accent">
-                    ${item?.productId?.price.toFixed(2)}
+                    ${item?.productId?.price?.toFixed(2)}
                   </p>
                 </div>
 
                 <div className="glass flex items-center gap-1 rounded-full border border-black/8 px-2 py-1 dark:border-[rgba(244,244,242,0.08)]">
                   <button
                     type="button"
+                    disabled={updatingIds.has(item?.productId?._id)}
                     onClick={() => updateQty(item?.productId?._id, -1)}
-                    className="flex h-7 w-7 items-center justify-center rounded-full text-cloud/50 transition hover:bg-black/8 hover:text-cloud dark:hover:bg-[rgba(244,244,242,0.08)]"
+                    className="flex h-7 w-7 items-center justify-center rounded-full text-cloud/50 transition hover:bg-black/8 hover:text-cloud disabled:opacity-30 dark:hover:bg-[rgba(244,244,242,0.08)]"
                     aria-label="Decrease quantity"
                   >
                     <Minus aria-hidden="true" className="h-3 w-3" />
                   </button>
                   <span className="flex h-7 w-8 items-center justify-center font-mono text-sm text-cloud">
-                    {item?.quantity}
+                    {updatingIds.has(item?.productId?._id) ? (
+                      <Loader
+                        aria-hidden="true"
+                        className="h-3.5 w-3.5 animate-spin text-cloud/50"
+                      />
+                    ) : (
+                      item?.quantity
+                    )}
                   </span>
                   <button
                     type="button"
+                    disabled={updatingIds.has(item?.productId?._id)}
                     onClick={() => updateQty(item?.productId?._id, 1)}
-                    className="flex h-7 w-7 items-center justify-center rounded-full text-cloud/50 transition hover:bg-black/8 hover:text-cloud dark:hover:bg-[rgba(244,244,242,0.08)]"
+                    className="flex h-7 w-7 items-center justify-center rounded-full text-cloud/50 transition hover:bg-black/8 hover:text-cloud disabled:opacity-30 dark:hover:bg-[rgba(244,244,242,0.08)]"
                     aria-label="Increase quantity"
                   >
                     <Plus aria-hidden="true" className="h-3 w-3" />
@@ -230,16 +273,24 @@ export default function CartPage() {
                 </div>
 
                 <p className="hidden w-20 text-right font-mono text-sm font-medium text-cloud sm:block">
-                  ${(item?.productId?.price * item?.quantity).toFixed(2)}
+                  ${(item?.productId?.price * item?.quantity)?.toFixed(2)}
                 </p>
 
                 <button
                   type="button"
+                  disabled={updatingIds.has(item?.productId?._id)}
                   onClick={() => removeItemFromCart(item?.productId?._id)}
-                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-cloud/40 transition hover:bg-red-500/10 hover:text-red-400"
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-cloud/40 transition hover:bg-red-500/10 hover:text-red-400 disabled:opacity-30"
                   aria-label={`Remove ${item?.productId?.prod_name}`}
                 >
-                  <Trash2 aria-hidden="true" className="h-4 w-4" />
+                  {updatingIds.has(item?.productId?._id) ? (
+                    <Loader
+                      aria-hidden="true"
+                      className="h-4 w-4 animate-spin text-red-400"
+                    />
+                  ) : (
+                    <Trash2 aria-hidden="true" className="h-4 w-4" />
+                  )}
                 </button>
               </div>
             ))}
@@ -255,7 +306,7 @@ export default function CartPage() {
                 <div className="flex justify-between text-sm">
                   <span className="text-cloud/50">Subtotal</span>
                   <span className="font-mono text-cloud">
-                    ${subtotal.toFixed(2)}
+                    ${subtotal?.toFixed(2)}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
@@ -264,7 +315,7 @@ export default function CartPage() {
                     {shipping === 0 ? (
                       <span className="text-green-400">FREE</span>
                     ) : (
-                      `$${shipping.toFixed(2)}`
+                      `$${shipping?.toFixed(2)}`
                     )}
                   </span>
                 </div>
@@ -279,7 +330,7 @@ export default function CartPage() {
                       Total
                     </span>
                     <span className="font-mono font-medium text-base text-cloud">
-                      ${total.toFixed(2)}
+                      ${total?.toFixed(2)}
                     </span>
                   </div>
                 </div>
