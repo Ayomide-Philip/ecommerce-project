@@ -142,8 +142,8 @@ export default function ProductPage() {
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
-              <div className="glass flex items-center gap-1 rounded-full px-2 py-2">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <div className="glass flex w-fit items-center gap-1 self-center rounded-full px-2 py-2 sm:self-auto">
                 <button
                   type="button"
                   onClick={() => setQuantity((q) => Math.max(1, q - 1))}
@@ -168,10 +168,12 @@ export default function ProductPage() {
               <button
                 type="button"
                 onClick={() => handleAddToCart(product?._id, quantity)}
-                className="inline-flex w-full items-center justify-center gap-3 rounded-full bg-accent px-10 py-4 font-mono text-xs uppercase tracking-[0.16em] text-cloud transition hover:brightness-110 focus-visible:ring-2 focus-visible:ring-accent sm:w-auto"
+                className="inline-flex w-full items-center justify-center gap-3 rounded-full bg-accent px-10 py-4 font-mono text-xs uppercase tracking-[0.16em] text-cloud transition hover:brightness-110 focus-visible:ring-2 focus-visible:ring-accent sm:w-auto sm:flex-1"
               >
-                <ShoppingCart aria-hidden="true" className="h-4 w-4" />
-                Add to Cart — ${(product?.price * quantity).toFixed(2)}
+                <ShoppingCart aria-hidden="true" className="h-4 w-4 shrink-0" />
+                <span>
+                  Add to Cart — ${(product?.price * quantity).toFixed(2)}
+                </span>
               </button>
             </div>
           </div>

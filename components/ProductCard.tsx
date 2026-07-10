@@ -1,8 +1,9 @@
 "use client";
 import { imageMap } from "./static/imagemap";
 import Link from "next/link";
-import { Minus, Plus, ShoppingCart } from "lucide-react";
+import { LoaderCircle, Minus, Plus, ShoppingCart } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 
 /* eslint-disable @next/next/no-img-element */
 type Product = {
@@ -19,9 +20,34 @@ type ProductCardProps = {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const [quantity, setQuantity] = useState(1);
+  const [adding, setAdding] = useState(false);
 
-  function handleAddToCart(productId: string, qty: number) {
-    console.log("Add to cart:", { productId, qty });
+  async function handleAddToCart(productId: string, qty: number) {
+    if (adding) return;
+    setAdding(true);
+    try {
+      const request = await fetch("/api/cart", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ productId, quantity: qty }),
+        credentials: "include",
+      });
+
+      const response = await request.json();
+      if (!request.ok || response?.error) {
+        return toast.error(
+          response?.error || "Failed to add item to cart. Please try again.",
+        );
+      }
+      toast.success(response?.message || "Item added to cart successfully.");
+    } catch (err) {
+      console.log(err);
+      toast.error("Failed to add item to cart. Please try again.");
+    } finally {
+      setAdding(false);
+    }
   }
 
   const imgSrc = `/images/${imageMap[product?.product_type_name] || product?.product_type_name?.toLowerCase()?.replace(/\s+/g, "-")}.jpg`;
@@ -60,7 +86,6 @@ export default function ProductCard({ product }: ProductCardProps) {
       </Link>
 
       <div className="mt-3 flex items-center gap-2">
-        {/* Quantity stepper */}
         <div className="glass flex items-center gap-1 rounded-full px-1 py-1">
           <button
             type="button"
@@ -85,11 +110,19 @@ export default function ProductCard({ product }: ProductCardProps) {
 
         <button
           type="button"
+          disabled={adding}
           onClick={() => handleAddToCart(product._id, quantity)}
-          className="flex flex-1 items-center justify-center gap-2 rounded-full bg-accent/10 py-2.5 font-mono text-[11px] uppercase tracking-[0.14em] text-accent transition hover:bg-accent/20"
+          className="flex flex-1 items-center justify-center gap-2 rounded-full bg-accent/10 py-2.5 font-mono text-[11px] uppercase tracking-[0.14em] text-accent transition hover:bg-accent/20 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          <ShoppingCart aria-hidden="true" className="h-3.5 w-3.5" />
-          Add to Cart
+          {adding ? (
+            <LoaderCircle
+              aria-hidden="true"
+              className="h-3.5 w-3.5 animate-spin"
+            />
+          ) : (
+            <ShoppingCart aria-hidden="true" className="h-3.5 w-3.5" />
+          )}
+          {adding ? "Adding…" : "Add to Cart"}
         </button>
       </div>
     </article>
