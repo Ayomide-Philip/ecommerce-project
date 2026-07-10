@@ -11,9 +11,13 @@ import { toast } from "sonner";
 import Loading from "@/components/loading";
 
 export default function ProductPage() {
+  type ProductExtend = Product & {
+    _id: string;
+  };
+
   const params = useParams();
   const { categoryId, productId } = params;
-  const [product, setProducts] = useState<Product | null>(null);
+  const [product, setProducts] = useState<ProductExtend | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [quantity, setQuantity] = useState(1);
 
@@ -140,12 +144,11 @@ export default function ProductPage() {
             </div>
 
             <div className="flex items-center gap-3">
-              {/* Quantity stepper */}
               <div className="glass flex items-center gap-1 rounded-full px-2 py-2">
                 <button
                   type="button"
                   onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                  className="flex h-9 w-9 items-center justify-center rounded-full transition hover:bg-[rgba(244,244,242,0.12)]"
+                  className="flex h-9 w-9 items-center cursor-pointer justify-center rounded-full transition hover:bg-[rgba(244,244,242,0.12)]"
                   aria-label="Decrease quantity"
                 >
                   <Minus aria-hidden="true" className="h-4 w-4 text-cloud/70" />
@@ -156,7 +159,7 @@ export default function ProductPage() {
                 <button
                   type="button"
                   onClick={() => setQuantity((q) => Math.min(99, q + 1))}
-                  className="flex h-9 w-9 items-center justify-center rounded-full transition hover:bg-[rgba(244,244,242,0.12)]"
+                  className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full transition hover:bg-[rgba(244,244,242,0.12)]"
                   aria-label="Increase quantity"
                 >
                   <Plus aria-hidden="true" className="h-4 w-4 text-cloud/70" />
