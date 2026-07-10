@@ -1,31 +1,18 @@
 "use client";
 
 import LeftOrderSummary from "@/components/shopping/checkout/leftOrderSummary";
-import { CreditCard, ShieldCheck, ArrowLeft, Lock } from "lucide-react";
+import RightOrderSummary from "@/components/shopping/checkout/rightOrderSummary";
+import { CreditCard, ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
 
-const sampleItems = [
-  {
-    name: "Basic Dress Fit",
-    type: "Dress",
-    price: 248.99,
-    quantity: 1,
-  },
-  {
-    name: "Michael Runner",
-    type: "Sneakers",
-    price: 79.0,
-    quantity: 2,
-  },
-];
-
-const subtotal = sampleItems.reduce(
-  (sum, item) => sum + item.price * item.quantity,
-  0,
-);
-const shipping = subtotal >= 100 ? 0 : 15.99;
-const total = subtotal + shipping;
+// const subtotal = sampleItems.reduce(
+//   (sum, item) => sum + item.price * item.quantity,
+//   0,
+// );
+// const shipping = subtotal >= 100 ? 0 : 15.99;
+// const total = subtotal + shipping;
 
 type FieldKey =
   | "fullName"
@@ -50,6 +37,64 @@ const initialFields: Record<FieldKey, string> = {
 export default function CheckoutPage() {
   const [fields, setFields] = useState(initialFields);
   const [errors, setErrors] = useState<Errors>({});
+  const [productItems, setProductItems] = useState([]);
+  const [subtotal, setSubtotal] = useState(0);
+  const [total, setTotal] = useState(0);
+  const [shipping, setShipping] = useState(0);
+
+  useEffect(() => {
+    async function fetchCart() {
+      try {
+        const request = await fetch("/api/cart", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        });
+
+        const response = await request.json();
+
+        if (!request.ok || response?.error) {
+          return toast.error("Failed to fetch cart items. Please try again.");
+        }
+
+        const r = response?.cart.map(
+          (c: {
+            productId: {
+              prod_name: string;
+              product_type_name: string;
+              price: number;
+            };
+            quantity: number;
+          }) => {
+            return {
+              name: c?.productId?.prod_name,
+              type: c?.productId?.product_type_name,
+              price: c?.productId?.price,
+              quantity: c?.quantity,
+            };
+          },
+        );
+
+        setProductItems(r || []);
+
+        const s = r.reduce(
+          (sum: number, item: { price: number; quantity: number }): number =>
+            sum + item.price * item.quantity,
+          0,
+        );
+        setSubtotal(s);
+        setShipping(subtotal >= 100 ? 0 : 15.99);
+        setTotal(s + (subtotal >= 100 ? 0 : 15.99));
+      } catch (err) {
+        console.log(err);
+        return toast.error("Failed to fetch cart items. Please try again.");
+      }
+    }
+
+    fetchCart();
+  }, []);
 
   function updateField(key: FieldKey, value: string) {
     setFields((prev) => ({ ...prev, [key]: value }));
@@ -97,7 +142,6 @@ export default function CheckoutPage() {
 
   return (
     <main className="mx-auto w-full max-w-7xl space-y-8 px-3 py-8 sm:px-4 md:px-6 lg:px-8 mt-15 sm:mt-16 lg:mt-18">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="glass flex h-10 w-10 items-center justify-center rounded-full">
@@ -128,75 +172,13 @@ export default function CheckoutPage() {
           updateField={updateField}
         />
 
-        <div className="lg:col-span-2">
-          <div className="glass rounded-[20px] p-5 sm:p-6">
-            <h2 className="font-display text-lg font-medium text-cloud">
-              Order Summary
-            </h2>
-
-            {/* Items */}
-            <div className="mt-5 divide-y divide-black/8 dark:divide-[rgba(244,244,242,0.08)]">
-              {sampleItems.map((item, idx) => (
-                <div
-                  key={idx}
-                  className="flex items-center justify-between py-3 first:pt-0 last:pb-0"
-                >
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate font-display text-sm font-medium text-cloud">
-                      {item.name}
-                    </p>
-                    <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-cloud/40">
-                      {item.type} × {item.quantity}
-                    </p>
-                  </div>
-                  <p className="ml-4 shrink-0 font-mono text-sm text-cloud">
-                    ${(item.price * item.quantity).toFixed(2)}
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            {/* Totals */}
-            <div className="mt-5 space-y-3 border-t border-black/8 pt-4 dark:border-[rgba(244,244,242,0.08)]">
-              <div className="flex justify-between text-sm">
-                <span className="text-cloud/50">Subtotal</span>
-                <span className="font-mono text-cloud">
-                  ${subtotal.toFixed(2)}
-                </span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-cloud/50">Shipping</span>
-                <span className="font-mono text-cloud">
-                  {shipping === 0 ? (
-                    <span className="text-green-400">FREE</span>
-                  ) : (
-                    `$${shipping.toFixed(2)}`
-                  )}
-                </span>
-              </div>
-              <div className="flex justify-between border-t border-black/8 pt-3 dark:border-[rgba(244,244,242,0.08)]">
-                <span className="text-sm font-medium text-cloud">Total</span>
-                <span className="font-mono font-medium text-cloud dark:text-cloud">
-                  ${total.toFixed(2)}
-                </span>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={handlePlaceOrder}
-              className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-accent py-3.5 font-mono text-[11px] uppercase tracking-[0.14em] text-white transition hover:bg-accent/90"
-            >
-              <Lock aria-hidden="true" className="h-4 w-4" />
-              Place Order — ${total.toFixed(2)}
-            </button>
-
-            <div className="mt-4 flex items-center justify-center gap-2 text-[10px] text-cloud/30">
-              <ShieldCheck aria-hidden="true" className="h-3 w-3" />
-              <span>Simulated payment — no real charges</span>
-            </div>
-          </div>
-        </div>
+        <RightOrderSummary
+          sampleItems={productItems}
+          subtotal={subtotal}
+          shipping={shipping || 0}
+          total={total || 0}
+          handlePlaceOrder={handlePlaceOrder}
+        />
       </div>
     </main>
   );
