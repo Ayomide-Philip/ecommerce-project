@@ -222,7 +222,7 @@ Since real payment integration is out of scope, it is simulated:
 | **Order history** — `GET /api/orders` + `/orders` page with loading/empty states            | ✅ Done      |
 | **Frontend pages** — Catalog, Product Detail, Cart, Checkout, Orders, Recommendations, ...  | ✅ Done      |
 | **Admin CRUD** — product creation only (PATCH/DELETE missing)                               | ⏳ Partial   |
-| **Track-event route** — interaction logging from frontend                                     | ✅ Done      |
+| **Track-event route** — interaction logging from frontend                                   | ✅ Done      |
 | **Seed data script** — automated product seeding                                            | ❌ Not built |
 | **Simulated interaction data** — fake user histories for testing                            | ❌ Not built |
 | **Evaluation** — Precision@K, Recall@K, MAP                                                 | ❌ Not built |
