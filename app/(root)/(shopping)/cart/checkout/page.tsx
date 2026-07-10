@@ -1,6 +1,7 @@
 "use client";
 
-import { CreditCard, ShieldCheck, Truck, ArrowLeft, Lock } from "lucide-react";
+import LeftOrderSummary from "@/components/shopping/checkout/leftOrderSummary";
+import { CreditCard, ShieldCheck, ArrowLeft, Lock } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -26,10 +27,73 @@ const subtotal = sampleItems.reduce(
 const shipping = subtotal >= 100 ? 0 : 15.99;
 const total = subtotal + shipping;
 
+type FieldKey =
+  | "fullName"
+  | "address"
+  | "city"
+  | "zip"
+  | "cardNumber"
+  | "expiry"
+  | "cvv";
+type Errors = Partial<Record<FieldKey, string>>;
+
+const initialFields: Record<FieldKey, string> = {
+  fullName: "John Doe",
+  address: "123 Fashion Street",
+  city: "New York",
+  zip: "10001",
+  cardNumber: "",
+  expiry: "",
+  cvv: "",
+};
+
 export default function CheckoutPage() {
-  const [cardNumber, setCardNumber] = useState("");
-  const [expiry, setExpiry] = useState("");
-  const [cvv, setCvv] = useState("");
+  const [fields, setFields] = useState(initialFields);
+  const [errors, setErrors] = useState<Errors>({});
+
+  function updateField(key: FieldKey, value: string) {
+    setFields((prev) => ({ ...prev, [key]: value }));
+    if (errors[key]) {
+      setErrors((prev) => {
+        const next = { ...prev };
+        delete next[key];
+        return next;
+      });
+    }
+  }
+
+  function validate(): boolean {
+    const newErrors: Errors = {};
+
+    if (!fields.fullName.trim()) newErrors.fullName = "Full name is required.";
+    if (!fields.address.trim()) newErrors.address = "Address is required.";
+    if (!fields.city.trim()) newErrors.city = "City is required.";
+    if (!fields.zip.trim()) newErrors.zip = "ZIP code is required.";
+    else if (!/^\d{5}(-\d{4})?$/.test(fields.zip.trim()))
+      newErrors.zip = "Enter a valid ZIP code (e.g. 10001).";
+
+    const cleanedCard = fields.cardNumber.replace(/\s/g, "");
+    if (!cleanedCard) newErrors.cardNumber = "Card number is required.";
+    else if (!/^\d{16}$/.test(cleanedCard))
+      newErrors.cardNumber = "Enter a valid 16-digit card number.";
+
+    if (!fields.expiry.trim()) newErrors.expiry = "Expiry date is required.";
+    else if (!/^\d{2}\/\d{2}$/.test(fields.expiry.trim()))
+      newErrors.expiry = "Use MM/YY format.";
+
+    if (!fields.cvv.trim()) newErrors.cvv = "CVV is required.";
+    else if (!/^\d{3}$/.test(fields.cvv.trim()))
+      newErrors.cvv = "CVV must be 3 digits.";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  }
+
+  function handlePlaceOrder() {
+    if (validate()) {
+      alert("Order placed successfully! (Demo)");
+    }
+  }
 
   return (
     <main className="mx-auto w-full max-w-7xl space-y-8 px-3 py-8 sm:px-4 md:px-6 lg:px-8 mt-15 sm:mt-16 lg:mt-18">
@@ -58,127 +122,12 @@ export default function CheckoutPage() {
       </div>
 
       <div className="grid gap-8 lg:grid-cols-5">
-        {/* Left — Shipping & Payment */}
-        <div className="space-y-6 lg:col-span-3">
-          {/* Shipping info */}
-          <div className="glass rounded-[20px] p-5 sm:p-6">
-            <div className="flex items-center gap-2">
-              <Truck aria-hidden="true" className="h-4 w-4 text-accent" />
-              <h2 className="font-display text-lg font-medium text-cloud">
-                Shipping Address
-              </h2>
-            </div>
+        <LeftOrderSummary
+          fields={fields}
+          errors={errors}
+          updateField={updateField}
+        />
 
-            <div className="mt-4 grid gap-4 sm:grid-cols-2">
-              <div className="space-y-1.5">
-                <label className="font-mono text-[10px] uppercase tracking-[0.14em] text-cloud/40">
-                  First Name
-                </label>
-                <input
-                  type="text"
-                  defaultValue="John"
-                  className="w-full rounded-xl border border-black/12 bg-panel px-4 py-3 font-mono text-sm text-cloud placeholder:text-cloud/30 transition focus:outline-none focus:ring-2 focus:ring-accent/60 dark:border-[rgba(244,244,242,0.12)]"
-                />
-              </div>
-              <div className="space-y-1.5">
-                <label className="font-mono text-[10px] uppercase tracking-[0.14em] text-cloud/40">
-                  Last Name
-                </label>
-                <input
-                  type="text"
-                  defaultValue="Doe"
-                  className="w-full rounded-xl border border-black/12 bg-panel px-4 py-3 font-mono text-sm text-cloud placeholder:text-cloud/30 transition focus:outline-none focus:ring-2 focus:ring-accent/60 dark:border-[rgba(244,244,242,0.12)]"
-                />
-              </div>
-              <div className="space-y-1.5 sm:col-span-2">
-                <label className="font-mono text-[10px] uppercase tracking-[0.14em] text-cloud/40">
-                  Address
-                </label>
-                <input
-                  type="text"
-                  defaultValue="123 Fashion Street"
-                  className="w-full rounded-xl border border-black/12 bg-panel px-4 py-3 font-mono text-sm text-cloud placeholder:text-cloud/30 transition focus:outline-none focus:ring-2 focus:ring-accent/60 dark:border-[rgba(244,244,242,0.12)]"
-                />
-              </div>
-              <div className="space-y-1.5">
-                <label className="font-mono text-[10px] uppercase tracking-[0.14em] text-cloud/40">
-                  City
-                </label>
-                <input
-                  type="text"
-                  defaultValue="New York"
-                  className="w-full rounded-xl border border-black/12 bg-panel px-4 py-3 font-mono text-sm text-cloud placeholder:text-cloud/30 transition focus:outline-none focus:ring-2 focus:ring-accent/60 dark:border-[rgba(244,244,242,0.12)]"
-                />
-              </div>
-              <div className="space-y-1.5">
-                <label className="font-mono text-[10px] uppercase tracking-[0.14em] text-cloud/40">
-                  ZIP Code
-                </label>
-                <input
-                  type="text"
-                  defaultValue="10001"
-                  className="w-full rounded-xl border border-black/12 bg-panel px-4 py-3 font-mono text-sm text-cloud placeholder:text-cloud/30 transition focus:outline-none focus:ring-2 focus:ring-accent/60 dark:border-[rgba(244,244,242,0.12)]"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Payment */}
-          <div className="glass rounded-[20px] p-5 sm:p-6">
-            <div className="flex items-center gap-2">
-              <CreditCard aria-hidden="true" className="h-4 w-4 text-accent" />
-              <h2 className="font-display text-lg font-medium text-cloud">
-                Payment Details
-              </h2>
-            </div>
-
-            <div className="mt-4 space-y-4">
-              <div className="space-y-1.5">
-                <label className="font-mono text-[10px] uppercase tracking-[0.14em] text-cloud/40">
-                  Card Number
-                </label>
-                <input
-                  type="text"
-                  placeholder="4242 4242 4242 4242"
-                  value={cardNumber}
-                  onChange={(e) => setCardNumber(e.target.value)}
-                  maxLength={19}
-                  className="w-full rounded-xl border border-black/12 bg-panel px-4 py-3 font-mono text-sm text-cloud placeholder:text-cloud/30 transition focus:outline-none focus:ring-2 focus:ring-accent/60 dark:border-[rgba(244,244,242,0.12)]"
-                />
-              </div>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-1.5">
-                  <label className="font-mono text-[10px] uppercase tracking-[0.14em] text-cloud/40">
-                    Expiry Date
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="MM/YY"
-                    value={expiry}
-                    onChange={(e) => setExpiry(e.target.value)}
-                    maxLength={5}
-                    className="w-full rounded-xl border border-black/12 bg-panel px-4 py-3 font-mono text-sm text-cloud placeholder:text-cloud/30 transition focus:outline-none focus:ring-2 focus:ring-accent/60 dark:border-[rgba(244,244,242,0.12)]"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="font-mono text-[10px] uppercase tracking-[0.14em] text-cloud/40">
-                    CVV
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="123"
-                    value={cvv}
-                    onChange={(e) => setCvv(e.target.value)}
-                    maxLength={3}
-                    className="w-full rounded-xl border border-black/12 bg-panel px-4 py-3 font-mono text-sm text-cloud placeholder:text-cloud/30 transition focus:outline-none focus:ring-2 focus:ring-accent/60 dark:border-[rgba(244,244,242,0.12)]"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Right — Order Summary */}
         <div className="lg:col-span-2">
           <div className="glass rounded-[20px] p-5 sm:p-6">
             <h2 className="font-display text-lg font-medium text-cloud">
@@ -227,15 +176,15 @@ export default function CheckoutPage() {
               </div>
               <div className="flex justify-between border-t border-black/8 pt-3 dark:border-[rgba(244,244,242,0.08)]">
                 <span className="text-sm font-medium text-cloud">Total</span>
-                <span className="font-mono font-medium text-base text-cloud sm:text-base">
+                <span className="font-mono font-medium text-cloud dark:text-cloud">
                   ${total.toFixed(2)}
                 </span>
               </div>
             </div>
 
-            {/* Place Order */}
             <button
               type="button"
+              onClick={handlePlaceOrder}
               className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-accent py-3.5 font-mono text-[11px] uppercase tracking-[0.14em] text-white transition hover:bg-accent/90"
             >
               <Lock aria-hidden="true" className="h-4 w-4" />
