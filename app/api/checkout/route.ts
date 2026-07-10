@@ -51,7 +51,6 @@ export const POST = auth(async function POST(req: NextAuthRequest) {
       );
     }
 
-    // Fetch user's cart items with populated product data
     const cartItems = await Carts.find({
       userId: new mongoose.Types.ObjectId(userId?.trim()),
     })
@@ -69,7 +68,6 @@ export const POST = auth(async function POST(req: NextAuthRequest) {
       );
     }
 
-    // Build order items and calculate total
     const items = cartItems.map((item) => ({
       productId: item.productId as unknown as mongoose.Types.ObjectId,
       quantity: item.quantity,
@@ -81,7 +79,6 @@ export const POST = auth(async function POST(req: NextAuthRequest) {
       0,
     );
 
-    // Create the order
     const order = await Orders.create({
       userId: new mongoose.Types.ObjectId(userId?.trim()),
       items,
@@ -90,7 +87,6 @@ export const POST = auth(async function POST(req: NextAuthRequest) {
       paymentMethod: "dummy-card",
     });
 
-    // Log purchase interactions for each item (feeds recommendation engine)
     const interactionData = cartItems.map((item) => ({
       userId: new mongoose.Types.ObjectId(userId?.trim()),
       productId: item.productId as unknown as mongoose.Types.ObjectId,
@@ -99,7 +95,6 @@ export const POST = auth(async function POST(req: NextAuthRequest) {
 
     await Interactions.insertMany(interactionData);
 
-    // Clear the user's cart after successful checkout
     await Carts.deleteMany({
       userId: new mongoose.Types.ObjectId(userId?.trim()),
     });
