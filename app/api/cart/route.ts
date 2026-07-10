@@ -35,7 +35,7 @@ export const GET = auth(async function GET(req: NextAuthRequest) {
   try {
     await connectToDatabase();
     const userCart = await Carts.find({ userId: userId?.trim() || "" })
-      .populate("productId")
+      .populate("productId", "product_type_name prod_name price prod_image")
       .lean();
 
     return NextResponse.json(
@@ -177,6 +177,117 @@ export const POST = auth(async function POST(req: NextAuthRequest) {
     return NextResponse.json(
       {
         error: "Failed to add product to cart",
+      },
+      {
+        status: 500,
+      },
+    );
+  }
+});
+
+export const DELETE = auth(async function DELETE(req: NextAuthRequest) {
+  if (!req?.auth || !req?.auth?.user) {
+    return NextResponse.json(
+      {
+        error: "Unauthorized Access",
+      },
+      {
+        status: 401,
+      },
+    );
+  }
+
+  const userId = req?.auth?.user?.id;
+
+  const { productId } = await req.json();
+
+  if (!productId?.trim() || !userId?.trim()) {
+    return NextResponse.json(
+      {
+        error: "Invalid Parameters",
+      },
+      {
+        status: 400,
+      },
+    );
+  }
+
+  if (
+    !mongoose.Types.ObjectId.isValid(productId?.trim() || "") ||
+    !mongoose.Types.ObjectId.isValid(userId?.trim() || "")
+  ) {
+    return NextResponse.json(
+      {
+        error: "Invalid Parameters",
+      },
+      {
+        status: 400,
+      },
+    );
+  }
+
+  try {
+    await connectToDatabase();
+    const userExist = await User.exists({
+      _id: new mongoose.Types.ObjectId(userId?.trim()),
+    });
+
+    if (!userExist) {
+      return NextResponse.json(
+        {
+          error: "Unauthorized Access",
+        },
+        {
+          status: 401,
+        },
+      );
+    }
+
+    const productExists = await Products.exists({
+      _id: new mongoose.Types.ObjectId(productId?.trim()),
+    });
+
+    if (!productExists) {
+      return NextResponse.json(
+        {
+          error: "Product not found",
+        },
+        {
+          status: 404,
+        },
+      );
+    }
+
+    const deletedItem = await Carts.findOneAndDelete({
+      productId: new mongoose.Types.ObjectId(productId?.trim()),
+      userId: new mongoose.Types.ObjectId(userId?.trim()),
+    });
+
+    if (!deletedItem) {
+      return NextResponse.json(
+        {
+          error: "Product not found in cart",
+        },
+        {
+          status: 404,
+        },
+      );
+    }
+
+    return NextResponse.json(
+      {
+        message: "Product removed from cart successfully",
+        deletedItem: !!deletedItem,
+      },
+      {
+        status: 200,
+      },
+    );
+  } catch (err) {
+    console.log(err);
+    return NextResponse.json(
+      {
+        error: "Failed to remove product from cart",
       },
       {
         status: 500,
