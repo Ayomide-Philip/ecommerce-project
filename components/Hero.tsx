@@ -68,7 +68,7 @@ export default function Hero() {
       <div className="space-y-8 sm:space-y-10 lg:space-y-12">
         <div className="text-center space-y-4 sm:space-y-5">
           <p className="font-mono text-xs uppercase tracking-[0.25em] text-accent">
-            New Arrivals, 2024
+            New Arrivals, {new Date().getFullYear()}
           </p>
           <h1
             id="hero-heading"

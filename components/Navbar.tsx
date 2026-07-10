@@ -4,13 +4,18 @@ import {
   ShoppingCart,
   ChevronDown,
   LogIn,
+  LogOut,
   Menu,
+  User,
+  Settings,
+  Package,
   X,
 } from "lucide-react";
 import Toggle from "@/components/toggle";
 import Link from "next/link";
 import { Session } from "next-auth";
-import { useEffect, useState } from "react";
+import { signOut } from "next-auth/react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 const iconButtonClass =
@@ -27,7 +32,31 @@ const navLinks = [
 
 export default function Navbar({ session }: { session: Session }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
   const [totalCartItems, setTotalCartItems] = useState(0);
+  const accountRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    if (!accountOpen) return;
+    function handleClick(e: MouseEvent) {
+      if (
+        accountRef.current &&
+        !accountRef.current.contains(e.target as Node)
+      ) {
+        setAccountOpen(false);
+      }
+    }
+    // Delay attaching to avoid the same click that opened it from closing it
+    const timer = setTimeout(
+      () => document.addEventListener("click", handleClick),
+      0,
+    );
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener("click", handleClick);
+    };
+  }, [accountOpen]);
 
   useEffect(() => {
     async function fetchCartItems() {
@@ -124,28 +153,88 @@ export default function Navbar({ session }: { session: Session }) {
             <Toggle />
 
             {session && session?.user ? (
-              <button
-                className="flex items-center gap-2 rounded-full p-1 pr-3 transition hover:bg-black/5 dark:hover:bg-[rgba(244,244,242,0.06)]"
-                type="button"
-                aria-label="Account"
-              >
-                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent font-mono text-xs font-medium text-cloud">
-                  {session?.user?.name?.charAt(0)?.toUpperCase() ||
-                    session?.user?.email?.charAt(0)?.toUpperCase()}
-                </span>
-                <span className="hidden text-left leading-tight lg:block">
-                  <span className="block font-mono text-[10px] text-cloud/50">
-                    Welcome Back!
+              <div className="relative" ref={accountRef}>
+                <button
+                  onClick={() => setAccountOpen((prev) => !prev)}
+                  className="flex items-center cursor-pointer gap-2 rounded-full p-1 pr-3 transition hover:bg-black/5 dark:hover:bg-[rgba(244,244,242,0.06)]"
+                  type="button"
+                  aria-label="Account"
+                >
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent font-mono text-xs font-medium text-cloud">
+                    {session?.user?.name?.charAt(0)?.toUpperCase() ||
+                      session?.user?.email?.charAt(0)?.toUpperCase()}
                   </span>
-                  <span className="block text-sm font-medium text-cloud capitalize">
-                    {session?.user?.name || session?.user?.email}
+                  <span className="hidden text-left leading-tight lg:block">
+                    <span className="block font-mono text-[10px] text-cloud/50">
+                      Welcome Back!
+                    </span>
+                    <span className="block text-sm font-medium text-cloud capitalize">
+                      {session?.user?.name || session?.user?.email}
+                    </span>
                   </span>
-                </span>
-                <ChevronDown
-                  aria-hidden="true"
-                  className="hidden h-3.5 w-3.5 text-cloud/50 lg:block"
-                />
-              </button>
+                  <ChevronDown
+                    aria-hidden="true"
+                    className={`hidden h-3.5 w-3.5 text-cloud/50 transition lg:block ${
+                      accountOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+
+                {/* Dropdown menu */}
+                {accountOpen && (
+                  <div className="absolute right-0 top-full z-50 mt-2 w-56 overflow-hidden rounded-2xl border border-black/10 bg-panel py-1.5 shadow-lg dark:border-[rgba(244,244,242,0.12)]">
+                    <div className="border-b border-black/8 px-4 pb-2 pt-2 dark:border-[rgba(244,244,242,0.08)]">
+                      <p className="truncate font-display text-sm font-medium text-cloud">
+                        {session?.user?.name || "User"}
+                      </p>
+                      <p className="truncate font-mono text-[10px] text-cloud/40">
+                        {session?.user?.email}
+                      </p>
+                    </div>
+
+                    <div className="py-1">
+                      <Link
+                        href="/profile"
+                        onClick={() => setAccountOpen(false)}
+                        className="flex items-center gap-3 px-4 py-2.5 font-mono text-[11px] uppercase tracking-widest text-cloud/70 transition hover:bg-[rgba(244,244,242,0.08)] hover:text-cloud"
+                      >
+                        <User aria-hidden="true" className="h-3.5 w-3.5" />
+                        Profile
+                      </Link>
+                      <Link
+                        href="/orders"
+                        onClick={() => setAccountOpen(false)}
+                        className="flex items-center gap-3 px-4 py-2.5 font-mono text-[11px] uppercase tracking-widest text-cloud/70 transition hover:bg-[rgba(244,244,242,0.08)] hover:text-cloud"
+                      >
+                        <Package aria-hidden="true" className="h-3.5 w-3.5" />
+                        My Orders
+                      </Link>
+                      <Link
+                        href="/settings"
+                        onClick={() => setAccountOpen(false)}
+                        className="flex items-center gap-3 px-4 py-2.5 font-mono text-[11px] uppercase tracking-widest text-cloud/70 transition hover:bg-[rgba(244,244,242,0.08)] hover:text-cloud"
+                      >
+                        <Settings aria-hidden="true" className="h-3.5 w-3.5" />
+                        Settings
+                      </Link>
+                    </div>
+
+                    <div className="border-t border-black/8 pt-1 dark:border-[rgba(244,244,242,0.08)]">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setAccountOpen(false);
+                          signOut({ callbackUrl: "/login" });
+                        }}
+                        className="flex w-full items-center gap-3 px-4 py-2.5 font-mono text-[11px] uppercase tracking-widest text-red-400 transition hover:bg-red-500/10"
+                      >
+                        <LogOut aria-hidden="true" className="h-3.5 w-3.5" />
+                        Sign Out
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             ) : (
               <Link
                 href="/login"
