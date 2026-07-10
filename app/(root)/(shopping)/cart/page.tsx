@@ -246,7 +246,7 @@ export default function CartPage() {
                     type="button"
                     disabled={updatingIds.has(item?.productId?._id)}
                     onClick={() => updateQty(item?.productId?._id, -1)}
-                    className="flex h-7 w-7 items-center justify-center rounded-full text-cloud/50 transition hover:bg-black/8 hover:text-cloud disabled:opacity-30 dark:hover:bg-[rgba(244,244,242,0.08)]"
+                    className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-full text-cloud/50 transition hover:bg-black/8 hover:text-cloud disabled:opacity-30 dark:hover:bg-[rgba(244,244,242,0.08)]"
                     aria-label="Decrease quantity"
                   >
                     <Minus aria-hidden="true" className="h-3 w-3" />
@@ -265,7 +265,7 @@ export default function CartPage() {
                     type="button"
                     disabled={updatingIds.has(item?.productId?._id)}
                     onClick={() => updateQty(item?.productId?._id, 1)}
-                    className="flex h-7 w-7 items-center justify-center rounded-full text-cloud/50 transition hover:bg-black/8 hover:text-cloud disabled:opacity-30 dark:hover:bg-[rgba(244,244,242,0.08)]"
+                    className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-full text-cloud/50 transition hover:bg-black/8 hover:text-cloud disabled:opacity-30 dark:hover:bg-[rgba(244,244,242,0.08)]"
                     aria-label="Increase quantity"
                   >
                     <Plus aria-hidden="true" className="h-3 w-3" />
@@ -280,7 +280,7 @@ export default function CartPage() {
                   type="button"
                   disabled={updatingIds.has(item?.productId?._id)}
                   onClick={() => removeItemFromCart(item?.productId?._id)}
-                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-cloud/40 transition hover:bg-red-500/10 hover:text-red-400 disabled:opacity-30"
+                  className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full text-cloud/40 transition hover:bg-red-500/10 hover:text-red-400 disabled:opacity-30"
                   aria-label={`Remove ${item?.productId?.prod_name}`}
                 >
                   {updatingIds.has(item?.productId?._id) ? (
