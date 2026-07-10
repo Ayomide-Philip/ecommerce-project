@@ -1,4 +1,5 @@
 import { Lock, ShieldCheck } from "lucide-react";
+
 export default function RightOrderSummary({
   sampleItems,
   subtotal,
