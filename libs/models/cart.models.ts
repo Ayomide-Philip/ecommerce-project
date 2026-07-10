@@ -18,16 +18,12 @@ const cartSchema = new Schema(
       min: 1,
       default: 1,
     },
-    hasPurchased: {
-      type: Boolean,
-      default: false,
-    },
   },
   { timestamps: true },
 );
 
 cartSchema.index({ userId: 1, productId: 1 }, { unique: true });
-cartSchema.index({ userId: 1, hasPurchased: 1 });
+cartSchema.index({ userId: 1, createdAt: -1 });
 
 export type Cart = InferSchemaType<typeof cartSchema>;
 

@@ -22,7 +22,6 @@ export default function ProductPage() {
   const [quantity, setQuantity] = useState(1);
 
   function handleAddToCart(productId: string, qty: number) {
-    // TODO: Connect to backend cart API
     console.log("Add to cart:", { productId, qty });
   }
 
