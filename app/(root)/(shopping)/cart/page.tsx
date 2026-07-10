@@ -336,13 +336,13 @@ export default function CartPage() {
                 </div>
               </div>
 
-              <button
-                type="button"
+              <Link
+                href="/cart/checkout"
                 className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-accent py-3 font-mono text-[11px] uppercase tracking-[0.14em] text-white transition hover:bg-accent/90"
               >
                 <ShieldCheck aria-hidden="true" className="h-4 w-4" />
                 Checkout
-              </button>
+              </Link>
 
               <div className="mt-4 flex items-center justify-center gap-2 text-[10px] text-cloud/40">
                 <ShieldCheck aria-hidden="true" className="h-3 w-3" />
