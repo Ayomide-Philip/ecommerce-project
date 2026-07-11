@@ -18,12 +18,12 @@ import { signOut } from "next-auth/react";
 
 const navItems = [
   { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/admin/products", label: "Products", icon: Package },
-  { href: "/admin/orders", label: "Orders", icon: ShoppingBag },
-  { href: "/admin/users", label: "Users", icon: Users },
-  { href: "/admin/categories", label: "Categories", icon: Layers },
-  { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
-  { href: "/admin/settings", label: "Settings", icon: Settings },
+  { href: "/admin/dashboard/products", label: "Products", icon: Package },
+  { href: "/admin/dashboard/orders", label: "Orders", icon: ShoppingBag },
+  { href: "/admin/dashboard/users", label: "Users", icon: Users },
+  { href: "/admin/dashboard/categories", label: "Categories", icon: Layers },
+  { href: "/admin/dashboard/analytics", label: "Analytics", icon: BarChart3 },
+  { href: "/admin/dashboard/settings", label: "Settings", icon: Settings },
 ];
 
 export default function AdminSidebar({

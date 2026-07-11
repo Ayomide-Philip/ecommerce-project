@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Sparkles } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
 import Loading from "@/components/loading";
 import { toast } from "sonner";
@@ -48,10 +47,6 @@ export default function RecommendationPage() {
       <section aria-labelledby="recommendation-heading" className="space-y-8">
         <div>
           <div className="flex items-center gap-3">
-            <Sparkles
-              aria-hidden="true"
-              className="h-6 w-6 text-accent sm:h-7 sm:w-7"
-            />
             <h2
               id="recommendation-heading"
               className="font-display text-2xl font-medium text-cloud sm:text-3xl"
