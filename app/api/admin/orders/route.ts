@@ -1,6 +1,9 @@
 import { auth } from "@/auth";
 import { NextResponse } from "next/server";
 import mongoose from "mongoose";
+import { connectToDatabase } from "@/libs/config/database.config";
+import User from "@/libs/models/users.models";
+import Orders from "@/libs/models/order.models";
 
 export const GET = auth(async function GET(req) {
   if (!req?.auth || !req?.auth?.user) {
@@ -28,6 +31,38 @@ export const GET = auth(async function GET(req) {
   }
 
   try {
+    await connectToDatabase();
+
+    const user = await User.findById(
+      new mongoose.Types.ObjectId(userId?.trim()),
+    )
+      .select("role")
+      .lean();
+
+    if (user?.role !== "admin") {
+      return NextResponse.json(
+        {
+          error: "Unauthorized Access",
+        },
+        {
+          status: 401,
+        },
+      );
+    }
+
+    const orders = await Orders.find()
+      .populate("userId", "name")
+      .populate("items.productId", "prod_name price")
+      .lean();
+
+    return NextResponse.json(
+      {
+        orders,
+      },
+      {
+        status: 200,
+      },
+    );
   } catch (err) {
     console.log(err);
     return NextResponse.json(
