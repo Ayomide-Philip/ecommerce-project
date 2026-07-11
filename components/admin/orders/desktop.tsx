@@ -1,21 +1,26 @@
 type Order = {
   _id: string;
-  userId: string;
-  customerName: string;
-  customerEmail: string;
+  userId: {
+    _id: string;
+    name: string;
+    email: string;
+  };
   items: OrderItem[];
   totalAmount: number;
-  status: "paid" | "processing" | "shipped" | "delivered" | "cancelled";
   paymentMethod: string;
   createdAt: string;
 };
 
 type OrderItem = {
-  productId: string;
-  productName: string;
+  _id: string;
   quantity: number;
   priceAtPurchase: number;
+  productId: {
+    prod_name: string;
+    _id: string;
+  };
 };
+
 
 export default function OrdersDesktop({
   paginatedOrders,
@@ -47,8 +52,10 @@ export default function OrdersDesktop({
                 </p>
               </td>
               <td className="py-3 pr-4">
-                <p className="font-medium text-cloud">{order.customerName}</p>
-                <p className="text-xs text-cloud/50">{order.customerEmail}</p>
+                <p className="font-medium text-cloud capitalize">
+                  {order.userId.name}
+                </p>
+                <p className="text-xs text-cloud/50">{order.userId.email}</p>
               </td>
               <td className="py-3 pr-4 text-cloud/70">
                 {order.items.length} item{order.items.length > 1 ? "s" : ""}

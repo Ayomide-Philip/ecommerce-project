@@ -51,7 +51,7 @@ export const GET = auth(async function GET(req) {
     }
 
     const orders = await Orders.find()
-      .populate("userId", "name")
+      .populate("userId", "name email")
       .populate("items.productId", "prod_name price")
       .lean();
 

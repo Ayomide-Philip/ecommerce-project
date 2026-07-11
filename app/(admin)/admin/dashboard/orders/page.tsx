@@ -6,205 +6,28 @@ import { toast } from "sonner";
 import OrdersDesktop from "@/components/admin/orders/desktop";
 import OrdersMobile from "@/components/admin/orders/mobile";
 
-// ── Types ─────────────────────────────────────────────
-
-type OrderItem = {
-  productId: string;
-  productName: string;
-  quantity: number;
-  priceAtPurchase: number;
-};
-
 type Order = {
   _id: string;
-  userId: string;
-  customerName: string;
-  customerEmail: string;
+  userId: {
+    _id: string;
+    name: string;
+    email: string;
+  };
   items: OrderItem[];
   totalAmount: number;
-  status: "paid" | "processing" | "shipped" | "delivered" | "cancelled";
   paymentMethod: string;
   createdAt: string;
 };
 
-// ── Mock Data ──────────────────────────────────────────
-
-const allOrders: Order[] = [
-  {
-    _id: "66f1a2b3c4d5e6f7a8b9c0d1",
-    userId: "user_001",
-    customerName: "Amara Okafor",
-    customerEmail: "amara.o@email.com",
-    items: [
-      {
-        productId: "p1",
-        productName: "Basic Dress Fit",
-        quantity: 1,
-        priceAtPurchase: 248.99,
-      },
-      {
-        productId: "p2",
-        productName: "Winona Cardigan",
-        quantity: 1,
-        priceAtPurchase: 224.0,
-      },
-    ],
-    totalAmount: 472.99,
-    status: "delivered",
-    paymentMethod: "Credit Card",
-    createdAt: "2026-07-10T14:30:00Z",
-  },
-  {
-    _id: "66f1a2b3c4d5e6f7a8b9c0d2",
-    userId: "user_002",
-    customerName: "Chidi Eze",
-    customerEmail: "chidi.eze@email.com",
-    items: [
-      {
-        productId: "p3",
-        productName: "Kente Street Hoodie",
-        quantity: 2,
-        priceAtPurchase: 89.0,
-      },
-    ],
-    totalAmount: 178.0,
-    status: "processing",
-    paymentMethod: "PayPal",
-    createdAt: "2026-07-10T10:15:00Z",
-  },
-  {
-    _id: "66f1a2b3c4d5e6f7a8b9c0d3",
-    userId: "user_003",
-    customerName: "Zara Bello",
-    customerEmail: "zara.b@email.com",
-    items: [
-      {
-        productId: "p4",
-        productName: "Dashiki Midi Dress",
-        quantity: 1,
-        priceAtPurchase: 159.0,
-      },
-      {
-        productId: "p5",
-        productName: "Leather Crossbody Bag",
-        quantity: 1,
-        priceAtPurchase: 145.0,
-      },
-      {
-        productId: "p6",
-        productName: "Basic Skirt Edition",
-        quantity: 1,
-        priceAtPurchase: 89.99,
-      },
-    ],
-    totalAmount: 393.99,
-    status: "shipped",
-    paymentMethod: "Credit Card",
-    createdAt: "2026-07-09T16:45:00Z",
-  },
-  {
-    _id: "66f1a2b3c4d5e6f7a8b9c0d4",
-    userId: "user_004",
-    customerName: "Kofi Mensah",
-    customerEmail: "kofi.m@email.com",
-    items: [
-      {
-        productId: "p7",
-        productName: "Ankara Bomber Jacket",
-        quantity: 1,
-        priceAtPurchase: 210.0,
-      },
-    ],
-    totalAmount: 210.0,
-    status: "paid",
-    paymentMethod: "Bank Transfer",
-    createdAt: "2026-07-09T09:20:00Z",
-  },
-  {
-    _id: "66f1a2b3c4d5e6f7a8b9c0d5",
-    userId: "user_005",
-    customerName: "Ngozi Adeyemi",
-    customerEmail: "ngozi.a@email.com",
-    items: [
-      {
-        productId: "p8",
-        productName: "Batik Wide-Leg Pants",
-        quantity: 1,
-        priceAtPurchase: 74.0,
-      },
-      {
-        productId: "p9",
-        productName: "Printed Maxi Dress",
-        quantity: 1,
-        priceAtPurchase: 312.0,
-      },
-    ],
-    totalAmount: 386.0,
-    status: "cancelled",
-    paymentMethod: "PayPal",
-    createdAt: "2026-07-08T11:30:00Z",
-  },
-  {
-    _id: "66f1a2b3c4d5e6f7a8b9c0d6",
-    userId: "user_006",
-    customerName: "Fatima Usman",
-    customerEmail: "fatima.u@email.com",
-    items: [
-      {
-        productId: "p10",
-        productName: "Elegant Trousers Line",
-        quantity: 2,
-        priceAtPurchase: 231.0,
-      },
-      {
-        productId: "p11",
-        productName: "Casual Blazer Style",
-        quantity: 1,
-        priceAtPurchase: 179.0,
-      },
-    ],
-    totalAmount: 641.0,
-    status: "processing",
-    paymentMethod: "Credit Card",
-    createdAt: "2026-07-08T08:10:00Z",
-  },
-  {
-    _id: "66f1a2b3c4d5e6f7a8b9c0d7",
-    userId: "user_007",
-    customerName: "Kwame Asante",
-    customerEmail: "kwame.a@email.com",
-    items: [
-      {
-        productId: "p12",
-        productName: "Classic Slippers Collection",
-        quantity: 3,
-        priceAtPurchase: 11.0,
-      },
-    ],
-    totalAmount: 33.0,
-    status: "delivered",
-    paymentMethod: "Bank Transfer",
-    createdAt: "2026-07-07T15:00:00Z",
-  },
-  {
-    _id: "66f1a2b3c4d5e6f7a8b9c0d8",
-    userId: "user_008",
-    customerName: "Sade Bello",
-    customerEmail: "sade.b@email.com",
-    items: [
-      {
-        productId: "p13",
-        productName: "Classic Underwear Bottom Wear",
-        quantity: 3,
-        priceAtPurchase: 249.99,
-      },
-    ],
-    totalAmount: 749.97,
-    status: "shipped",
-    paymentMethod: "Credit Card",
-    createdAt: "2026-07-07T12:25:00Z",
-  },
-];
+type OrderItem = {
+  _id: string;
+  quantity: number;
+  priceAtPurchase: number;
+  productId: {
+    prod_name: string;
+    _id: string;
+  };
+};
 
 const ITEMS_PER_PAGE = 10;
 
@@ -228,8 +51,21 @@ export default function AdminOrdersPage() {
     async function fetchOrders() {
       setLoading(true);
       try {
-        await new Promise((r) => setTimeout(r, 600));
-        setOrders(allOrders);
+        const request = await fetch("/api/admin/orders", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          cache: "no-store",
+          credentials: "include",
+        });
+        const response = await request.json();
+        if (!request.ok || response?.error) {
+          return toast.error(
+            response?.error || "Failed to load orders. Please try again later.",
+          );
+        }
+        setOrders(response?.orders || []);
       } catch (err) {
         console.log(err);
         toast.error("Failed to load orders.");
@@ -245,12 +81,13 @@ export default function AdminOrdersPage() {
     const q = searchQuery.toLowerCase();
     return (
       o._id.toLowerCase().includes(q) ||
-      o.customerName.toLowerCase().includes(q) ||
-      o.customerEmail.toLowerCase().includes(q) ||
-      o.status.toLowerCase().includes(q) ||
+      o.userId.name.toLowerCase().includes(q) ||
+      o.userId.email.toLowerCase().includes(q) ||
       o.paymentMethod.toLowerCase().includes(q) ||
       o.totalAmount.toString().includes(q) ||
-      o.items.some((item) => item.productName.toLowerCase().includes(q))
+      o.items.some((item) =>
+        item?.productId?.prod_name?.toLowerCase()?.includes(q),
+      )
     );
   });
 

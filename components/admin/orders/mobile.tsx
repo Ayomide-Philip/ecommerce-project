@@ -1,8 +1,10 @@
 type Order = {
   _id: string;
-  userId: string;
-  customerName: string;
-  customerEmail: string;
+  userId: {
+    _id: string;
+    name: string;
+    email: string;
+  };
   items: OrderItem[];
   totalAmount: number;
   paymentMethod: string;
@@ -10,10 +12,13 @@ type Order = {
 };
 
 type OrderItem = {
-  productId: string;
-  productName: string;
+  _id: string;
   quantity: number;
   priceAtPurchase: number;
+  productId: {
+    prod_name: string;
+    _id: string;
+  };
 };
 
 export default function OrdersMobile({
@@ -33,8 +38,8 @@ export default function OrdersMobile({
               <p className="font-mono text-xs font-medium text-cloud">
                 #{order._id.slice(-8)}
               </p>
-              <p className="mt-0.5 text-sm font-medium text-cloud">
-                {order.customerName}
+              <p className="mt-0.5 text-sm font-medium text-cloud capitalize">
+                {order.userId.name}
               </p>
             </div>
           </div>
