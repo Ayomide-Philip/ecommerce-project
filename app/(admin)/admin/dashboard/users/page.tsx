@@ -15,105 +15,6 @@ type User = {
   createdAt: string;
 };
 
-const allUsers: User[] = [
-  {
-    _id: "64f1a2b3c4d5e6f7a8b9c001",
-    name: "amara okafor",
-    email: "amara.o@email.com",
-    role: "admin",
-    emailVerified: true,
-    createdAt: "2026-01-15T10:30:00Z",
-  },
-  {
-    _id: "64f1a2b3c4d5e6f7a8b9c002",
-    name: "chidi eze",
-    email: "chidi.eze@email.com",
-    role: "user",
-    emailVerified: true,
-    createdAt: "2026-02-20T14:00:00Z",
-  },
-  {
-    _id: "64f1a2b3c4d5e6f7a8b9c003",
-    name: "zara bello",
-    email: "zara.b@email.com",
-    role: "user",
-    emailVerified: true,
-    createdAt: "2026-03-05T09:15:00Z",
-  },
-  {
-    _id: "64f1a2b3c4d5e6f7a8b9c004",
-    name: "kofi mensah",
-    email: "kofi.m@email.com",
-    role: "user",
-    emailVerified: false,
-    createdAt: "2026-03-18T16:45:00Z",
-  },
-  {
-    _id: "64f1a2b3c4d5e6f7a8b9c005",
-    name: "ngozi adeyemi",
-    email: "ngozi.a@email.com",
-    role: "admin",
-    emailVerified: true,
-    createdAt: "2026-01-08T11:00:00Z",
-  },
-  {
-    _id: "64f1a2b3c4d5e6f7a8b9c006",
-    name: "fatima usman",
-    email: "fatima.u@email.com",
-    role: "user",
-    emailVerified: true,
-    createdAt: "2026-04-12T08:30:00Z",
-  },
-  {
-    _id: "64f1a2b3c4d5e6f7a8b9c007",
-    name: "kwame asante",
-    email: "kwame.a@email.com",
-    role: "user",
-    emailVerified: false,
-    createdAt: "2026-05-01T13:20:00Z",
-  },
-  {
-    _id: "64f1a2b3c4d5e6f7a8b9c008",
-    name: "sade bello",
-    email: "sade.b@email.com",
-    role: "user",
-    emailVerified: true,
-    createdAt: "2026-05-22T10:10:00Z",
-  },
-  {
-    _id: "64f1a2b3c4d5e6f7a8b9c009",
-    name: "tunde balogun",
-    email: "tunde.b@email.com",
-    role: "user",
-    emailVerified: true,
-    createdAt: "2026-06-03T15:50:00Z",
-  },
-  {
-    _id: "64f1a2b3c4d5e6f7a8b9c00a",
-    name: "ifunanya okeke",
-    email: "ifunanya.o@email.com",
-    role: "admin",
-    emailVerified: true,
-    createdAt: "2026-01-02T09:00:00Z",
-  },
-  {
-    _id: "64f1a2b3c4d5e6f7a8b9c00b",
-    name: "ekezie philip",
-    email: "ekezie.p@email.com",
-    role: "user",
-    emailVerified: true,
-    createdAt: "2026-06-20T12:00:00Z",
-  },
-  {
-    _id: "64f1a2b3c4d5e6f7a8b9c00c",
-    name: "amina mohammed",
-    email: "amina.m@email.com",
-    role: "user",
-    emailVerified: false,
-    createdAt: "2026-07-05T14:30:00Z",
-  },
-];
-
 const ITEMS_PER_PAGE = 6;
 
 function getPageNumbers(current: number, total: number): (number | "...")[] {
@@ -136,8 +37,21 @@ export default function AdminUsersPage() {
     async function fetchUsers() {
       setLoading(true);
       try {
-        await new Promise((r) => setTimeout(r, 600));
-        setUsers(allUsers);
+        const request = await fetch("/api/admin/users", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          cache: "no-store",
+          credentials: "include",
+        });
+        const response = await request.json();
+        if (!request.ok || response?.error) {
+          return toast.error(
+            response?.error || "Failed to load users. Please try again later.",
+          );
+        }
+        setUsers(response?.users || []);
       } catch (err) {
         console.log(err);
         toast.error("Failed to load users.");
@@ -192,7 +106,6 @@ export default function AdminUsersPage() {
 
   return (
     <div className="px-4 py-4 sm:px-6 sm:py-6 lg:p-8">
-      {/* ── Header ── */}
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="font-display text-xl font-medium text-cloud sm:text-3xl">
@@ -217,7 +130,6 @@ export default function AdminUsersPage() {
         </div>
       </div>
 
-      {/* ── Summary Cards ── */}
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
         <div className="rounded-xl border border-black/10 bg-white/80 p-4 backdrop-blur-sm dark:border-[rgba(244,244,242,0.08)] dark:bg-panel/60">
           <div className="flex items-center gap-2.5">
@@ -262,7 +174,6 @@ export default function AdminUsersPage() {
 
       <UsersMobile paginatedUsers={paginatedUsers} />
 
-      {/* ── Empty State ── */}
       {filtered.length === 0 && (
         <div className="flex min-h-40 flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-cloud/10">
           <Ban className="h-8 w-8 text-cloud/20" />
@@ -272,7 +183,6 @@ export default function AdminUsersPage() {
         </div>
       )}
 
-      {/* ── Pagination ── */}
       {filtered.length > 0 && (
         <div className="mt-4 flex items-center justify-between sm:mt-6">
           <p className="text-xs text-cloud/50">
