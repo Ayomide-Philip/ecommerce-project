@@ -1,9 +1,26 @@
-import NextAuth from "next-auth";
+import NextAuth, { type DefaultSession } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import User from "./libs/models/users.models";
 import { BETTER_AUTH_SECRET } from "./libs/config/config";
 import bcrypt from "bcrypt";
 import { connectToDatabase } from "./libs/config/database.config";
+
+declare module "next-auth" {
+  interface User {
+    role?: string;
+  }
+  interface Session {
+    user: {
+      role: string;
+    } & DefaultSession["user"];
+  }
+}
+
+declare module "@auth/core/jwt" {
+  interface JWT {
+    role?: string;
+  }
+}
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -44,6 +61,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           id: user?._id?.toString(),
           name: user?.name,
           email: user?.email,
+          role: user?.role,
         };
       },
     }),
@@ -54,6 +72,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.id = user.id;
         token.name = user.name;
         token.email = user.email;
+        token.role = user.role;
       }
       return token;
     },
@@ -62,6 +81,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.id = token.id as string;
         session.user.name = token.name as string;
         session.user.email = token.email as string;
+        session.user.role = token.role as string;
       }
       return session;
     },
