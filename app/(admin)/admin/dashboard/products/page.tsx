@@ -3,92 +3,122 @@
 import { useState } from "react";
 import { Plus, Search, Pencil, Trash2, MoreHorizontal } from "lucide-react";
 
-// ── Mock Data ──────────────────────────────────────────
+// ── Mock Data (matches MongoDB model fields) ──────────
 
 type Product = {
-  id: string;
-  name: string;
-  category: string;
+  _id: string;
+  prod_name: string;
+  product_type_name: string;
   price: number;
+  detail_desc: string;
   stock: number;
   status: "Active" | "Draft" | "Out of Stock";
-  image: string;
 };
 
-const products: Product[] = [
+const allProducts: Product[] = [
   {
-    id: "#PRD-1024",
-    name: "Basic Dress Fit",
-    category: "Dress",
+    _id: "6a4fd493074e5ffa612d919c",
+    prod_name: "Basic Dress Fit",
+    product_type_name: "dress",
     price: 248.99,
+    detail_desc:
+      "Calf-length, sleeveless dress in a patterned weave with an elasticated frill trim.",
     stock: 34,
     status: "Active",
-    image: "dress",
   },
   {
-    id: "#PRD-1023",
-    name: "Elegant Trousers Line",
-    category: "Trousers",
-    price: 231.0,
-    stock: 52,
-    status: "Active",
-    image: "trousers",
-  },
-  {
-    id: "#PRD-1022",
-    name: "Winona Cardigan",
-    category: "Cardigan",
-    price: 224.0,
-    stock: 18,
-    status: "Active",
-    image: "cardigan",
-  },
-  {
-    id: "#PRD-1021",
-    name: "Classic Slippers Collection",
-    category: "Slippers",
-    price: 11.0,
-    stock: 0,
-    status: "Out of Stock",
-    image: "slippers",
-  },
-  {
-    id: "#PRD-1020",
-    name: "Classic Underwear Bottom Wear",
-    category: "Underwear",
-    price: 249.99,
-    stock: 67,
-    status: "Active",
-    image: "underwear",
-  },
-  {
-    id: "#PRD-1019",
-    name: "Basic Skirt Edition",
-    category: "Skirt",
-    price: 89.99,
-    stock: 41,
-    status: "Draft",
-    image: "skirt",
-  },
-  {
-    id: "#PRD-1018",
-    name: "PE HALLE BOTTOMS",
-    category: "Underwear",
+    _id: "6a4fd493074e5ffa612d919d",
+    prod_name: "PE HALLE BOTTOMS",
+    product_type_name: "underwear bottom",
     price: 297.99,
+    detail_desc:
+      "Briefs in an airy silk blend with lace sections, an elasticated waist and lined gusset.",
     stock: 23,
     status: "Active",
-    image: "underwear",
   },
   {
-    id: "#PRD-1017",
-    name: "Casual Blazer Style",
-    category: "Blazer",
+    _id: "6a4fd493074e5ffa612d919e",
+    prod_name: "Winona Cardigan",
+    product_type_name: "cardigan",
+    price: 224.0,
+    detail_desc:
+      "Long, fine-knit cardigan in a soft viscose blend with long sleeves and ribbed cuffs.",
+    stock: 18,
+    status: "Active",
+  },
+  {
+    _id: "6a4fd493074e5ffa612d919f",
+    prod_name: "Elegant Trousers Line",
+    product_type_name: "trousers",
+    price: 231.0,
+    detail_desc:
+      "Ankle-length trousers in twill with a slight sheen. Mid waist with elastication.",
+    stock: 52,
+    status: "Active",
+  },
+  {
+    _id: "6a4fd493074e5ffa612d91a0",
+    prod_name: "Classic Underwear Bottom Wear",
+    product_type_name: "underwear bottom",
+    price: 249.99,
+    detail_desc:
+      "Briefs in an airy silk blend with lace sections, an elasticated waist.",
+    stock: 67,
+    status: "Active",
+  },
+  {
+    _id: "6a4fd493074e5ffa612d91a1",
+    prod_name: "Classic Slippers Collection",
+    product_type_name: "slippers",
+    price: 11.0,
+    detail_desc:
+      "Imitation suede slippers with soft pile linings and fluted soles.",
+    stock: 0,
+    status: "Out of Stock",
+  },
+  {
+    _id: "6a4fd493074e5ffa612d91a2",
+    prod_name: "Basic Skirt Edition",
+    product_type_name: "skirt",
+    price: 89.99,
+    detail_desc:
+      "A-line skirt in a woven fabric with a concealed zip at the back.",
+    stock: 41,
+    status: "Draft",
+  },
+  {
+    _id: "6a4fd493074e5ffa612d91a3",
+    prod_name: "Casual Blazer Style",
+    product_type_name: "blazer",
     price: 179.0,
+    detail_desc:
+      "Single-breasted blazer in a comfortable stretch weave with notched lapels.",
     stock: 12,
     status: "Active",
-    image: "blazer",
+  },
+  {
+    _id: "6a4fd493074e5ffa612d91a4",
+    prod_name: "Printed Maxi Dress",
+    product_type_name: "dress",
+    price: 312.0,
+    detail_desc:
+      "Floor-length dress with an all-over print, short puff sleeves and a gathered waist.",
+    stock: 8,
+    status: "Active",
+  },
+  {
+    _id: "6a4fd493074e5ffa612d91a5",
+    prod_name: "Leather Crossbody Bag",
+    product_type_name: "bag",
+    price: 145.0,
+    detail_desc:
+      "Genuine leather crossbody bag with an adjustable strap and zip closure.",
+    stock: 29,
+    status: "Active",
   },
 ];
+
+const ITEMS_PER_PAGE = 10;
 
 const statusStyles: Record<string, string> = {
   Active: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
@@ -100,12 +130,30 @@ const statusStyles: Record<string, string> = {
 
 export default function AdminProductsPage() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
 
-  const filtered = products.filter(
+  const filtered = allProducts.filter(
     (p) =>
-      p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      p.id.toLowerCase().includes(searchQuery.toLowerCase()),
+      p.prod_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p._id.toLowerCase().includes(searchQuery.toLowerCase()),
   );
+
+  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedProducts = filtered.slice(
+    startIndex,
+    startIndex + ITEMS_PER_PAGE,
+  );
+
+  const goToPage = (page: number) => {
+    if (page >= 1 && page <= totalPages) setCurrentPage(page);
+  };
+
+  // Reset to page 1 when searching
+  const handleSearch = (value: string) => {
+    setSearchQuery(value);
+    setCurrentPage(1);
+  };
 
   return (
     <div className="px-4 py-4 sm:px-6 sm:py-6 lg:p-8">
@@ -115,7 +163,7 @@ export default function AdminProductsPage() {
             Products
           </h1>
           <p className="mt-0.5 text-xs text-cloud/50 sm:mt-1 sm:text-sm">
-            Manage your product catalog — {products.length} total items
+            Manage your product catalog — {allProducts.length} total items
           </p>
         </div>
 
@@ -125,7 +173,7 @@ export default function AdminProductsPage() {
             <input
               type="text"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => handleSearch(e.target.value)}
               placeholder="Search products..."
               className="w-full rounded-xl border border-black/10 bg-white/80 py-2 pl-9 pr-3 text-sm text-cloud placeholder:text-cloud/40 focus:outline-none focus:ring-2 focus:ring-accent dark:border-[rgba(244,244,242,0.08)] dark:bg-panel/50 sm:w-56"
             />
@@ -155,23 +203,29 @@ export default function AdminProductsPage() {
             </tr>
           </thead>
           <tbody>
-            {filtered.map((product) => (
+            {paginatedProducts.map((product) => (
               <tr
-                key={product.id}
+                key={product._id}
                 className="border-b border-black/5 last:border-0 dark:border-[rgba(244,244,242,0.05)]"
               >
                 <td className="py-3 pl-4 pr-4 sm:pl-6">
                   <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-black/5 text-[10px] font-medium uppercase text-cloud/40 dark:bg-white/5">
-                      {product.image.slice(0, 2)}
+                      {product.prod_name.slice(0, 2)}
                     </div>
                     <div>
-                      <p className="font-medium text-cloud">{product.name}</p>
-                      <p className="text-xs text-cloud/50">{product.id}</p>
+                      <p className="font-medium text-cloud">
+                        {product.prod_name}
+                      </p>
+                      <p className="text-xs text-cloud/50">
+                        {product._id.slice(-6)}
+                      </p>
                     </div>
                   </div>
                 </td>
-                <td className="py-3 pr-4 text-cloud/70">{product.category}</td>
+                <td className="py-3 pr-4 text-cloud/70">
+                  {product.product_type_name}
+                </td>
                 <td className="py-3 pr-4 font-medium text-cloud">
                   ${product.price.toFixed(2)}
                 </td>
@@ -227,21 +281,23 @@ export default function AdminProductsPage() {
 
       {/* ── Mobile Cards ── */}
       <div className="space-y-3 sm:hidden">
-        {filtered.map((product) => (
+        {paginatedProducts.map((product) => (
           <div
-            key={product.id}
+            key={product._id}
             className="rounded-2xl border border-black/10 bg-white/80 p-4 backdrop-blur-sm dark:border-[rgba(244,244,242,0.08)] dark:bg-panel/60"
           >
             <div className="mb-3 flex items-start justify-between">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-black/5 text-[10px] font-medium uppercase text-cloud/40 dark:bg-white/5">
-                  {product.image.slice(0, 2)}
+                  {product.prod_name.slice(0, 2)}
                 </div>
                 <div>
                   <p className="text-sm font-medium text-cloud">
-                    {product.name}
+                    {product.prod_name}
                   </p>
-                  <p className="text-xs text-cloud/50">{product.id}</p>
+                  <p className="text-xs text-cloud/50">
+                    {product._id.slice(-6)}
+                  </p>
                 </div>
               </div>
               <span
@@ -256,7 +312,9 @@ export default function AdminProductsPage() {
             <div className="grid grid-cols-3 gap-2 border-t border-black/5 pt-3 text-xs dark:border-[rgba(244,244,242,0.05)]">
               <div>
                 <span className="block text-cloud/40">Category</span>
-                <span className="text-cloud/70">{product.category}</span>
+                <span className="text-cloud/70">
+                  {product.product_type_name}
+                </span>
               </div>
               <div>
                 <span className="block text-cloud/40">Price</span>
@@ -313,36 +371,38 @@ export default function AdminProductsPage() {
       {filtered.length > 0 && (
         <div className="mt-4 flex items-center justify-between sm:mt-6">
           <p className="text-xs text-cloud/50">
-            Showing 1–{filtered.length} of {products.length} products
+            Showing {startIndex + 1}–
+            {Math.min(startIndex + ITEMS_PER_PAGE, filtered.length)} of{" "}
+            {allProducts.length} products
           </p>
           <div className="flex items-center gap-1">
             <button
               type="button"
-              className="flex h-8 w-8 items-center justify-center rounded-lg text-xs font-medium text-cloud/50 transition hover:bg-black/5 hover:text-cloud dark:hover:bg-white/5"
+              onClick={() => goToPage(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-xs font-medium text-cloud/50 transition hover:bg-black/5 hover:text-cloud disabled:opacity-30 disabled:cursor-not-allowed dark:hover:bg-white/5"
             >
               ‹
             </button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <button
+                key={page}
+                type="button"
+                onClick={() => goToPage(page)}
+                className={`flex h-8 w-8 items-center justify-center rounded-lg text-xs font-medium transition ${
+                  page === currentPage
+                    ? "bg-accent/10 text-accent"
+                    : "text-cloud/50 hover:bg-black/5 hover:text-cloud dark:hover:bg-white/5"
+                }`}
+              >
+                {page}
+              </button>
+            ))}
             <button
               type="button"
-              className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/10 text-xs font-medium text-accent"
-            >
-              1
-            </button>
-            <button
-              type="button"
-              className="flex h-8 w-8 items-center justify-center rounded-lg text-xs font-medium text-cloud/50 transition hover:bg-black/5 hover:text-cloud dark:hover:bg-white/5"
-            >
-              2
-            </button>
-            <button
-              type="button"
-              className="flex h-8 w-8 items-center justify-center rounded-lg text-xs font-medium text-cloud/50 transition hover:bg-black/5 hover:text-cloud dark:hover:bg-white/5"
-            >
-              3
-            </button>
-            <button
-              type="button"
-              className="flex h-8 w-8 items-center justify-center rounded-lg text-xs font-medium text-cloud/50 transition hover:bg-black/5 hover:text-cloud dark:hover:bg-white/5"
+              onClick={() => goToPage(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-xs font-medium text-cloud/50 transition hover:bg-black/5 hover:text-cloud disabled:opacity-30 disabled:cursor-not-allowed dark:hover:bg-white/5"
             >
               ›
             </button>
