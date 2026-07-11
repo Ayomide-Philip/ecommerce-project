@@ -16,7 +16,7 @@ export default function QuickActions() {
         },
         {
           label: "Recent Activity",
-          desc: "See what&apos;s happening on your store",
+          desc: "See what's happening on your store",
           icon: Clock,
         },
       ].map((action) => {
