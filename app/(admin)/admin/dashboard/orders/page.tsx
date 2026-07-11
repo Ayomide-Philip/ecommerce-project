@@ -124,7 +124,6 @@ export default function AdminOrdersPage() {
 
   return (
     <div className="px-4 py-4 sm:px-6 sm:py-6 lg:p-8">
-      {/* ── Header ── */}
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="font-display text-xl font-medium text-cloud sm:text-3xl">
@@ -153,7 +152,6 @@ export default function AdminOrdersPage() {
 
       <OrdersMobile paginatedOrders={paginatedOrders} />
 
-      {/* ── Empty State ── */}
       {filtered.length === 0 && (
         <div className="flex min-h-40 flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-cloud/10">
           <ShoppingBag className="h-8 w-8 text-cloud/20" />
