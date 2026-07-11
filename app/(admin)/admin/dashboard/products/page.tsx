@@ -42,9 +42,11 @@ export default function AdminProductsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchProduct() {
+      setLoading(true);
       try {
         const request = await fetch("/api/products", {
           method: "GET",
@@ -65,6 +67,8 @@ export default function AdminProductsPage() {
       } catch (err) {
         console.log(err);
         return toast.error("Failed to load products. Please try again later.");
+      } finally {
+        setLoading(false);
       }
     }
     fetchProduct();
@@ -102,6 +106,21 @@ export default function AdminProductsPage() {
     setSearchQuery(value);
     setCurrentPage(1);
   };
+
+  if (loading) {
+    return (
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div
+            className="h-10 w-10 animate-spin rounded-full border-2 border-cloud/10 border-t-accent"
+            role="status"
+            aria-label="Loading products"
+          />
+          <p className="text-xs text-cloud/40">Loading products...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="px-4 py-4 sm:px-6 sm:py-6 lg:p-8">

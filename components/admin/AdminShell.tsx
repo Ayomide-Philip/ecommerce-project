@@ -95,7 +95,7 @@ export default function AdminShell({
       />
 
       <main
-        className={`flex-1 transition-all duration-300 ${
+        className={`relative flex-1 transition-all duration-300 ${
           collapsed ? "md:pl-18" : "md:pl-64"
         } pt-14 md:pt-0`}
       >
