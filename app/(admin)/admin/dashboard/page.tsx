@@ -3,7 +3,7 @@
 import { Package, ShoppingBag, Users, DollarSign, Search } from "lucide-react";
 import Toggle from "@/components/toggle";
 import RecentOrders from "@/components/admin/dashboard/recentorders";
-import TopProducts from "@/components/admin/dashboard/topproducts";
+// import TopProducts from "@/components/admin/dashboard/topproducts";
 import QuickActions from "@/components/admin/dashboard/quickactions";
 import DashboardStats from "@/components/admin/dashboard/stats";
 
@@ -89,13 +89,13 @@ const recentOrders = [
   },
 ];
 
-const topProducts = [
-  { name: "Adire Print Blazer", sales: 342, revenue: "$44,118" },
-  { name: "Kente Street Hoodie", sales: 289, revenue: "$25,721" },
-  { name: "Dashiki Midi Dress", sales: 256, revenue: "$40,704" },
-  { name: "Ankara Bomber Jacket", sales: 198, revenue: "$41,580" },
-  { name: "Batik Wide-Leg Pants", sales: 167, revenue: "$12,358" },
-];
+// const topProducts = [
+//   { name: "Adire Print Blazer", sales: 342, revenue: "$44,118" },
+//   { name: "Kente Street Hoodie", sales: 289, revenue: "$25,721" },
+//   { name: "Dashiki Midi Dress", sales: 256, revenue: "$40,704" },
+//   { name: "Ankara Bomber Jacket", sales: 198, revenue: "$41,580" },
+//   { name: "Batik Wide-Leg Pants", sales: 167, revenue: "$12,358" },
+// ];
 
 export const statusStyles: Record<string, string> = {
   Delivered: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
@@ -140,12 +140,13 @@ export default function AdminDashboardPage() {
       </div>
 
       <DashboardStats stats={stats} />
+   <RecentOrders recentOrders={recentOrders} />
 
-      <div className="grid gap-4 sm:gap-6 lg:grid-cols-3">
+      {/* <div className="grid gap-4 sm:gap-6 lg:grid-cols-3">
         <RecentOrders recentOrders={recentOrders} />
 
         <TopProducts topProducts={topProducts} />
-      </div>
+      </div> */}
 
       <QuickActions />
     </div>

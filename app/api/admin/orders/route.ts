@@ -18,6 +18,7 @@ export const GET = auth(async function GET(req) {
   }
 
   const userId = req?.auth?.user?.id;
+  const limit = parseInt(req?.nextUrl?.searchParams.get("limit") || "0") || 0;
 
   if (!mongoose.Types.ObjectId.isValid(userId?.trim() || "")) {
     return NextResponse.json(
@@ -53,6 +54,8 @@ export const GET = auth(async function GET(req) {
     const orders = await Orders.find()
       .populate("userId", "name email")
       .populate("items.productId", "prod_name price")
+      .limit(limit || 0)
+      .sort({ createdAt: -1 })
       .lean();
 
     return NextResponse.json(
