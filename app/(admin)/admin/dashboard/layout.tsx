@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import AdminShell from "@/components/admin/AdminShell";
 
 export default async function Layout({
   children,
@@ -9,5 +10,5 @@ export default async function Layout({
   const session = await auth();
   if (!session || !session?.user) return redirect("/admin/login");
   if (session?.user?.role !== "admin") return redirect("/admin/login");
-  return <>{children}</>;
+  return <AdminShell>{children}</AdminShell>;
 }
