@@ -186,12 +186,11 @@ export default function OrdersPage() {
                 ))}
               </div>
 
-              {/* Order total */}
               <div className="mt-3 flex items-center justify-between border-t border-black/8 pt-3 dark:border-[rgba(244,244,242,0.08)]">
                 <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-cloud/40">
                   Total
                 </span>
-                <span className="font-mono font-medium text-base text-cloud">
+                <span className="font-mono font-medium text-cloud dark:text-cloud">
                   ${order.totalAmount.toFixed(2)}
                 </span>
               </div>
