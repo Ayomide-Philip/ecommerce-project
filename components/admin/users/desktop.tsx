@@ -1,5 +1,3 @@
-import { MoreHorizontal } from "lucide-react";
-
 type User = {
   _id: string;
   name: string;
@@ -24,7 +22,6 @@ export default function UsersDesktop({
             <th className="py-3 pr-4 font-medium">Role</th>
             <th className="py-3 pr-4 font-medium">Verified</th>
             <th className="py-3 pr-4 font-medium">Joined</th>
-            <th className="py-3 pr-4 font-medium">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -74,14 +71,6 @@ export default function UsersDesktop({
               </td>
               <td className="py-3 whitespace-nowrap text-cloud/50">
                 {formatDate(user.createdAt)}
-              </td>
-              <td className="py-3 pr-4">
-                <button
-                  type="button"
-                  className="flex h-8 w-8 items-center justify-center rounded-lg text-cloud/40 transition hover:bg-black/5 hover:text-cloud dark:hover:bg-white/5"
-                >
-                  <MoreHorizontal className="h-4 w-4" />
-                </button>
               </td>
             </tr>
           ))}
