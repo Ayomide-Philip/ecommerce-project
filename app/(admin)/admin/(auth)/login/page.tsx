@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Mail, Lock, Eye, EyeOff, Shield } from "lucide-react";
 import { toast } from "sonner";
+import { signIn } from "next-auth/react";
 
 export default function AdminLoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -31,17 +32,24 @@ export default function AdminLoginPage() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
 
     setIsLoading(true);
 
-    // Simulate authentication delay
-    setTimeout(() => {
-      toast.success("Welcome back, Admin!");
-      setIsLoading(false);
-    }, 1500);
+    const result = await signIn("credentials", {
+      email: email,
+      password: password,
+      redirect: false,
+      callbackUrl: "/admin/dashboard",
+    });
+
+    window.location.href = result?.url || "/admin/dashboard";
+    console.log(result);
+    if (result?.error) {
+      toast.error("Invalid email or password. Please try again.");
+    }
   };
 
   return (
