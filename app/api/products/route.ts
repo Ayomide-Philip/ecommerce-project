@@ -9,6 +9,7 @@ export async function GET(req: NextRequest) {
     await connectToDatabase();
     const product = await Products.find()
       .limit(limit || 0)
+      .sort({ createdAt: -1 })
       .lean();
 
     return NextResponse.json({

@@ -38,19 +38,29 @@ export const POST = auth(async function POST(req) {
       },
     );
   }
-  const {
-    prod_name,
-    product_type_name,
-    graphical_appearance_name,
-    colour_group_name,
-    perceived_colour_value_name,
-    perceived_colour_master_name,
-    department_name,
-    index_name,
-    detail_desc,
-    price,
-    article_id,
-  }: Product = await req.json();
+  const raw: Product = await req.json();
+
+  // Normalize enum values to match the correct casing
+  const matchEnum = <T extends readonly string[]>(arr: T, val: string) =>
+    arr.find((e) => e.toLowerCase() === val.toLowerCase().trim()) || val;
+
+  const product_type_name = matchEnum(ProductTypeName, raw.product_type_name);
+  const graphical_appearance_name = matchEnum(
+    GraphicalAppearanceName,
+    raw.graphical_appearance_name,
+  );
+  const colour_group_name = matchEnum(ColourGroupName, raw.colour_group_name);
+  const perceived_colour_value_name = matchEnum(
+    PerceivedColourValueName,
+    raw.perceived_colour_value_name,
+  );
+  const perceived_colour_master_name = matchEnum(
+    PerceivedColourMasterName,
+    raw.perceived_colour_master_name,
+  );
+  const department_name = matchEnum(DepartmentName, raw.department_name);
+  const index_name = matchEnum(IndexName, raw.index_name);
+  const { prod_name, detail_desc, price, article_id } = raw;
 
   if (
     !prod_name?.trim() ||

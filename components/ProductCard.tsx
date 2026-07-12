@@ -105,7 +105,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           )}
         </div>
 
-        <h3 className="truncate font-display text-lg font-medium text-cloud">
+        <h3 className="truncate capitalize font-display text-lg font-medium text-cloud">
           {product?.prod_name}
         </h3>
         <div className="mt-1 flex-1">
