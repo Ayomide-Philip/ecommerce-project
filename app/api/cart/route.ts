@@ -35,7 +35,7 @@ export const GET = auth(async function GET(req: NextAuthRequest) {
   try {
     await connectToDatabase();
     const userCart = await Carts.find({ userId: userId?.trim() || "" })
-      .populate("productId", "product_type_name prod_name price prod_image")
+      .populate("productId", "product_type_name prod_name price prod_image article_id")
       .lean();
 
     return NextResponse.json(

@@ -167,14 +167,14 @@ export default function CartPage() {
 
   return (
     <main className="mx-auto w-full max-w-7xl space-y-8 px-3 py-8 sm:px-4 md:px-6 lg:px-8 mt-15 sm:mt-16 lg:mt-18">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           <div className="glass flex h-10 w-10 items-center justify-center rounded-full">
             <ShoppingCart aria-hidden="true" className="h-5 w-5 text-accent" />
           </div>
           <div>
-            <h1 className="font-display text-2xl font-medium text-cloud sm:text-3xl">
-              Shopping Cart
+            <h1 className="font-display text-xl font-medium text-cloud sm:text-3xl">
+              Cart
             </h1>
             <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-cloud/40">
               {items?.length} {items?.length === 1 ? "item" : "items"}
@@ -183,10 +183,10 @@ export default function CartPage() {
         </div>
         <Link
           href="/catalog"
-          className="glass flex items-center gap-2 rounded-full px-4 py-2 font-mono text-[11px] uppercase tracking-[0.14em] text-cloud/60 transition hover:text-cloud"
+          className="glass inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-cloud/60 transition hover:text-cloud sm:text-[11px]"
         >
           <ArrowLeft aria-hidden="true" className="h-3.5 w-3.5" />
-          Continue Shopping
+          Continue
         </Link>
       </div>
 
@@ -227,84 +227,114 @@ export default function CartPage() {
                 key={idx}
                 className="glass flex items-center gap-4 rounded-[20px] p-4 transition hover:bg-[rgba(244,244,242,0.1)] sm:gap-6 sm:p-5"
               >
-                <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-black/12 bg-panel dark:border-[rgba(244,244,242,0.12)] sm:h-24 sm:w-24">
-                  {item?.productId?.article_id ? (
-                    <img
-                      src={"/images/product_images/" + item.productId.article_id + ".jpg"}
-                      alt={item.productId.prod_name}
-                      className="h-full w-full object-cover"
-                      loading="lazy"
-                    />
-                  ) : (
-                    <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-cloud/50">
-                      {item?.productId?.product_type_name}
-                    </span>
-                  )}
+                <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-black/12 bg-panel sm:h-24 sm:w-24 sm:rounded-2xl dark:border-[rgba(244,244,242,0.12)]">
+                  <img
+                    src={
+                      item?.productId?.article_id
+                        ? "/images/product_images/" +
+                          item.productId.article_id +
+                          ".jpg"
+                        : "/images/" +
+                          item?.productId?.product_type_name
+                            ?.toLowerCase()
+                            ?.replace(/\s+/g, "-") +
+                          ".jpg"
+                    }
+                    alt={item.productId.prod_name}
+                    className="h-full w-full object-cover"
+                    loading="lazy"
+                    onError={(e) => {
+                      e.currentTarget.style.display = "none";
+                      e.currentTarget.parentElement!.classList.add(
+                        "font-mono",
+                        "text-[9px]",
+                        "uppercase",
+                        "tracking-[0.12em]",
+                        "text-cloud/50",
+                      );
+                      e.currentTarget.parentElement!.textContent =
+                        item?.productId?.product_type_name || "";
+                    }}
+                  />
                 </div>
 
                 <div className="min-w-0 flex-1">
-                  <h3 className="truncate font-display font-medium text-cloud dark:text-cloud sm:text-lg">
+                  <h3 className="truncate font-display text-sm font-medium text-cloud sm:text-lg">
                     {item?.productId?.prod_name}
                   </h3>
-                  <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-cloud/50">
+                  <p className="mt-0.5 font-mono text-[9px] uppercase tracking-[0.12em] text-cloud/50 sm:text-[10px]">
                     {item?.productId?.product_type_name}
                   </p>
-                  <p className="mt-1 font-mono text-sm text-accent">
+                  <p className="mt-1 font-mono text-xs text-accent sm:text-sm">
                     ${item?.productId?.price?.toFixed(2)}
                   </p>
                 </div>
 
-                <div className="glass flex items-center gap-1 rounded-full border border-black/8 px-2 py-1 dark:border-[rgba(244,244,242,0.08)]">
+                <div className="flex flex-col items-end gap-2 sm:flex-row sm:items-center">
+                  <div className="glass flex items-center gap-1 rounded-full border border-black/8 px-1.5 py-1 sm:px-2 dark:border-[rgba(244,244,242,0.08)]">
+                    <button
+                      type="button"
+                      disabled={updatingIds.has(item?.productId?._id)}
+                      onClick={() => updateQty(item?.productId?._id, -1)}
+                      className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-full text-cloud/50 transition hover:bg-black/8 hover:text-cloud disabled:opacity-30 sm:h-7 sm:w-7 dark:hover:bg-[rgba(244,244,242,0.08)]"
+                      aria-label="Decrease quantity"
+                    >
+                      <Minus
+                        aria-hidden="true"
+                        className="h-2.5 w-2.5 sm:h-3 sm:w-3"
+                      />
+                    </button>
+                    <span className="flex h-6 w-6 items-center justify-center font-mono text-xs text-cloud sm:h-7 sm:w-8 sm:text-sm">
+                      {updatingIds.has(item?.productId?._id) ? (
+                        <Loader
+                          aria-hidden="true"
+                          className="h-3 w-3 animate-spin text-cloud/50"
+                        />
+                      ) : (
+                        item?.quantity
+                      )}
+                    </span>
+                    <button
+                      type="button"
+                      disabled={updatingIds.has(item?.productId?._id)}
+                      onClick={() => updateQty(item?.productId?._id, 1)}
+                      className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-full text-cloud/50 transition hover:bg-black/8 hover:text-cloud disabled:opacity-30 sm:h-7 sm:w-7 dark:hover:bg-[rgba(244,244,242,0.08)]"
+                      aria-label="Increase quantity"
+                    >
+                      <Plus
+                        aria-hidden="true"
+                        className="h-2.5 w-2.5 sm:h-3 sm:w-3"
+                      />
+                    </button>
+                  </div>
+
+                  <p className="font-mono text-xs font-medium text-cloud sm:hidden">
+                    ${(item?.productId?.price * item?.quantity)?.toFixed(2)}
+                  </p>
+                  <p className="hidden w-20 text-right font-mono text-sm font-medium text-cloud sm:block">
+                    ${(item?.productId?.price * item?.quantity)?.toFixed(2)}
+                  </p>
+
                   <button
                     type="button"
                     disabled={updatingIds.has(item?.productId?._id)}
-                    onClick={() => updateQty(item?.productId?._id, -1)}
-                    className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-full text-cloud/50 transition hover:bg-black/8 hover:text-cloud disabled:opacity-30 dark:hover:bg-[rgba(244,244,242,0.08)]"
-                    aria-label="Decrease quantity"
+                    onClick={() => removeItemFromCart(item?.productId?._id)}
+                    className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-cloud/40 transition hover:bg-red-500/10 hover:text-red-400 disabled:opacity-30 sm:h-9 sm:w-9"
+                    aria-label={`Remove ${item?.productId?.prod_name}`}
                   >
-                    <Minus aria-hidden="true" className="h-3 w-3" />
-                  </button>
-                  <span className="flex h-7 w-8 items-center justify-center font-mono text-sm text-cloud">
                     {updatingIds.has(item?.productId?._id) ? (
                       <Loader
                         aria-hidden="true"
-                        className="h-3.5 w-3.5 animate-spin text-cloud/50"
+                        className="h-3.5 w-3.5 animate-spin text-red-400"
                       />
                     ) : (
-                      item?.quantity
+                      <Trash2
+                        aria-hidden="true"
+                        className="h-3.5 w-3.5 sm:h-4 sm:w-4"
+                      />
                     )}
-                  </span>
-                  <button
-                    type="button"
-                    disabled={updatingIds.has(item?.productId?._id)}
-                    onClick={() => updateQty(item?.productId?._id, 1)}
-                    className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-full text-cloud/50 transition hover:bg-black/8 hover:text-cloud disabled:opacity-30 dark:hover:bg-[rgba(244,244,242,0.08)]"
-                    aria-label="Increase quantity"
-                  >
-                    <Plus aria-hidden="true" className="h-3 w-3" />
                   </button>
                 </div>
-
-                <p className="hidden w-20 text-right font-mono text-sm font-medium text-cloud sm:block">
-                  ${(item?.productId?.price * item?.quantity)?.toFixed(2)}
-                </p>
-
-                <button
-                  type="button"
-                  disabled={updatingIds.has(item?.productId?._id)}
-                  onClick={() => removeItemFromCart(item?.productId?._id)}
-                  className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full text-cloud/40 transition hover:bg-red-500/10 hover:text-red-400 disabled:opacity-30"
-                  aria-label={`Remove ${item?.productId?.prod_name}`}
-                >
-                  {updatingIds.has(item?.productId?._id) ? (
-                    <Loader
-                      aria-hidden="true"
-                      className="h-4 w-4 animate-spin text-red-400"
-                    />
-                  ) : (
-                    <Trash2 aria-hidden="true" className="h-4 w-4" />
-                  )}
-                </button>
               </div>
             ))}
           </div>
