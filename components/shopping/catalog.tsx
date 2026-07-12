@@ -17,6 +17,7 @@ import { Product } from "@/libs/models/products.models";
 
 type ProductExtend = Product & {
   _id: string;
+  article_id?: string;
 };
 
 export default function Catalog() {
@@ -95,23 +96,27 @@ export default function Catalog() {
       );
     }
     if (selectedCategories.length > 0) {
+      const lowered = selectedCategories.map((c) => c.toLowerCase());
       result = result.filter((item) =>
-        selectedCategories?.includes(item.product_type_name),
+        lowered.includes(item.product_type_name.toLowerCase()),
       );
     }
     if (selectedColors.length > 0) {
+      const lowered = selectedColors.map((c) => c.toLowerCase());
       result = result.filter((item) =>
-        selectedColors.includes(item.colour_group_name),
+        lowered.includes(item.colour_group_name.toLowerCase()),
       );
     }
     if (selectedPatterns.length > 0) {
+      const lowered = selectedPatterns.map((p) => p.toLowerCase());
       result = result.filter((item) =>
-        selectedPatterns.includes(item.graphical_appearance_name),
+        lowered.includes(item.graphical_appearance_name.toLowerCase()),
       );
     }
     if (selectedDepartments.length > 0) {
+      const lowered = selectedDepartments.map((d) => d.toLowerCase());
       result = result.filter((item) =>
-        selectedDepartments.includes(item?.department_name),
+        lowered.includes(item.department_name.toLowerCase()),
       );
     }
 
@@ -125,7 +130,7 @@ export default function Catalog() {
     products,
   ]);
 
-  const visibleProducts = filtered.slice(0, visibleCount);
+  const visibleProducts = filtered.slice(0, visibleCount) as ProductExtend[];
   const hasMore = visibleCount < filtered.length;
 
   const toggleFilter = (
@@ -287,8 +292,11 @@ export default function Catalog() {
         <div className="flex-1">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {!loading &&
-              visibleProducts.map((product: Product, idx) => (
-                <ProductCard key={idx} product={product} />
+              visibleProducts.map((product, idx) => (
+                <ProductCard
+                  key={product._id || idx}
+                  product={product as ProductExtend}
+                />
               ))}
           </div>
 
