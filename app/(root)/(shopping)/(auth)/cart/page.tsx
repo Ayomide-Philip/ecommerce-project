@@ -1,6 +1,5 @@
 "use client";
 
-import { Product } from "@/libs/models/products.models";
 import {
   ShoppingCart,
   Trash2,
@@ -14,10 +13,15 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
+/* eslint-disable @next/next/no-img-element */
 type CartItem = {
   _id: string;
-  productId: Product & {
+  productId: {
     _id: string;
+    prod_name: string;
+    product_type_name: string;
+    price: number;
+    article_id?: string;
   };
   quantity: number;
 };
@@ -224,9 +228,18 @@ export default function CartPage() {
                 className="glass flex items-center gap-4 rounded-[20px] p-4 transition hover:bg-[rgba(244,244,242,0.1)] sm:gap-6 sm:p-5"
               >
                 <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-black/12 bg-panel dark:border-[rgba(244,244,242,0.12)] sm:h-24 sm:w-24">
-                  <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-cloud/50">
-                    {item?.productId?.product_type_name}
-                  </span>
+                  {item?.productId?.article_id ? (
+                    <img
+                      src={"/images/product_images/" + item.productId.article_id + ".jpg"}
+                      alt={item.productId.prod_name}
+                      className="h-full w-full object-cover"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-cloud/50">
+                      {item?.productId?.product_type_name}
+                    </span>
+                  )}
                 </div>
 
                 <div className="min-w-0 flex-1">

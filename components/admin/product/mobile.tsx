@@ -1,5 +1,6 @@
 import { Pencil, Trash2 } from "lucide-react";
 
+/* eslint-disable @next/next/no-img-element */
 type Product = {
   _id: string;
   prod_name: string;
@@ -12,6 +13,7 @@ type Product = {
   index_name: string;
   detail_desc: string;
   price: number;
+  article_id?: string;
 };
 
 export default function ProductMobileTable({
@@ -28,9 +30,22 @@ export default function ProductMobileTable({
         >
           <div className="mb-3 flex items-start justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-black/5 text-[10px] font-medium uppercase text-cloud/40 dark:bg-white/5">
-                {product.prod_name.slice(0, 2)}
-              </div>
+              {product.article_id ? (
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-black/5 dark:bg-white/5">
+                  <img
+                    src={
+                      "/images/product_images/" + product.article_id + ".jpg"
+                    }
+                    alt={product.prod_name}
+                    className="h-full w-full object-cover"
+                    loading="lazy"
+                  />
+                </div>
+              ) : (
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-black/5 text-[10px] font-medium uppercase text-cloud/40 dark:bg-white/5">
+                  {product.prod_name.slice(0, 2)}
+                </div>
+              )}
               <div>
                 <p className="text-sm font-medium text-cloud">
                   {product.prod_name}
