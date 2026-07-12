@@ -49,8 +49,8 @@ export default function ProductImageUpload({
             uploadPreset="ecommerce-website"
             signatureEndpoint="/api/sign-cloudinary"
             onSuccess={(result) => {
-              console.log(result);
               setUploading(false);
+              document.body.style.overflow = "";
               const info = result?.info as
                 | { secure_url?: string; public_id?: string }
                 | undefined;
@@ -67,6 +67,10 @@ export default function ProductImageUpload({
             onError={(error) => {
               console.error("Cloudinary upload error:", error);
               setUploading(false);
+              document.body.style.overflow = "";
+            }}
+            onClose={() => {
+              document.body.style.overflow = "";
             }}
             options={{
               maxFiles: 1,

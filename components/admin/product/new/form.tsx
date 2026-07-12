@@ -6,6 +6,7 @@ import Link from "next/link";
 import ProductFormBasicInfo from "./basicInfo";
 import ProductFormClassification from "./classification";
 import ProductImageUpload from "./imageupload";
+import { toast } from "sonner";
 
 export type FormData = {
   prod_name: string;
@@ -41,7 +42,6 @@ export default function ProductForm() {
   const [form, setForm] = useState<FormData>(initialForm);
   const [errors, setErrors] = useState<FormErrors>({});
   const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
 
   const validate = (): boolean => {
     const newErrors: FormErrors = {};
@@ -93,63 +93,35 @@ export default function ProductForm() {
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: undefined }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
 
     setSubmitting(true);
-    setTimeout(() => {
+    try {
+      const request = await fetch("/api/admin/products", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(form),
+      });
+      const response = await request.json();
+      if (!request?.ok || response?.error) {
+        return toast.error(
+          response?.error || "Unable to create product. Please try again.",
+        );
+      }
+      toast.success(response?.message || "Product created successfully.");
+      window.location.href = "/admin/dashboard/products";
+    } catch (err) {
+      console.log(err);
+      return toast.error("Unable to create product. Please try again.");
+    } finally {
       setSubmitting(false);
-      setSubmitted(true);
-    }, 1500);
+    }
   };
-
-  if (submitted) {
-    return (
-      <div className="mx-auto flex min-h-60 max-w-lg flex-col items-center justify-center gap-4 px-4 py-4 text-center sm:px-6 sm:py-6 lg:p-8">
-        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/10">
-          <svg
-            className="h-7 w-7 text-emerald-500"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M5 13l4 4L19 7"
-            />
-          </svg>
-        </div>
-        <h2 className="font-display text-xl font-medium text-cloud">
-          Product Created
-        </h2>
-        <p className="text-sm text-cloud/50">
-          Your product has been added successfully.
-        </p>
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <button
-            type="button"
-            onClick={() => {
-              setSubmitted(false);
-              setForm(initialForm);
-              setErrors({});
-            }}
-            className="rounded-xl bg-accent px-5 py-2.5 text-sm font-medium text-white transition hover:brightness-110"
-          >
-            Add Another
-          </button>
-          <Link
-            href="/admin/dashboard/products"
-            className="rounded-xl border border-black/10 px-5 py-2.5 text-sm font-medium text-cloud/60 transition hover:bg-black/5 dark:border-[rgba(244,244,242,0.08)] dark:hover:bg-white/5"
-          >
-            View Products
-          </Link>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <form onSubmit={handleSubmit} className="max-w-3xl space-y-8">
