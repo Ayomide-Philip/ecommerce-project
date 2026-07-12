@@ -1,4 +1,5 @@
 import { Plus, Search } from "lucide-react";
+import Link from "next/link";
 export default function ProductHeader({
   searchQuery,
   handleSearch,
@@ -31,13 +32,13 @@ export default function ProductHeader({
           />
         </div>
 
-        <button
-          type="button"
+        <Link
+          href="/admin/dashboard/products/new"
           className="flex items-center gap-2 rounded-xl bg-accent px-4 py-2 text-sm font-medium text-white transition hover:brightness-110"
         >
           <Plus className="h-4 w-4" />
           <span className="hidden sm:inline">Add Product</span>
-        </button>
+        </Link>
       </div>
     </div>
   );

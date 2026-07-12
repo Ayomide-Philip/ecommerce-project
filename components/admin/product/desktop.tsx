@@ -1,6 +1,9 @@
-import { Pencil, Trash2 } from "lucide-react";
+import {
+  // Pencil,
+  Trash2,
+} from "lucide-react";
+import { CldImage } from "next-cloudinary";
 
-/* eslint-disable @next/next/no-img-element */
 type Product = {
   _id: string;
   prod_name: string;
@@ -46,15 +49,13 @@ export default function ProductDesktopTable({
                 <div className="flex items-center gap-3">
                   {product.article_id ? (
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-black/5 dark:bg-white/5">
-                      <img
-                        src={
-                          "/images/product_images/" +
-                          product.article_id +
-                          ".jpg"
-                        }
+                      <CldImage
+                        src={product.article_id}
                         alt={product.prod_name}
                         className="h-full w-full object-cover"
                         loading="lazy"
+                        width={400}
+                        height={400}
                       />
                     </div>
                   ) : (
@@ -94,12 +95,12 @@ export default function ProductDesktopTable({
 
               <td className="py-3 pr-4">
                 <div className="flex items-center gap-1">
-                  <button
+                  {/* <button
                     type="button"
                     className="flex h-8 w-8 items-center justify-center rounded-lg text-cloud/40 transition hover:bg-black/5 hover:text-accent dark:hover:bg-white/5"
                   >
                     <Pencil className="h-4 w-4" />
-                  </button>
+                  </button> */}
                   <button
                     type="button"
                     className="flex h-8 w-8 items-center justify-center rounded-lg text-cloud/40 transition hover:bg-black/5 hover:text-red-500 dark:hover:bg-white/5"

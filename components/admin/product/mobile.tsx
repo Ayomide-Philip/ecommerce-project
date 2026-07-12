@@ -1,6 +1,9 @@
-import { Pencil, Trash2 } from "lucide-react";
+import {
+  //  Pencil,
+  Trash2,
+} from "lucide-react";
+import { CldImage } from "next-cloudinary";
 
-/* eslint-disable @next/next/no-img-element */
 type Product = {
   _id: string;
   prod_name: string;
@@ -32,13 +35,13 @@ export default function ProductMobileTable({
             <div className="flex items-center gap-3">
               {product.article_id ? (
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-black/5 dark:bg-white/5">
-                  <img
-                    src={
-                      "/images/product_images/" + product.article_id + ".jpg"
-                    }
+                  <CldImage
+                    src={product.article_id}
                     alt={product.prod_name}
                     className="h-full w-full object-cover"
                     loading="lazy"
+                    width={400}
+                    height={400}
                   />
                 </div>
               ) : (
@@ -87,13 +90,13 @@ export default function ProductMobileTable({
           </div>
 
           <div className="mt-3 flex items-center gap-2 border-t border-black/5 pt-3 dark:border-[rgba(244,244,242,0.05)]">
-            <button
+            {/* <button
               type="button"
               className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-black/10 py-2 text-xs font-medium text-cloud/60 transition hover:bg-black/5 dark:border-[rgba(244,244,242,0.08)] dark:hover:bg-white/5"
             >
               <Pencil className="h-3.5 w-3.5" />
               Edit
-            </button>
+            </button> */}
             <button
               type="button"
               className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-red-500/20 py-2 text-xs font-medium text-red-500 transition hover:bg-red-500/10"
