@@ -1,18 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Upload, X, Loader } from "lucide-react";
+import { Loader } from "lucide-react";
 import Link from "next/link";
-import {
-  ProductTypeName,
-  GraphicalAppearanceName,
-  ColourGroupName,
-  PerceivedColourValueName,
-  PerceivedColourMasterName,
-  DepartmentName,
-  IndexName,
-} from "@/libs/enums/product.enums";
 import ProductFormBasicInfo from "./basicInfo";
+import ProductFormClassification from "./classification";
+import ProductImageUpload from "./imageupload";
 
 export type FormData = {
   prod_name: string;
@@ -42,48 +35,6 @@ const initialForm: FormData = {
   price: "",
 };
 
-function SelectField({
-  label,
-  value,
-  options,
-  onChange,
-  error,
-  placeholder,
-}: {
-  label: string;
-  value: string;
-  options: readonly string[];
-  onChange: (v: string) => void;
-  error?: string;
-  placeholder: string;
-}) {
-  return (
-    <div>
-      <label className="mb-1.5 block text-xs font-medium text-cloud/70">
-        {label}
-      </label>
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className={`w-full rounded-xl border bg-white/80 px-4 py-2.5 text-sm text-cloud transition focus:outline-none focus:ring-2 focus:ring-accent dark:border-[rgba(244,244,242,0.08)] dark:bg-panel/50 ${
-          error
-            ? "border-red-500 dark:border-red-400"
-            : "border-black/10 dark:border-[rgba(244,244,242,0.08)]"
-        } ${!value ? "text-cloud/40" : ""}`}
-      >
-        <option value="" disabled>
-          {placeholder}
-        </option>
-        {options.map((opt) => (
-          <option key={opt} value={opt}>
-            {opt}
-          </option>
-        ))}
-      </select>
-      {error && <p className="mt-1 text-[11px] text-red-500">{error}</p>}
-    </div>
-  );
-}
 export default function ProductForm() {
   const [form, setForm] = useState<FormData>(initialForm);
   const [errors, setErrors] = useState<FormErrors>({});
@@ -221,129 +172,18 @@ export default function ProductForm() {
         updateField={updateField}
       />
 
-      {/* ── Classification ── */}
-      <div className="rounded-2xl border border-black/10 bg-white/80 p-5 backdrop-blur-sm dark:border-[rgba(244,244,242,0.08)] dark:bg-panel/60">
-        <h2 className="mb-4 font-display text-[16px] font-medium text-cloud">
-          Classification
-        </h2>
+      <ProductFormClassification
+        errors={errors}
+        form={form}
+        updateField={updateField}
+      />
 
-        <div className="grid gap-4 sm:grid-cols-2">
-          <SelectField
-            label="Product Type"
-            value={form.product_type_name}
-            options={ProductTypeName}
-            onChange={(v) => updateField("product_type_name", v)}
-            error={errors.product_type_name}
-            placeholder="Select type…"
-          />
+      <ProductImageUpload
+        imagePreviews={imagePreviews}
+        removeImage={removeImage}
+        handleImageUpload={handleImageUpload}
+      />
 
-          <SelectField
-            label="Graphical Appearance"
-            value={form.graphical_appearance_name}
-            options={GraphicalAppearanceName}
-            onChange={(v) => updateField("graphical_appearance_name", v)}
-            error={errors.graphical_appearance_name}
-            placeholder="Select appearance…"
-          />
-
-          <SelectField
-            label="Colour Group"
-            value={form.colour_group_name}
-            options={ColourGroupName}
-            onChange={(v) => updateField("colour_group_name", v)}
-            error={errors.colour_group_name}
-            placeholder="Select colour…"
-          />
-
-          <SelectField
-            label="Colour Value"
-            value={form.perceived_colour_value_name}
-            options={PerceivedColourValueName}
-            onChange={(v) => updateField("perceived_colour_value_name", v)}
-            error={errors.perceived_colour_value_name}
-            placeholder="Select value…"
-          />
-
-          <SelectField
-            label="Colour Master"
-            value={form.perceived_colour_master_name}
-            options={PerceivedColourMasterName}
-            onChange={(v) => updateField("perceived_colour_master_name", v)}
-            error={errors.perceived_colour_master_name}
-            placeholder="Select master…"
-          />
-
-          <SelectField
-            label="Department"
-            value={form.department_name}
-            options={DepartmentName}
-            onChange={(v) => updateField("department_name", v)}
-            error={errors.department_name}
-            placeholder="Select department…"
-          />
-
-          <SelectField
-            label="Index"
-            value={form.index_name}
-            options={IndexName}
-            onChange={(v) => updateField("index_name", v)}
-            error={errors.index_name}
-            placeholder="Select index…"
-          />
-        </div>
-      </div>
-
-      {/* ── Image Upload ── */}
-      <div className="rounded-2xl border border-black/10 bg-white/80 p-5 backdrop-blur-sm dark:border-[rgba(244,244,242,0.08)] dark:bg-panel/60">
-        <h2 className="mb-4 font-display text-[16px] font-medium text-cloud">
-          Product Images
-        </h2>
-
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-          {imagePreviews.map((preview, i) => (
-            <div
-              key={i}
-              className="group relative aspect-square overflow-hidden rounded-xl border border-black/10 bg-panel dark:border-[rgba(244,244,242,0.08)]"
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={preview}
-                alt={`Preview ${i + 1}`}
-                className="h-full w-full object-cover"
-              />
-              <button
-                type="button"
-                onClick={() => removeImage(i)}
-                className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-black/60 text-white opacity-0 transition hover:bg-black/80 group-hover:opacity-100"
-              >
-                <X className="h-3 w-3" />
-              </button>
-            </div>
-          ))}
-
-          <label className="flex aspect-square cursor-pointer items-center justify-center rounded-xl border-2 border-dashed border-cloud/20 transition hover:border-accent/50 hover:bg-accent/5">
-            <div className="flex flex-col items-center gap-1.5">
-              <Upload className="h-5 w-5 text-cloud/40" />
-              <span className="text-[10px] font-medium text-cloud/40">
-                Upload
-              </span>
-            </div>
-            <input
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={handleImageUpload}
-              className="sr-only"
-            />
-          </label>
-        </div>
-
-        <p className="mt-3 text-[11px] text-cloud/40">
-          Supported formats: JPG, PNG, WebP. Max 5MB each.
-        </p>
-      </div>
-
-      {/* ── Submit ── */}
       <div className="flex items-center gap-3">
         <button
           type="submit"
