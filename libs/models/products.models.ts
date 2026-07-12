@@ -67,6 +67,10 @@ const productSchema = new Schema(
       type: Number,
       required: true,
     },
+    article_id: {
+      type: String,
+      required: true,
+    },
   },
   { timestamps: true },
 );
