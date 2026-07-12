@@ -114,7 +114,9 @@ export default function ProductPage() {
     );
   }
 
-  const imgSrc = `/images/${imageMap[product.product_type_name] || product.product_type_name.toLowerCase().replace(/\s+/g, "-")}.jpg`;
+  const imgSrc = product?.article_id
+    ? `/images/product_images/${product.article_id}.jpg`
+    : `/images/${product.product_type_name.toLowerCase().replace(/\s+/g, "-")}.jpg`;
 
   return (
     <main className="mx-auto w-full max-w-7xl space-y-20 px-3 py-8 sm:px-4 md:px-6 lg:px-8 mt-15 sm:mt-16 lg:mt-18">

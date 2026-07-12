@@ -1,5 +1,4 @@
 "use client";
-import { imageMap } from "./static/imagemap";
 import Link from "next/link";
 import { LoaderCircle, Minus, Plus, ShoppingCart } from "lucide-react";
 import { useState } from "react";
@@ -12,6 +11,7 @@ type Product = {
   price: number;
   detail_desc?: string;
   _id: string;
+  article_id?: string;
 };
 
 type ProductCardProps = {
@@ -50,7 +50,9 @@ export default function ProductCard({ product }: ProductCardProps) {
     }
   }
 
-  const imgSrc = `/images/${imageMap[product?.product_type_name] || product?.product_type_name?.toLowerCase()?.replace(/\s+/g, "-")}.jpg`;
+  const imgSrc = product?.article_id
+    ? `/images/product_images/${product.article_id}.jpg`
+    : `/images/${product?.product_type_name?.toLowerCase()?.replace(/\s+/g, "-")}.jpg`;
   const categorySlug = product?.product_type_name
     ?.toLowerCase()
     ?.replace(/\s+/g, "-")
