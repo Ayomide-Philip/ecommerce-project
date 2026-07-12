@@ -3,8 +3,8 @@ import Link from "next/link";
 import { LoaderCircle, Minus, Plus, ShoppingCart } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { CldImage } from "next-cloudinary";
 
-/* eslint-disable @next/next/no-img-element */
 type Product = {
   prod_name: string;
   product_type_name: string;
@@ -50,9 +50,7 @@ export default function ProductCard({ product }: ProductCardProps) {
     }
   }
 
-  const imgSrc = product?.article_id
-    ? `/images/product_images/${product.article_id}.jpg`
-    : `/images/${product?.product_type_name?.toLowerCase()?.replace(/\s+/g, "-")}.jpg`;
+  const cloudSrc = product?.article_id ? `${product.article_id}` : undefined;
   const categorySlug = product?.product_type_name
     ?.toLowerCase()
     ?.replace(/\s+/g, "-")
@@ -91,12 +89,20 @@ export default function ProductCard({ product }: ProductCardProps) {
         className="flex flex-1 flex-col"
       >
         <div className="relative mb-4 h-52 shrink-0 overflow-hidden rounded-2xl border border-black/12 bg-panel dark:border-[rgba(244,244,242,0.12)]">
-          <img
-            src={imgSrc}
-            alt={product.prod_name}
-            loading="lazy"
-            className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
-          />
+          {cloudSrc ? (
+            <CldImage
+              src={cloudSrc}
+              width={500}
+              height={500}
+              alt={product.prod_name}
+              loading="lazy"
+              className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center text-[10px] font-medium uppercase tracking-wider text-cloud/40">
+              {product?.product_type_name}
+            </div>
+          )}
         </div>
 
         <h3 className="truncate font-display text-lg font-medium text-cloud">

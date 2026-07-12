@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { Product } from "@/libs/models/products.models";
 import { toast } from "sonner";
 import Loading from "@/components/loading";
+import { CldImage } from "next-cloudinary";
 
 export default function ProductPage() {
   type ProductExtend = Product & {
@@ -114,20 +115,23 @@ export default function ProductPage() {
     );
   }
 
-  const imgSrc = product?.article_id
-    ? `/images/product_images/${product.article_id}.jpg`
-    : `/images/${product.product_type_name.toLowerCase().replace(/\s+/g, "-")}.jpg`;
+  const cloudSrc = product?.article_id ? `${product.article_id}` : undefined;
 
   return (
     <main className="mx-auto w-full max-w-7xl space-y-20 px-3 py-8 sm:px-4 md:px-6 lg:px-8 mt-15 sm:mt-16 lg:mt-18">
       <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
         <div className="flex items-center justify-center">
           <div className="relative aspect-3/4 w-full max-w-md overflow-hidden rounded-3xl border border-black/12 bg-panel dark:border-[rgba(244,244,242,0.12)] sm:aspect-5/4 lg:aspect-4/3">
-            <img
-              src={imgSrc}
-              alt={product.prod_name}
-              className="h-full w-full object-cover"
-            />
+            {cloudSrc ? (
+              <CldImage
+                src={cloudSrc}
+                alt={product.prod_name}
+                loading="lazy"
+                className="h-full w-full object-cover"
+                width={500}
+                height={500}
+              />
+            ) : null}
           </div>
         </div>
 
