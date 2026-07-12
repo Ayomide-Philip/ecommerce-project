@@ -215,7 +215,11 @@ export const POST = auth(async function POST(req) {
     );
   }
 
-  if (typeof price !== "number" || price < 1 || price > 100000) {
+  if (
+    typeof price !== "number" ||
+    Number(price) < 1 ||
+    Number(price) > 100000
+  ) {
     return NextResponse.json(
       {
         error: "Price must be a number between 1 and 100,000",

@@ -105,7 +105,7 @@ export default function ProductForm() {
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify(form),
+        body: JSON.stringify({...form, price: Number(form?.price)}),
       });
       const response = await request.json();
       if (!request?.ok || response?.error) {
