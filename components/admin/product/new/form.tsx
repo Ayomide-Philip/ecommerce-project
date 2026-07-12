@@ -38,10 +38,9 @@ const initialForm: FormData = {
 export default function ProductForm() {
   const [form, setForm] = useState<FormData>(initialForm);
   const [errors, setErrors] = useState<FormErrors>({});
-  const [images, setImages] = useState<File[]>([]);
-  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [imageId, setImageId] = useState<string | null>(null);
 
   const validate = (): boolean => {
     const newErrors: FormErrors = {};
@@ -89,24 +88,10 @@ export default function ProductForm() {
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: undefined }));
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    const newImages = [...images, ...files];
-    setImages(newImages);
-
-    const newPreviews = files.map((f) => URL.createObjectURL(f));
-    setImagePreviews((prev) => [...prev, ...newPreviews]);
-  };
-
-  const removeImage = (index: number) => {
-    URL.revokeObjectURL(imagePreviews[index]);
-    setImages((prev) => prev.filter((_, i) => i !== index));
-    setImagePreviews((prev) => prev.filter((_, i) => i !== index));
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
+    console.log(imageId);
 
     setSubmitting(true);
     setTimeout(() => {
@@ -144,9 +129,7 @@ export default function ProductForm() {
             type="button"
             onClick={() => {
               setSubmitted(false);
-              setForm(initialForm);
-              setImages([]);
-              setImagePreviews([]);
+              setForm(initialForm)
               setErrors({});
             }}
             className="rounded-xl bg-accent px-5 py-2.5 text-sm font-medium text-white transition hover:brightness-110"
@@ -178,7 +161,7 @@ export default function ProductForm() {
         updateField={updateField}
       />
 
-      <ProductImageUpload />
+      <ProductImageUpload setImageId={setImageId} />
 
       <div className="flex items-center gap-3">
         <button

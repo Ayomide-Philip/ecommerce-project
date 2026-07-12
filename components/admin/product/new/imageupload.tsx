@@ -1,7 +1,8 @@
 "use client";
 
-import { Upload, X } from "lucide-react";
+import { Upload, X, Loader } from "lucide-react";
 import { useState } from "react";
+import { CldUploadWidget } from "next-cloudinary";
 
 export default function ProductImageUpload({
   setImageId,
@@ -9,23 +10,13 @@ export default function ProductImageUpload({
   setImageId?: (id: string) => void;
 }) {
   const [preview, setPreview] = useState<string | null>(null);
-  const [file, setFile] = useState<File | null>(null);
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selected = e.target.files?.[0];
-    if (!selected) return;
-
-    // Revoke previous preview to avoid memory leaks
-    if (preview) URL.revokeObjectURL(preview);
-
-    setFile(selected);
-    setPreview(URL.createObjectURL(selected));
-  };
+  const [publicId, setPublicId] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   const handleRemove = () => {
-    if (preview) URL.revokeObjectURL(preview);
     setPreview(null);
-    setFile(null);
+    setPublicId(null);
+    setImageId?.("");
   };
 
   return (
@@ -34,8 +25,9 @@ export default function ProductImageUpload({
         Product Image
       </h2>
 
-      <div className="flex justify-center">
+      <div className="flex justify-center w-full">
         {preview ? (
+          // 1. Keep the preview window separate
           <div className="group relative aspect-square w-full max-w-xs overflow-hidden rounded-xl border border-black/10 bg-panel dark:border-[rgba(244,244,242,0.08)]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -52,29 +44,68 @@ export default function ProductImageUpload({
             </button>
           </div>
         ) : (
-          <label className="flex aspect-square w-full max-w-xs cursor-pointer items-center justify-center rounded-xl border-2 border-dashed border-cloud/20 transition hover:border-accent/50 hover:bg-accent/5">
-            <div className="flex flex-col items-center gap-2">
-              <Upload className="h-8 w-8 text-cloud/40" />
-              <span className="text-xs font-medium text-cloud/40">
-                Click to upload
-              </span>
-              <span className="text-[10px] text-cloud/30">
-                JPG, PNG or WebP
-              </span>
-            </div>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="sr-only"
-            />
-          </label>
+          <CldUploadWidget
+            uploadPreset="ecommerce-website"
+            signatureEndpoint="/api/sign-cloudinary"
+            onSuccess={(result) => {
+              console.log(result);
+              setUploading(false);
+              const info = result?.info as
+                | { secure_url?: string; public_id?: string }
+                | undefined;
+              if (info?.secure_url) {
+                setPreview(info.secure_url);
+                const id = info.public_id || null;
+                setPublicId(id);
+                if (id) setImageId?.(id);
+              }
+            }}
+            onQueuesStart={() => setUploading(true)}
+            onError={(error) => {
+              console.error("Cloudinary upload error:", error);
+              setUploading(false);
+            }}
+            options={{
+              maxFiles: 1,
+              sources: ["local", "url", "camera"],
+              clientAllowedFormats: ["jpg", "png", "webp", "jpeg"],
+            }}
+          >
+            {({ open, isLoading }) => (
+              <button
+                type="button"
+                disabled={uploading || isLoading}
+                onClick={(e) => {
+                  e.preventDefault()
+                  open();
+                }}
+                className="flex aspect-square w-full max-w-xs cursor-pointer items-center justify-center rounded-xl border-2 border-dashed border-cloud/20 transition hover:border-accent/50 hover:bg-accent/5 disabled:cursor-not-allowed"
+              >
+                {uploading || isLoading ? (
+                  <div className="flex flex-col items-center gap-2">
+                    <Loader className="h-8 w-8 animate-spin text-cloud/30" />
+                    <span className="text-xs text-cloud/40">Uploading…</span>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center gap-2">
+                    <Upload className="h-8 w-8 text-cloud/40" />
+                    <span className="text-xs font-medium text-cloud/40">
+                      Click to upload
+                    </span>
+                    <span className="text-[10px] text-cloud/30">
+                      JPG, PNG or WebP
+                    </span>
+                  </div>
+                )}
+              </button>
+            )}
+          </CldUploadWidget>
         )}
       </div>
 
-      {file && (
+      {publicId && (
         <p className="mt-3 truncate text-center text-[11px] text-cloud/50">
-          {file.name}
+          {publicId}
         </p>
       )}
     </div>
