@@ -1,7 +1,6 @@
 export const ProductTypeName = [
   "Blazer",
   "Blouse",
-  "Cap",
   "Cardigan",
   "Coat",
   "Dress",
