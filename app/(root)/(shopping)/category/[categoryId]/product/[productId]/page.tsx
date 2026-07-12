@@ -1,10 +1,8 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { redirect, useParams } from "next/navigation";
 import { ArrowLeft, Minus, Plus, ShoppingCart } from "lucide-react";
 import Link from "next/link";
-import { imageMap } from "@/components/static/imagemap";
 import { useEffect, useState } from "react";
 import { Product } from "@/libs/models/products.models";
 import { toast } from "sonner";
@@ -131,7 +129,9 @@ export default function ProductPage() {
                 width={500}
                 height={500}
               />
-            ) : null}
+            ) :    <div className="flex h-full w-full items-center justify-center text-[10px] font-medium uppercase tracking-wider text-cloud/40">
+              {product?.product_type_name}
+            </div>}
           </div>
         </div>
 

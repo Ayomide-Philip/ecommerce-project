@@ -1,9 +1,49 @@
+"use client";
+
 import { ArrowUpRight } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
-import data from "@/data/articles_sample.json";
+import { useEffect, useState } from "react";
+import { Product } from "@/libs/models/products.models";
+import { toast } from "sonner";
+
+type ProductExtend = Product & {
+  _id: string;
+};
 
 export default function Recommended() {
-  const recommended = [...data].sort(() => Math.random() - 0.5).slice(0, 4);
+  const [userRecommendations, setUserRecommendations] = useState<
+    ProductExtend[]
+  >([]);
+
+  useEffect(() => {
+    async function fetchUserRecommendations() {
+      try {
+        const request = await fetch("/api/recommendations?topN=4", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          cache: "force-cache",
+        });
+        const response = await request.json();
+        if (!request.ok || response?.error) {
+          return toast.error(
+            response?.error ||
+              "Failed to load user recommendations. Please try again later.",
+          );
+        }
+        setUserRecommendations(response?.recommendations || []);
+      } catch (err) {
+        console.log(err);
+        return toast.error(
+          "Failed to load user recommendations. Please try again later.",
+        );
+      }
+    }
+    fetchUserRecommendations();
+  }, []);
+
   return (
     <section aria-labelledby="recommended-heading" className="space-y-6">
       <div className="flex items-end justify-between">
@@ -28,8 +68,8 @@ export default function Recommended() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {recommended.map((product) => (
-          <ProductCard key={product.prod_name} product={product} />
+        {userRecommendations.map((product) => (
+          <ProductCard key={product._id} product={product} />
         ))}
       </div>
     </section>

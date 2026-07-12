@@ -14,7 +14,7 @@ export default async function Home() {
       <main className="mx-auto w-full max-w-7xl space-y-20 px-3 py-6 pt-20 sm:px-4 sm:pt-24 md:px-6 lg:px-8 lg:py-12 lg:pt-28">
         <Categories />
         {(!session || !session?.user) && <Explainer />}
-        <Recommended />
+        {session && session?.user && <Recommended />}
         <LandingCatalog />
       </main>
     </>
