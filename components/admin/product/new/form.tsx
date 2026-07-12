@@ -178,11 +178,7 @@ export default function ProductForm() {
         updateField={updateField}
       />
 
-      <ProductImageUpload
-        imagePreviews={imagePreviews}
-        removeImage={removeImage}
-        handleImageUpload={handleImageUpload}
-      />
+      <ProductImageUpload />
 
       <div className="flex items-center gap-3">
         <button
