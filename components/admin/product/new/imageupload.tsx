@@ -3,11 +3,12 @@
 import { Upload, X, Loader } from "lucide-react";
 import { useState } from "react";
 import { CldUploadWidget } from "next-cloudinary";
+import { FormData } from "./form";
 
 export default function ProductImageUpload({
-  setImageId,
+  updateField,
 }: {
-  setImageId?: (id: string) => void;
+  updateField?: (field: keyof FormData, value: string) => void;
 }) {
   const [preview, setPreview] = useState<string | null>(null);
   const [publicId, setPublicId] = useState<string | null>(null);
@@ -16,7 +17,7 @@ export default function ProductImageUpload({
   const handleRemove = () => {
     setPreview(null);
     setPublicId(null);
-    setImageId?.("");
+    updateField?.("article_id", "");
   };
 
   return (
@@ -57,7 +58,9 @@ export default function ProductImageUpload({
                 setPreview(info.secure_url);
                 const id = info.public_id || null;
                 setPublicId(id);
-                if (id) setImageId?.(id);
+                if (id) {
+                  updateField?.("article_id", id);
+                }
               }
             }}
             onQueuesStart={() => setUploading(true)}
@@ -76,7 +79,7 @@ export default function ProductImageUpload({
                 type="button"
                 disabled={uploading || isLoading}
                 onClick={(e) => {
-                  e.preventDefault()
+                  e.preventDefault();
                   open();
                 }}
                 className="flex aspect-square w-full max-w-xs cursor-pointer items-center justify-center rounded-xl border-2 border-dashed border-cloud/20 transition hover:border-accent/50 hover:bg-accent/5 disabled:cursor-not-allowed"

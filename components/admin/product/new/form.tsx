@@ -18,6 +18,7 @@ export type FormData = {
   index_name: string;
   detail_desc: string;
   price: string;
+  article_id?: string;
 };
 
 export type FormErrors = Partial<Record<keyof FormData, string>>;
@@ -33,6 +34,7 @@ const initialForm: FormData = {
   index_name: "",
   detail_desc: "",
   price: "",
+  article_id: "",
 };
 
 export default function ProductForm() {
@@ -40,7 +42,6 @@ export default function ProductForm() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [imageId, setImageId] = useState<string | null>(null);
 
   const validate = (): boolean => {
     const newErrors: FormErrors = {};
@@ -79,6 +80,10 @@ export default function ProductForm() {
       newErrors.price = "Price must be a positive number";
     }
 
+    if (!form.article_id || !form.article_id.trim()) {
+      newErrors.article_id = "Product image is required";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -91,7 +96,6 @@ export default function ProductForm() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
-    console.log(imageId);
 
     setSubmitting(true);
     setTimeout(() => {
@@ -129,7 +133,7 @@ export default function ProductForm() {
             type="button"
             onClick={() => {
               setSubmitted(false);
-              setForm(initialForm)
+              setForm(initialForm);
               setErrors({});
             }}
             className="rounded-xl bg-accent px-5 py-2.5 text-sm font-medium text-white transition hover:brightness-110"
@@ -161,7 +165,7 @@ export default function ProductForm() {
         updateField={updateField}
       />
 
-      <ProductImageUpload setImageId={setImageId} />
+      <ProductImageUpload updateField={updateField} />
 
       <div className="flex items-center gap-3">
         <button
