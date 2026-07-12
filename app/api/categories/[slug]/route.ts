@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { slug: string } },
+  { params }: { params: Promise<{ slug: string }> },
 ) {
   const { slug } = await params;
   if (!slug) {
@@ -22,9 +22,15 @@ export async function GET(
     await connectToDatabase();
 
     const formattedSlug = slug.replace(/-/g, " ");
+    const searchTerm = formattedSlug.toLowerCase();
 
     const category = await Products.find({
-      product_type_name: { $in: [formattedSlug, slug] },
+      product_type_name: {
+        $regex: new RegExp(
+          `^${searchTerm.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`,
+          "i",
+        ),
+      },
     }).lean();
 
     if (!category || category.length === 0) {
