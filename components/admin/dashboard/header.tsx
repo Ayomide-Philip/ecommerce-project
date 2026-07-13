@@ -1,6 +1,11 @@
 import Toggle from "@/components/toggle";
+import { Session } from "next-auth";
 
-export default function AdminDashboardHeader() {
+export default function AdminDashboardHeader({
+  session,
+}: {
+  session: Session;
+}) {
   return (
     <div className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-center sm:justify-between">
       <div>
@@ -18,7 +23,7 @@ export default function AdminDashboardHeader() {
         </div>
 
         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent/10 text-xs font-medium text-accent sm:h-9 sm:w-9 sm:text-sm">
-          A
+          {session.user?.name?.charAt(0).toUpperCase()}
         </div>
       </div>
     </div>

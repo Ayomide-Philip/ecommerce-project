@@ -1,3 +1,4 @@
+"use client";
 import { Package, ShoppingBag, Users, DollarSign } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -34,9 +35,7 @@ export default function DashboardStats() {
         setDashboardStats(response?.stats);
       } catch (err) {
         console.log(err);
-        toast.error(
-          "Unable to fetch dashboard stats. Please try again later",
-        );
+        toast.error("Unable to fetch dashboard stats. Please try again later");
       } finally {
         setLoading(false);
       }

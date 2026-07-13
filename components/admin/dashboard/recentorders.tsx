@@ -1,3 +1,4 @@
+"use client";
 import { ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Order } from "../../../app/(admin)/admin/dashboard/orders/page";
