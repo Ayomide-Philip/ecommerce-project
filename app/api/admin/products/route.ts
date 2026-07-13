@@ -455,7 +455,7 @@ export const DELETE = auth(async function DELETE(req) {
         status: 200,
       },
     );
-  } catch (err: any) {
+  } catch (err) {
     console.log(err);
     if (err.code === "EAI_AGAIN" || err.syscall === "getaddrinfo") {
       return Response.json(

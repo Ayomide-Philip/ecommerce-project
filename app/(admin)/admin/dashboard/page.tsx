@@ -6,49 +6,6 @@ import RecentOrders from "@/components/admin/dashboard/recentorders";
 import QuickActions from "@/components/admin/dashboard/quickactions";
 import DashboardStats from "@/components/admin/dashboard/stats";
 
-const recentOrders = [
-  {
-    id: "#ORD-7842",
-    customer: "Amara Okafor",
-    items: 3,
-    amount: "$129.00",
-    payment: "Credit Card",
-    date: "2 min ago",
-  },
-  {
-    id: "#ORD-7841",
-    customer: "Chidi Eze",
-    items: 1,
-    amount: "$89.00",
-    payment: "PayPal",
-    date: "15 min ago",
-  },
-  {
-    id: "#ORD-7840",
-    customer: "Zara Bello",
-    items: 2,
-    amount: "$159.00",
-    payment: "Credit Card",
-    date: "1 hr ago",
-  },
-  {
-    id: "#ORD-7839",
-    customer: "Kofi Mensah",
-    items: 4,
-    amount: "$210.00",
-    payment: "Bank Transfer",
-    date: "3 hrs ago",
-  },
-  {
-    id: "#ORD-7838",
-    customer: "Ngozi Adeyemi",
-    items: 2,
-    amount: "$74.00",
-    payment: "PayPal",
-    date: "5 hrs ago",
-  },
-];
-
 export default function AdminDashboardPage() {
   return (
     <div className="px-4 py-4 sm:px-6 sm:py-6 lg:p-8">
@@ -83,7 +40,7 @@ export default function AdminDashboardPage() {
       </div>
 
       <DashboardStats />
-      <RecentOrders recentOrders={recentOrders} />
+      <RecentOrders />
       <QuickActions />
     </div>
   );

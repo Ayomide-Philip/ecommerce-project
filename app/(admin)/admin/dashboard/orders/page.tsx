@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import OrdersDesktop from "@/components/admin/orders/desktop";
 import OrdersMobile from "@/components/admin/orders/mobile";
 
-type Order = {
+export type Order = {
   _id: string;
   userId: {
     _id: string;
@@ -19,7 +19,7 @@ type Order = {
   createdAt: string;
 };
 
-type OrderItem = {
+export type OrderItem = {
   _id: string;
   quantity: number;
   priceAtPurchase: number;
