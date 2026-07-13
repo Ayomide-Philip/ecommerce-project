@@ -34,12 +34,29 @@ export const GET = auth(async function GET(req) {
 
   try {
     await connectToDatabase();
-    const user = await User.findById(
-      new mongoose.Types.ObjectId(userId),
-    ).select("role");
+    const user = await User.findById(new mongoose.Types.ObjectId(userId))
+      .select("role")
+      .lean();
 
-    if (user?.role !== "admin") {
+    if (!user || user?.role !== "admin") {
+      return NextResponse.json(
+        {
+          error: "Only admin can view this page",
+        },
+        {
+          status: 401,
+        },
+      );
     }
+
+    return NextResponse.json(
+      {
+        message: "Fetch admin stats",
+      },
+      {
+        status: 200,
+      },
+    );
   } catch (err) {
     console.log(err);
     return NextResponse.json(

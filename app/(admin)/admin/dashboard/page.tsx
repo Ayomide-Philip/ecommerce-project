@@ -49,51 +49,44 @@ const recentOrders = [
   {
     id: "#ORD-7842",
     customer: "Amara Okafor",
-    product: "Adire Print Blazer",
+    items: 3,
     amount: "$129.00",
-    status: "Delivered" as const,
+    payment: "Credit Card",
     date: "2 min ago",
   },
   {
     id: "#ORD-7841",
     customer: "Chidi Eze",
-    product: "Kente Street Hoodie",
+    items: 1,
     amount: "$89.00",
-    status: "Processing" as const,
+    payment: "PayPal",
     date: "15 min ago",
   },
   {
     id: "#ORD-7840",
     customer: "Zara Bello",
-    product: "Dashiki Midi Dress",
+    items: 2,
     amount: "$159.00",
-    status: "Shipped" as const,
+    payment: "Credit Card",
     date: "1 hr ago",
   },
   {
     id: "#ORD-7839",
     customer: "Kofi Mensah",
-    product: " Ankara Bomber Jacket",
+    items: 4,
     amount: "$210.00",
-    status: "Pending" as const,
+    payment: "Bank Transfer",
     date: "3 hrs ago",
   },
   {
     id: "#ORD-7838",
     customer: "Ngozi Adeyemi",
-    product: "Batik Wide-Leg Pants",
+    items: 2,
     amount: "$74.00",
-    status: "Delivered" as const,
+    payment: "PayPal",
     date: "5 hrs ago",
   },
 ];
-
-export const statusStyles: Record<string, string> = {
-  Delivered: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
-  Processing: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
-  Shipped: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
-  Pending: "bg-zinc-500/10 text-zinc-600 dark:text-zinc-400",
-};
 
 export default function AdminDashboardPage() {
   return (

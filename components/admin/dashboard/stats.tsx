@@ -1,13 +1,9 @@
-import { TrendingUp, TrendingDown } from "lucide-react";
-
 export default function DashboardStats({
   stats,
 }: {
   stats: {
     label: string;
     value: string;
-    change: string;
-    up: boolean;
     icon: React.ComponentType<{ className?: string }>;
     color: string;
     bg: string;
@@ -26,18 +22,6 @@ export default function DashboardStats({
               <div className={`rounded-xl ${stat.bg} p-2.5`}>
                 <Icon className={`h-5 w-5 ${stat.color}`} />
               </div>
-              <span
-                className={`flex items-center gap-1 text-xs font-medium ${
-                  stat.up ? "text-emerald-500" : "text-red-500"
-                }`}
-              >
-                {stat.up ? (
-                  <TrendingUp className="h-3 w-3" />
-                ) : (
-                  <TrendingDown className="h-3 w-3" />
-                )}
-                {stat.change}
-              </span>
             </div>
             <p className="mt-3 text-xl font-semibold text-cloud sm:mt-4 sm:text-2xl">
               {stat.value}
