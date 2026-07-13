@@ -9,6 +9,7 @@ export default function DashboardStats() {
     totalRevenue: number;
     totalUsers: number;
   } | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function getDashboardStats() {
@@ -24,21 +25,46 @@ export default function DashboardStats() {
 
         const response = await request.json();
         if (!request.ok || response?.error) {
-          return toast.error(
+          toast.error(
             response?.error ||
               "Unable to fetch dashboard stats. Please try again later",
           );
+          return;
         }
         setDashboardStats(response?.stats);
       } catch (err) {
         console.log(err);
-        return toast.error(
+        toast.error(
           "Unable to fetch dashboard stats. Please try again later",
         );
+      } finally {
+        setLoading(false);
       }
     }
     getDashboardStats();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="mb-6 grid grid-cols-1 gap-3 sm:mb-8 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
+        {["Total Products", "Total Orders", "Revenue", "Total Users"].map(
+          (label) => (
+            <div
+              key={label}
+              className="animate-pulse rounded-2xl border border-black/10 bg-white/80 p-5 backdrop-blur-sm dark:border-[rgba(244,244,242,0.08)] dark:bg-panel/60"
+            >
+              <div className="flex items-center justify-between">
+                <div className="h-10 w-10 rounded-xl bg-black/5 dark:bg-white/5" />
+              </div>
+              <div className="mt-3 h-8 w-24 rounded-md bg-black/5 dark:bg-white/5 sm:mt-4 sm:h-9" />
+              <div className="mt-2 h-4 w-28 rounded-md bg-black/5 dark:bg-white/5 sm:mt-3 sm:h-5" />
+            </div>
+          ),
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="mb-6 grid grid-cols-1 gap-3 sm:mb-8 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
       {[
