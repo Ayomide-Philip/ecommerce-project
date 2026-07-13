@@ -77,7 +77,7 @@ export default function RightOrderSummary({
           type="button"
           disabled={placing}
           onClick={handlePlaceOrder}
-          className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-accent py-3.5 font-mono text-[11px] uppercase tracking-[0.14em] text-white transition hover:bg-accent/90 disabled:cursor-not-allowed disabled:opacity-50"
+          className="mt-6 flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-accent py-3.5 font-mono text-[11px] uppercase tracking-[0.14em] text-white transition hover:bg-accent/90 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {placing ? (
             <Loader aria-hidden="true" className="h-4 w-4 animate-spin" />

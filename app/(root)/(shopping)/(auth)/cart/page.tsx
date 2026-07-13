@@ -9,11 +9,11 @@ import {
   ShieldCheck,
   Loader,
 } from "lucide-react";
+import { CldImage } from "next-cloudinary";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-/* eslint-disable @next/next/no-img-element */
 type CartItem = {
   _id: string;
   productId: {
@@ -228,21 +228,13 @@ export default function CartPage() {
                 className="glass flex items-center gap-4 rounded-[20px] p-4 transition hover:bg-[rgba(244,244,242,0.1)] sm:gap-6 sm:p-5"
               >
                 <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-black/12 bg-panel sm:h-24 sm:w-24 sm:rounded-2xl dark:border-[rgba(244,244,242,0.12)]">
-                  <img
-                    src={
-                      item?.productId?.article_id
-                        ? "/images/product_images/" +
-                          item.productId.article_id +
-                          ".jpg"
-                        : "/images/" +
-                          item?.productId?.product_type_name
-                            ?.toLowerCase()
-                            ?.replace(/\s+/g, "-") +
-                          ".jpg"
-                    }
-                    alt={item.productId.prod_name}
+                  <CldImage
+                    src={item?.productId?.article_id || ""}
+                    alt={item?.productId?.prod_name || ""}
                     className="h-full w-full object-cover"
                     loading="lazy"
+                    width={400}
+                    height={400}
                     onError={(e) => {
                       e.currentTarget.style.display = "none";
                       e.currentTarget.parentElement!.classList.add(
@@ -381,7 +373,7 @@ export default function CartPage() {
 
               <Link
                 href="/cart/checkout"
-                className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-accent py-3 font-mono text-[11px] uppercase tracking-[0.14em] text-white transition hover:bg-accent/90"
+                className="mt-6 flex w-full items-center cursor-pointer justify-center gap-2 rounded-full bg-accent py-3 font-mono text-[11px] uppercase tracking-[0.14em] text-white transition hover:bg-accent/90"
               >
                 <ShieldCheck aria-hidden="true" className="h-4 w-4" />
                 Checkout

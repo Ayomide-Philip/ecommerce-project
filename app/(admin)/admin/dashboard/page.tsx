@@ -3,7 +3,6 @@
 import { Package, ShoppingBag, Users, DollarSign, Search } from "lucide-react";
 import Toggle from "@/components/toggle";
 import RecentOrders from "@/components/admin/dashboard/recentorders";
-// import TopProducts from "@/components/admin/dashboard/topproducts";
 import QuickActions from "@/components/admin/dashboard/quickactions";
 import DashboardStats from "@/components/admin/dashboard/stats";
 
@@ -133,13 +132,6 @@ export default function AdminDashboardPage() {
 
       <DashboardStats stats={stats} />
       <RecentOrders recentOrders={recentOrders} />
-
-      {/* <div className="grid gap-4 sm:gap-6 lg:grid-cols-3">
-        <RecentOrders recentOrders={recentOrders} />
-
-        <TopProducts topProducts={topProducts} />
-      </div> */}
-
       <QuickActions />
     </div>
   );
