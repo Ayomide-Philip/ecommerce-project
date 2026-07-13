@@ -62,7 +62,7 @@ export default function ProductPage() {
         });
         const response = await request.json();
         if (!request.ok || response?.error) {
-          return toast.error("Failed to fetch product.");
+          return toast.error(response?.error || "Failed to fetch product.");
         }
         setProducts(response?.product);
       } catch (err) {
@@ -129,9 +129,11 @@ export default function ProductPage() {
                 width={500}
                 height={500}
               />
-            ) :    <div className="flex h-full w-full items-center justify-center text-[10px] font-medium uppercase tracking-wider text-cloud/40">
-              {product?.product_type_name}
-            </div>}
+            ) : (
+              <div className="flex h-full w-full items-center justify-center text-[10px] font-medium uppercase tracking-wider text-cloud/40">
+                {product?.product_type_name}
+              </div>
+            )}
           </div>
         </div>
 
@@ -141,7 +143,7 @@ export default function ProductPage() {
               <span className="inline-block rounded-full border border-accent/20 bg-accent/5 px-4 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-accent">
                 {product?.product_type_name}
               </span>
-              <h1 className="font-display text-3xl font-medium text-cloud sm:text-4xl lg:text-5xl">
+              <h1 className="font-display capitalize text-3xl font-medium text-cloud sm:text-4xl lg:text-5xl">
                 {product?.prod_name}
               </h1>
             </div>

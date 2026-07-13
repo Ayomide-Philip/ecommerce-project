@@ -331,20 +331,20 @@ export const POST = auth(async function POST(req) {
 });
 
 export const DELETE = auth(async function DELETE(req) {
-  // if (!req?.auth || !req?.auth?.user) {
-  //   return NextResponse.json(
-  //     {
-  //       error: "Unauthorized Access",
-  //     },
-  //     {
-  //       status: 401,
-  //     },
-  //   );
-  // }
+  if (!req?.auth || !req?.auth?.user) {
+    return NextResponse.json(
+      {
+        error: "Unauthorized Access",
+      },
+      {
+        status: 401,
+      },
+    );
+  }
 
   const searchParams = new URL(req.url).searchParams;
   const productId = searchParams.get("productId");
-  const userId = searchParams.get("userId");
+  const userId = req?.auth?.user?.id;
 
   if (
     !productId?.trim() ||
