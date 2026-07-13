@@ -3,6 +3,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { CldImage } from "next-cloudinary";
+import { toast } from "sonner";
 
 type Product = {
   _id: string;
@@ -18,6 +19,32 @@ type Product = {
   price: number;
   article_id?: string;
 };
+
+export async function handleDeleteProduct(productId: string) {
+  try {
+    const request = await fetch(`/api/admin/products?productId=${productId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      cache: "no-store",
+      credentials: "include",
+    });
+
+    const response = await request.json();
+
+    if (!request.ok || response?.error) {
+      return toast.error(
+        response?.error || "Failed to delete product. Please try again later.",
+      );
+    }
+    toast.success(response?.message || "Product deleted successfully.");
+    window.location.reload();
+  } catch (e) {
+    console.log(e);
+    return toast.error("Failed to delete product. Please try again later.");
+  }
+}
 
 export default function ProductDesktopTable({
   paginatedProducts,
@@ -103,7 +130,8 @@ export default function ProductDesktopTable({
                   </button> */}
                   <button
                     type="button"
-                    className="flex h-8 w-8 items-center justify-center rounded-lg text-cloud/40 transition hover:bg-black/5 hover:text-red-500 dark:hover:bg-white/5"
+                    onClick={() => handleDeleteProduct(product._id)}
+                    className="flex h-8 w-8 items-center cursor-pointer justify-center rounded-lg text-cloud/40 transition hover:bg-black/5 hover:text-red-500 dark:hover:bg-white/5"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>

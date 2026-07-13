@@ -3,6 +3,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { CldImage } from "next-cloudinary";
+import { handleDeleteProduct } from "./desktop";
 
 type Product = {
   _id: string;
@@ -99,6 +100,7 @@ export default function ProductMobileTable({
             </button> */}
             <button
               type="button"
+              onClick={() => handleDeleteProduct(product?._id)}
               className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-red-500/20 py-2 text-xs font-medium text-red-500 transition hover:bg-red-500/10"
             >
               <Trash2 className="h-3.5 w-3.5" />

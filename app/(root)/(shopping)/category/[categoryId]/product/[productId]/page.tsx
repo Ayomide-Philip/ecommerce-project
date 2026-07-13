@@ -59,6 +59,7 @@ export default function ProductPage() {
           headers: {
             "Content-Type": "application/json",
           },
+          credentials: "include",
         });
         const response = await request.json();
         if (!request.ok || response?.error) {
@@ -84,6 +85,7 @@ export default function ProductPage() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ productId, eventType: "view" }),
+          credentials: "include",
         });
         const response = await request.json();
         if (!request?.ok || response?.error) {
