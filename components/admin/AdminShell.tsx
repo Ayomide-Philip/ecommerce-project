@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Menu } from "lucide-react";
 import AdminSidebar from "./AdminSidebar";
 import Toggle from "@/components/toggle";
+import { Session } from "next-auth";
 
 const STORAGE_KEY = "admin-sidebar-collapsed";
 
@@ -18,8 +19,10 @@ function getInitialCollapsed(): boolean {
 
 export default function AdminShell({
   children,
+  session,
 }: {
   children: React.ReactNode;
+  session: Session;
 }) {
   const [collapsed, setCollapsed] = useState(getInitialCollapsed);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -51,7 +54,6 @@ export default function AdminShell({
 
   return (
     <div className="flex min-h-screen">
-      {/* Mobile top bar */}
       <div className="fixed inset-x-0 top-0 z-30 flex items-center justify-between border-b border-black/10 bg-white/90 px-4 py-3 backdrop-blur-xl dark:border-[rgba(244,244,242,0.08)] dark:bg-panel/90 md:hidden">
         <div className="flex items-center gap-3">
           <button
@@ -74,12 +76,11 @@ export default function AdminShell({
         <div className="flex items-center gap-2">
           <Toggle />
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent/10 text-xs font-medium text-accent">
-            A
+            {session?.user?.name?.[0]?.toUpperCase() || "A"}
           </div>
         </div>
       </div>
 
-      {/* Mobile backdrop */}
       {mobileOpen && (
         <div
           className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm md:hidden"
@@ -95,7 +96,7 @@ export default function AdminShell({
       />
 
       <main
-        className={`relative flex-1 transition-all duration-300 ${
+        className={`relative flex-1 overflow-x-hidden transition-all duration-300 ${
           collapsed ? "md:pl-18" : "md:pl-64"
         } pt-14 md:pt-0`}
       >

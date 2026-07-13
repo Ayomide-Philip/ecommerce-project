@@ -123,7 +123,7 @@ export default function AdminProductsPage() {
   }
 
   return (
-    <div className="px-4 py-4 sm:px-6 sm:py-6 lg:p-8">
+    <div className="w-full max-w-full px-4 py-4 sm:px-6 sm:py-6 lg:p-8">
       <ProductHeader
         searchQuery={searchQuery}
         handleSearch={handleSearch}

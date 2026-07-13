@@ -5,7 +5,7 @@ import {
   Package,
   ShoppingBag,
   Users,
-  Settings,
+  // Settings,
   LogOut,
   ChevronLeft,
   X,
@@ -19,7 +19,7 @@ const navItems = [
   { href: "/admin/dashboard/products", label: "Products", icon: Package },
   { href: "/admin/dashboard/orders", label: "Orders", icon: ShoppingBag },
   { href: "/admin/dashboard/users", label: "Users", icon: Users },
-  { href: "/admin/dashboard/settings", label: "Settings", icon: Settings },
+  // { href: "/admin/dashboard/settings", label: "Settings", icon: Settings },
 ];
 
 export default function AdminSidebar({
