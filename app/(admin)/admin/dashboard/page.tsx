@@ -1,49 +1,10 @@
 "use client";
 
-import { Package, ShoppingBag, Users, DollarSign, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import Toggle from "@/components/toggle";
 import RecentOrders from "@/components/admin/dashboard/recentorders";
 import QuickActions from "@/components/admin/dashboard/quickactions";
 import DashboardStats from "@/components/admin/dashboard/stats";
-
-const stats = [
-  {
-    label: "Total Products",
-    value: "1,284",
-    change: "+12.5%",
-    up: true,
-    icon: Package,
-    color: "text-blue-500",
-    bg: "bg-blue-500/10",
-  },
-  {
-    label: "Total Orders",
-    value: "3,572",
-    change: "+8.2%",
-    up: true,
-    icon: ShoppingBag,
-    color: "text-emerald-500",
-    bg: "bg-emerald-500/10",
-  },
-  {
-    label: "Revenue",
-    value: "$48,290",
-    change: "+23.1%",
-    up: true,
-    icon: DollarSign,
-    color: "text-violet-500",
-    bg: "bg-violet-500/10",
-  },
-  {
-    label: "Total Users",
-    value: "6,841",
-    change: "-3.4%",
-    up: false,
-    icon: Users,
-    color: "text-amber-500",
-    bg: "bg-amber-500/10",
-  },
-];
 
 const recentOrders = [
   {
@@ -102,7 +63,6 @@ export default function AdminDashboardPage() {
         </div>
 
         <div className="flex items-center gap-2 sm:gap-3">
-          {/* Search */}
           <div className="relative flex-1 sm:flex-none">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-cloud/40" />
             <input
@@ -116,14 +76,13 @@ export default function AdminDashboardPage() {
             <Toggle />
           </div>
 
-          {/* Admin Avatar */}
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent/10 text-xs font-medium text-accent sm:h-9 sm:w-9 sm:text-sm">
             A
           </div>
         </div>
       </div>
 
-      <DashboardStats stats={stats} />
+      <DashboardStats />
       <RecentOrders recentOrders={recentOrders} />
       <QuickActions />
     </div>

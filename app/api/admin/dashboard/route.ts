@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 import mongoose from "mongoose";
 import User from "@/libs/models/users.models";
 import { connectToDatabase } from "@/libs/config/database.config";
+import Products from "@/libs/models/products.models";
+import Orders from "@/libs/models/order.models";
 
 export const GET = auth(async function GET(req) {
   if (!req?.auth || !req?.auth?.user) {
@@ -41,7 +43,7 @@ export const GET = auth(async function GET(req) {
     if (!user || user?.role !== "admin") {
       return NextResponse.json(
         {
-          error: "Only admin can view this page",
+          error: "Only admin can view this api",
         },
         {
           status: 401,
@@ -49,9 +51,27 @@ export const GET = auth(async function GET(req) {
       );
     }
 
+    const allProducts = await Products.find().lean();
+
+    const allOrders = await Orders.find().select("totalAmount").lean();
+
+    const allUsers = await User.find().lean();
+
+    const totalRevenues: number = allOrders.reduce((sum, acc) => {
+      return sum + acc?.totalAmount;
+    }, 0);
+
+    console.log(totalRevenues);
+
     return NextResponse.json(
       {
         message: "Fetch admin stats",
+        stats: {
+          totalProduct: allProducts?.length || 0,
+          totalOrder: allOrders?.length || 0,
+          totalUsers: allUsers?.length || 0,
+          totalRevenue: Number(totalRevenues.toFixed(2)) || 0,
+        },
       },
       {
         status: 200,
