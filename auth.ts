@@ -1,9 +1,13 @@
 import NextAuth, { type DefaultSession } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import User from "./libs/models/users.models";
-import { BETTER_AUTH_SECRET } from "./libs/config/config";
+import { BETTER_AUTH_SECRET, BASE_URL } from "./libs/config/config";
 import bcrypt from "bcrypt";
 import { connectToDatabase } from "./libs/config/database.config";
+
+if (BASE_URL) {
+  process.env.AUTH_URL = BASE_URL;
+}
 
 declare module "next-auth" {
   interface User {
