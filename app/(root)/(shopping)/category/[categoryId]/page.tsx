@@ -20,7 +20,7 @@ const slugToCategory = [...new Set(data.map((i) => i?.product_type_name))]
 export default function Page() {
   const params = useParams();
   const { categoryId } = params;
-  const [category, setCategory] = useState<Product[] | null>(null);
+  const [category, setCategory] = useState<ProductExtend[] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -96,10 +96,14 @@ export default function Page() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {category?.map((product: Product, idx: number) => (
+        {category?.map((product: ProductExtend, idx: number) => (
           <ProductCard key={idx} product={product} />
         ))}
       </div>
     </main>
   );
 }
+
+type ProductExtend = Product & {
+  _id: string;
+};
