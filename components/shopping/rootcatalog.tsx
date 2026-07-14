@@ -1,9 +1,9 @@
 import { ArrowUpRight } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
 import { BASE_URL } from "@/libs/config/config";
-import { Product } from "@/libs/models/products.models";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { ProductExtend } from "@/app/(root)/(shopping)/category/[categoryId]/page";
 
 export default async function LandingCatalog() {
   const request = await fetch(`${BASE_URL}/api/products?limit=20`, {
@@ -40,7 +40,7 @@ export default async function LandingCatalog() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {product.map((p: Product, idx: number) => (
+        {product.map((p: ProductExtend, idx: number) => (
           <ProductCard key={idx} product={p} />
         ))}
       </div>
