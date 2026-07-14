@@ -3,7 +3,11 @@ import ProductCard from "@/components/ProductCard";
 import { BASE_URL } from "@/libs/config/config";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { ProductExtend } from "@/app/(root)/(shopping)/category/[categoryId]/page";
+import { Product } from "@/libs/models/products.models";
+
+type ProductExtend = Product & {
+  _id: string;
+};
 
 export default async function LandingCatalog() {
   const request = await fetch(`${BASE_URL}/api/products?limit=20`, {
