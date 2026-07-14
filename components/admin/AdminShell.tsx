@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Menu } from "lucide-react";
+import { LogOut, Menu } from "lucide-react";
 import AdminSidebar from "./AdminSidebar";
 import Toggle from "@/components/toggle";
+import { signOut } from "next-auth/react";
 import { Session } from "next-auth";
 
 const STORAGE_KEY = "admin-sidebar-collapsed";
@@ -75,6 +76,14 @@ export default function AdminShell({
         </div>
         <div className="flex items-center gap-2">
           <Toggle />
+          <button
+            type="button"
+            onClick={() => signOut({ callbackUrl: "/admin/login" })}
+            className="flex h-9 w-9 items-center justify-center rounded-xl text-red-400 transition hover:bg-red-500/10 hover:text-red-500"
+            aria-label="Logout"
+          >
+            <LogOut className="h-4 w-4" />
+          </button>
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent/10 text-xs font-medium text-accent">
             {session?.user?.name?.[0]?.toUpperCase() || "A"}
           </div>
