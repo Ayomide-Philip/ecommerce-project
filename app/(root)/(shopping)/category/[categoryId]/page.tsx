@@ -2,20 +2,21 @@
 import { useParams } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import data from "@/data/articles_sample.json";
+import { ProductTypeName } from "@/libs/enums/product.enums";
 import ProductCard from "@/components/ProductCard";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Product } from "@/libs/models/products.models";
 import Loading from "@/components/loading";
 
-const slugToCategory = [...new Set(data.map((i) => i?.product_type_name))]
-  .filter(Boolean)
-  .reduce<Record<string, string>>((acc, name) => {
-    const slug = name!.toLowerCase().replace(/\s+/g, "-");
-    acc[slug] = name!;
+const slugToCategory = ProductTypeName.reduce<Record<string, string>>(
+  (acc, name) => {
+    const slug = name.toLowerCase().replace(/\s+/g, "-");
+    acc[slug] = name;
     return acc;
-  }, {});
+  },
+  {},
+);
 
 export default function Page() {
   const params = useParams();
@@ -104,6 +105,6 @@ export default function Page() {
   );
 }
 
-type ProductExtend = Product & {
+export type ProductExtend = Product & {
   _id: string;
 };
