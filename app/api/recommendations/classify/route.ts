@@ -15,6 +15,7 @@ import {
   ZeroShotImageClassificationPipeline,
 } from "@huggingface/transformers";
 import { NextResponse } from "next/server";
+import mongoose from "mongoose";
 
 type Classifier = Promise<ZeroShotImageClassificationPipeline> | null;
 type ZeroShotResult = { label: string; score: number }[];
@@ -22,7 +23,7 @@ const CONFIDENCE_THRESHOLD = 0.4;
 
 let classifierPromise: Classifier = null;
 env.localModelPath = "./models";
-env.allowRemoteModels = false; // hard stop — never touches the network again
+env.allowRemoteModels = false;
 
 function getClassifier() {
   if (!classifierPromise) {
@@ -36,6 +37,29 @@ function getClassifier() {
 }
 
 export const POST = auth(async function POST(req) {
+  if (!req?.auth || !req?.auth?.user) {
+    return NextResponse.json(
+      {
+        error: "Unauthorized Access, please log in to classify an image.",
+      },
+      {
+        status: 401,
+      },
+    );
+  }
+
+  const userId = req?.auth?.user?.id;
+
+  if (!userId?.trim() || !mongoose.Types.ObjectId.isValid(userId)) {
+    return NextResponse.json(
+      {
+        error: "Invalid Parameters.",
+      },
+      {
+        status: 400,
+      },
+    );
+  }
   const formData = await req.formData();
   const imageFile = formData.get("image") as File | null;
 
@@ -51,6 +75,8 @@ export const POST = auth(async function POST(req) {
   }
 
   try {
+    await connectToDatabase();
+
     const arrayBuffer = await imageFile.arrayBuffer();
     const blob = new Blob([arrayBuffer], { type: imageFile.type });
     const image = await RawImage.fromBlob(blob);
@@ -82,12 +108,10 @@ export const POST = auth(async function POST(req) {
       );
     }
 
-    await connectToDatabase();
-
     const similarProducts = await Products.aggregate([
       {
         $match: {
-          product_type_name: productTypeValue, // hard filter: must be the same type of item
+          product_type_name: productTypeValue,
         },
       },
       {
