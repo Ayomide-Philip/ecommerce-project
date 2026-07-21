@@ -37,8 +37,6 @@ function getClassifier() {
 
 export const POST = auth(async function POST(req) {
   const formData = await req.formData();
-  console.log("FormData received:", formData);
-
   const imageFile = formData.get("image") as File | null;
 
   if (!imageFile) {
