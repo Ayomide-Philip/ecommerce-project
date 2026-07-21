@@ -3,6 +3,7 @@ import { getRecommendations } from "@/libs/recommendation/engine";
 import { auth } from "@/auth";
 import { NextAuthRequest } from "next-auth";
 import mongoose from "mongoose";
+import { connectToDatabase } from "@/libs/config/database.config";
 
 export const GET = auth(async function GET(req: NextAuthRequest) {
   try {
@@ -32,7 +33,8 @@ export const GET = auth(async function GET(req: NextAuthRequest) {
     const topN = topNParam
       ? Math.min(Math.max(parseInt(topNParam, 10) || 8, 1), 20)
       : 20;
-
+      
+    await connectToDatabase();
     const recommendations = await getRecommendations(userId, topN);
 
     return NextResponse.json({ recommendations });
