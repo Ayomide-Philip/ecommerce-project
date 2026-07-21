@@ -153,13 +153,13 @@ export default function RecommendationPage() {
             />
 
             {modalOpen && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+              <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
                 <div
                   className="absolute inset-0 cursor-pointer bg-black/40 backdrop-blur-sm"
                   onClick={closeModal}
                 />
 
-                <div className="relative w-full max-w-lg rounded-2xl border border-black/10 bg-white/90 p-6 backdrop-blur-xl dark:border-[rgba(244,244,242,0.08)] dark:bg-panel/90">
+                <div className="relative w-full max-w-lg rounded-t-2xl sm:rounded-2xl border border-black/10 bg-white/90 p-5 sm:p-6 backdrop-blur-xl dark:border-[rgba(244,244,242,0.08)] dark:bg-panel/90 max-sm:pb-8">
                   <div className="mb-5 flex items-center justify-between">
                     <h3 className="font-display text-lg font-medium text-cloud">
                       Upload Image
@@ -179,7 +179,7 @@ export default function RecommendationPage() {
                       onClick={() => fileInputRef.current?.click()}
                       onDrop={handleDrop}
                       onDragOver={handleDragOver}
-                      className="group flex w-full cursor-pointer flex-col items-center gap-3 rounded-xl border-2 border-dashed border-cloud/20 py-10 transition hover:border-accent/50 hover:bg-accent/5"
+                      className="group flex w-full cursor-pointer flex-col items-center gap-3 rounded-xl border-2 border-dashed border-cloud/20 py-8 sm:py-10 transition hover:border-accent/50 hover:bg-accent/5"
                     >
                       <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-accent/10 transition group-hover:bg-accent/20">
                         <ImageUp className="h-5 w-5 text-accent" />
@@ -201,18 +201,18 @@ export default function RecommendationPage() {
                           alt="Uploaded preview"
                           width={800}
                           height={400}
-                          className="max-h-64 w-full object-contain"
+                          className="max-h-48 sm:max-h-64 w-full object-contain"
                         />
                         <button
                           type="button"
                           onClick={clearImage}
-                          className="absolute top-2 right-2 flex h-7 w-7 cursor-pointer  items-center justify-center rounded-full bg-black/50 text-white transition hover:bg-black/70"
+                          className="absolute top-2 right-2 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full bg-black/50 text-white transition hover:bg-black/70"
                         >
                           <X className="h-3.5 w-3.5" />
                         </button>
                       </div>
 
-                      <div className="flex items-center justify-between border-t border-black/5 px-4 py-3 dark:border-[rgba(244,244,242,0.05)]">
+                      <div className="flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-between border-t border-black/5 px-4 py-3 dark:border-[rgba(244,244,242,0.05)]">
                         <span className="truncate text-sm text-cloud/70">
                           {uploadedImage?.name}
                         </span>
@@ -220,7 +220,7 @@ export default function RecommendationPage() {
                           type="button"
                           onClick={handleSearchSimilar}
                           disabled={isSearching}
-                          className="flex items-center cursor-pointer gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white transition hover:bg-accent/90 disabled:opacity-60"
+                          className="flex w-full sm:w-auto items-center justify-center cursor-pointer gap-2 rounded-lg bg-accent px-4 py-2.5 sm:py-2 text-sm font-medium text-white transition hover:bg-accent/90 disabled:opacity-60"
                         >
                           {isSearching ? (
                             <LoaderCircle className="h-4 w-4 animate-spin" />

@@ -1,3 +1,4 @@
+import { auth } from "@/auth";
 import { connectToDatabase } from "@/libs/config/database.config";
 import {
   ColourGroupName,
@@ -7,10 +8,15 @@ import {
   PerceivedColourMasterName,
 } from "@/libs/enums/product.enums";
 import Products from "@/libs/models/products.models";
-import { pipeline, env, RawImage } from "@huggingface/transformers";
-import { NextRequest, NextResponse } from "next/server";
+import {
+  pipeline,
+  env,
+  RawImage,
+  ZeroShotImageClassificationPipeline,
+} from "@huggingface/transformers";
+import { NextResponse } from "next/server";
 
-type Classifier = ReturnType<typeof pipeline> | null;
+type Classifier = Promise<ZeroShotImageClassificationPipeline> | null;
 type ZeroShotResult = { label: string; score: number }[];
 const CONFIDENCE_THRESHOLD = 0.4;
 
@@ -24,12 +30,12 @@ function getClassifier() {
       "zero-shot-image-classification",
       "Xenova/clip-vit-base-patch32",
       { dtype: "q8" },
-    );
+    ) as unknown as Promise<ZeroShotImageClassificationPipeline>;
   }
   return classifierPromise;
 }
 
-export async function POST(req: NextRequest) {
+export const POST = auth(async function POST(req) {
   const formData = await req.formData();
   console.log("FormData received:", formData);
 
@@ -54,12 +60,12 @@ export async function POST(req: NextRequest) {
 
     const [productType, appearance, colourGroup, colourValue, colourMaster] =
       (await Promise.all([
-        clf(image, ProductTypeName),
-        clf(image, GraphicalAppearanceName),
-        clf(image, ColourGroupName),
-        clf(image, PerceivedColourValueName),
-        clf(image, PerceivedColourMasterName),
-      ])) as ZeroShotResult[];
+        clf(image, [...ProductTypeName]),
+        clf(image, [...GraphicalAppearanceName]),
+        clf(image, [...ColourGroupName]),
+        clf(image, [...PerceivedColourValueName]),
+        clf(image, [...PerceivedColourMasterName]),
+      ])) as unknown as ZeroShotResult[];
 
     const productTypeValue = productType[0].label;
     const appearanceValue = appearance[0].label;
@@ -127,15 +133,9 @@ export async function POST(req: NextRequest) {
     ]);
 
     return NextResponse.json({
-      message: "FormData received successfully",
+      message:
+        "Successfully classified the image and retrieved similar products.",
       similarProducts,
-      classifiedAttributes: {
-        product_type_name: productTypeValue,
-        graphical_appearance_name: appearanceValue,
-        colour_group_name: colourGroupValue,
-        perceived_colour_value_name: colourValueValue,
-        perceived_colour_master_name: colourMasterValue,
-      },
     });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
@@ -160,4 +160,4 @@ export async function POST(req: NextRequest) {
       },
     );
   }
-}
+});
