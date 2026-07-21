@@ -80,15 +80,51 @@ export async function POST(req: NextRequest) {
 
     await connectToDatabase();
 
-    const similarProducts = await Products.find({
-      product_type_name: productTypeValue,
-      $or: [
-        { graphical_appearance_name: appearanceValue },
-        { colour_group_name: colourGroupValue },
-        { perceived_colour_value_name: colourValueValue },
-        { perceived_colour_master_name: colourMasterValue },
-      ],
-    });
+    const similarProducts = await Products.aggregate([
+      {
+        $match: {
+          product_type_name: productTypeValue, // hard filter: must be the same type of item
+        },
+      },
+      {
+        $addFields: {
+          matchScore: {
+            $sum: [
+              {
+                $cond: [
+                  { $eq: ["$graphical_appearance_name", appearanceValue] },
+                  1,
+                  0,
+                ],
+              },
+              {
+                $cond: [
+                  { $eq: ["$colour_group_name", colourGroupValue] },
+                  1,
+                  0,
+                ],
+              },
+              {
+                $cond: [
+                  { $eq: ["$perceived_colour_value_name", colourValueValue] },
+                  1,
+                  0,
+                ],
+              },
+              {
+                $cond: [
+                  { $eq: ["$perceived_colour_master_name", colourMasterValue] },
+                  1,
+                  0,
+                ],
+              },
+            ],
+          },
+        },
+      },
+      { $sort: { matchScore: -1 } },
+      { $limit: 10 },
+    ]);
 
     return NextResponse.json({
       message: "FormData received successfully",

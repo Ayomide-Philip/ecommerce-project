@@ -2,13 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { signIn } from "next-auth/react";
 
 export default function LoginPage() {
-  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -49,8 +47,7 @@ export default function LoginPage() {
       if (signingIn?.error) {
         return toast.error("Invalid email or password. Please try again.");
       }
-
-      router.replace("/catalog");
+      window.location.href = "/catalog";
     } catch (err) {
       console.log(err);
       return toast.error("An error occurred during sign-in. Please try again.");
