@@ -19,7 +19,7 @@ import mongoose from "mongoose";
 
 type Classifier = Promise<ZeroShotImageClassificationPipeline> | null;
 type ZeroShotResult = { label: string; score: number }[];
-const CONFIDENCE_THRESHOLD = 0.4;
+const CONFIDENCE_THRESHOLD = 0.2;
 
 let classifierPromise: Classifier = null;
 env.localModelPath = "./models";
@@ -90,6 +90,14 @@ export const POST = auth(async function POST(req) {
         clf(image, [...PerceivedColourValueName]),
         clf(image, [...PerceivedColourMasterName]),
       ])) as unknown as ZeroShotResult[];
+
+    console.log(
+      productType,
+      appearance,
+      colourGroup,
+      colourValue,
+      colourMaster,
+    );
 
     const productTypeValue = productType[0].label;
     const appearanceValue = appearance[0].label;
