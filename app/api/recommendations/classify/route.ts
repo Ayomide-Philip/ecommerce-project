@@ -20,6 +20,21 @@ import mongoose from "mongoose";
 type ZeroShotResult = { label: string; score: number }[];
 const CONFIDENCE_THRESHOLD = 0.15;
 
+/**
+ * Broad non-clothing categories — if the model picks one of these over
+ * a clothing type, the image isn't fashion and we should reject it.
+ */
+const NON_CLOTHING_LABELS = [
+  "Food and drink",
+  "Animal or pet",
+  "Landscape, nature and scenery",
+  "Building and architecture",
+  "Vehicle",
+  "Electronics and technology",
+  "Furniture and home decor",
+  "Plant and flower",
+] as const;
+
 // Use globalThis for model caching — survives hot reloads & edge cold-starts better
 env.localModelPath = "./models";
 env.allowRemoteModels = false;
@@ -64,9 +79,10 @@ async function classifyImage(
   colourValue: { label: string; score: number };
   colourMaster: { label: string; score: number };
 }> {
-  // Run 3 focused calls in parallel
+  // Run 3 focused calls in parallel.
+  // Product-type call also includes non-clothing labels so we can detect non-fashion images.
   const [[productType], [appearance], colourResults] = (await Promise.all([
-    clf(image, [...ProductTypeName]),
+    clf(image, [...ProductTypeName, ...NON_CLOTHING_LABELS]),
     clf(image, [...GraphicalAppearanceName]),
     clf(image, [
       ...ColourGroupName,
@@ -164,6 +180,21 @@ export const POST = auth(async function POST(req) {
       return NextResponse.json(
         {
           error: "Unable to classify the image with sufficient confidence.",
+        },
+        {
+          status: 400,
+        },
+      );
+    }
+
+    // Reject non-clothing images (e.g. food, animal, landscape)
+    if (
+      (NON_CLOTHING_LABELS as readonly string[]).includes(productType.label)
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "The uploaded image does not appear to be a clothing item. Please upload a fashion or clothing image.",
         },
         {
           status: 400,
