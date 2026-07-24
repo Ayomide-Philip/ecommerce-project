@@ -322,7 +322,7 @@ export const POST = auth(async function POST(req) {
           },
         },
         { $sort: { matchScore: -1 } },
-        { $limit: 10 },
+        { $limit: 16 },
       ]);
     }
 
