@@ -73,7 +73,8 @@ async function classifyImage(
   clf: ZeroShotImageClassificationPipeline,
   image: RawImage,
 ): Promise<{
-  productType: { label: string; score: number };
+  /** Top-2 clothing product types (e.g. "Shirt" + "Trousers" when both are visible) */
+  productTypes: { label: string; score: number }[];
   appearance: { label: string; score: number };
   colourGroup: { label: string; score: number };
   colourValue: { label: string; score: number };
@@ -81,7 +82,7 @@ async function classifyImage(
 }> {
   // Run 3 focused calls in parallel.
   // Product-type call also includes non-clothing labels so we can detect non-fashion images.
-  const [[productType], [appearance], colourResults] = (await Promise.all([
+  const [productTypeResults, [appearance], colourResults] = (await Promise.all([
     clf(image, [...ProductTypeName, ...NON_CLOTHING_LABELS]),
     clf(image, [...GraphicalAppearanceName]),
     clf(image, [
@@ -90,6 +91,12 @@ async function classifyImage(
       ...PerceivedColourMasterName,
     ]),
   ])) as unknown as [ZeroShotResult, ZeroShotResult, ZeroShotResult];
+
+  // Filter out non-clothing labels, then take top 2
+  const clothingSet = new Set(ProductTypeName);
+  const productTypes = productTypeResults
+    .filter((r) => clothingSet.has(r.label as (typeof ProductTypeName)[number]))
+    .slice(0, 2);
 
   // Colour set includes labels from 3 enums — pick the best in each
   const colourSets: Record<string, Set<string>> = {
@@ -109,7 +116,7 @@ async function classifyImage(
   }
 
   return {
-    productType,
+    productTypes,
     appearance,
     colourGroup: groupedColours.colourGroup!,
     colourValue: groupedColours.colourValue!,
@@ -164,11 +171,11 @@ export const POST = auth(async function POST(req) {
     const clf = await getClassifier();
 
     // Single model inference call instead of 5
-    const { productType, appearance, colourGroup, colourValue, colourMaster } =
+    const { productTypes, appearance, colourGroup, colourValue, colourMaster } =
       await classifyImage(clf, image);
 
     console.log(
-      productType,
+      productTypes,
       appearance,
       colourGroup,
       colourValue,
@@ -176,7 +183,10 @@ export const POST = auth(async function POST(req) {
     );
 
     // Early exit — don't waste time on the DB query if confidence is too low
-    if (CONFIDENCE_THRESHOLD > productType.score) {
+    if (
+      productTypes.length === 0 ||
+      CONFIDENCE_THRESHOLD > productTypes[0].score
+    ) {
       return NextResponse.json(
         {
           error: "Unable to classify the image with sufficient confidence.",
@@ -189,7 +199,7 @@ export const POST = auth(async function POST(req) {
 
     // Reject non-clothing images (e.g. food, animal, landscape)
     if (
-      (NON_CLOTHING_LABELS as readonly string[]).includes(productType.label)
+      (NON_CLOTHING_LABELS as readonly string[]).includes(productTypes[0].label)
     ) {
       return NextResponse.json(
         {
@@ -202,11 +212,14 @@ export const POST = auth(async function POST(req) {
       );
     }
 
-    // Primary aggregation — exact product_type match, scored by other attributes
+    // Collect all product-type labels to match against
+    const productTypeLabels = productTypes.map((p) => p.label);
+
+    // Primary aggregation — match on one of the top product types, scored by other attributes
     let similarProducts = await Products.aggregate([
       {
         $match: {
-          product_type_name: productType.label,
+          product_type_name: { $in: productTypeLabels },
         },
       },
       {
@@ -262,7 +275,9 @@ export const POST = auth(async function POST(req) {
               $sum: [
                 {
                   $cond: [
-                    { $eq: ["$product_type_name", productType.label] },
+                    {
+                      $in: ["$product_type_name", productTypeLabels],
+                    },
                     3,
                     0,
                   ],
