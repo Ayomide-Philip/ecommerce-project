@@ -68,6 +68,13 @@ const productSchema = new Schema(
   { timestamps: true },
 );
 
+// Index for the classify/recommendation aggregation pipeline
+productSchema.index({ product_type_name: 1 });
+productSchema.index({ graphical_appearance_name: 1 });
+productSchema.index({ colour_group_name: 1 });
+productSchema.index({ perceived_colour_value_name: 1 });
+productSchema.index({ perceived_colour_master_name: 1 });
+
 export type Product = InferSchemaType<typeof productSchema>;
 
 const Products = models.Products || model("Products", productSchema);

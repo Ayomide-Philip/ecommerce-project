@@ -17,23 +17,82 @@ import {
 import { NextResponse } from "next/server";
 import mongoose from "mongoose";
 
-type Classifier = Promise<ZeroShotImageClassificationPipeline> | null;
-type ZeroShotResult = { label: string; score: number }[];
+type ZeroShotResult = {
+  label: string;
+  score: number;
+}[];
 const CONFIDENCE_THRESHOLD = 0.2;
 
-let classifierPromise: Classifier = null;
+// Use globalThis for model caching — survives hot reloads & edge cold-starts better
 env.localModelPath = "./models";
 env.allowRemoteModels = false;
 
-function getClassifier() {
-  if (!classifierPromise) {
-    classifierPromise = pipeline(
+declare global {
+  var __classifierPromise:
+    | Promise<ZeroShotImageClassificationPipeline>
+    | undefined;
+}
+
+function getClassifier(): Promise<ZeroShotImageClassificationPipeline> {
+  if (!globalThis.__classifierPromise) {
+    globalThis.__classifierPromise = pipeline(
       "zero-shot-image-classification",
       "Xenova/clip-vit-base-patch32",
       { dtype: "q8" },
     ) as unknown as Promise<ZeroShotImageClassificationPipeline>;
   }
-  return classifierPromise;
+  return globalThis.__classifierPromise;
+}
+
+/**
+ * Build a lookup so we can group classification results back to their category.
+ */
+function buildLabelCategoryMap() {
+  const map: Record<string, string> = {};
+  ProductTypeName.forEach((l) => (map[l] = "productType"));
+  GraphicalAppearanceName.forEach((l) => (map[l] = "appearance"));
+  ColourGroupName.forEach((l) => (map[l] = "colourGroup"));
+  PerceivedColourValueName.forEach((l) => (map[l] = "colourValue"));
+  PerceivedColourMasterName.forEach((l) => (map[l] = "colourMaster"));
+  return map;
+}
+
+const LABEL_CATEGORY = buildLabelCategoryMap();
+const ALL_LABELS = Object.keys(LABEL_CATEGORY);
+
+/**
+ * Run the model ONCE with every candidate label.
+ * Because the image is encoded a single time this is ~5× faster than 5 separate calls.
+ */
+async function classifyImage(
+  clf: ZeroShotImageClassificationPipeline,
+  image: RawImage,
+): Promise<{
+  productType: { label: string; score: number };
+  appearance: { label: string; score: number };
+  colourGroup: { label: string; score: number };
+  colourValue: { label: string; score: number };
+  colourMaster: { label: string; score: number };
+}> {
+  const results = (await clf(image, ALL_LABELS)) as unknown as ZeroShotResult;
+
+  // Group results by category and pick the highest-scoring label per category
+  const grouped: Record<string, { label: string; score: number }> = {};
+  for (const r of results) {
+    const cat = LABEL_CATEGORY[r.label];
+    // results come sorted descending from the pipeline, first hit per category wins
+    if (!grouped[cat]) {
+      grouped[cat] = { label: r.label, score: r.score };
+    }
+  }
+
+  return {
+    productType: grouped.productType!,
+    appearance: grouped.appearance!,
+    colourGroup: grouped.colourGroup!,
+    colourValue: grouped.colourValue!,
+    colourMaster: grouped.colourMaster!,
+  };
 }
 
 export const POST = auth(async function POST(req) {
@@ -82,14 +141,9 @@ export const POST = auth(async function POST(req) {
     const image = await RawImage.fromBlob(blob);
     const clf = await getClassifier();
 
-    const [productType, appearance, colourGroup, colourValue, colourMaster] =
-      (await Promise.all([
-        clf(image, [...ProductTypeName]),
-        clf(image, [...GraphicalAppearanceName]),
-        clf(image, [...ColourGroupName]),
-        clf(image, [...PerceivedColourValueName]),
-        clf(image, [...PerceivedColourMasterName]),
-      ])) as unknown as ZeroShotResult[];
+    // Single model inference call instead of 5
+    const { productType, appearance, colourGroup, colourValue, colourMaster } =
+      await classifyImage(clf, image);
 
     console.log(
       productType,
@@ -99,16 +153,11 @@ export const POST = auth(async function POST(req) {
       colourMaster,
     );
 
-    const productTypeValue = productType[0].label;
-    const appearanceValue = appearance[0].label;
-    const colourGroupValue = colourGroup[0].label;
-    const colourValueValue = colourValue[0].label;
-    const colourMasterValue = colourMaster[0].label;
-
-    if (CONFIDENCE_THRESHOLD > productType[0].score) {
+    // Early exit — don't waste time on the DB query if confidence is too low
+    if (CONFIDENCE_THRESHOLD > productType.score) {
       return NextResponse.json(
         {
-          error: " Unable to classify the image with sufficient confidence.",
+          error: "Unable to classify the image with sufficient confidence.",
         },
         {
           status: 400,
@@ -116,10 +165,11 @@ export const POST = auth(async function POST(req) {
       );
     }
 
-    const similarProducts = await Products.aggregate([
+    // Primary aggregation — exact product_type match, scored by other attributes
+    let similarProducts = await Products.aggregate([
       {
         $match: {
-          product_type_name: productTypeValue,
+          product_type_name: productType.label,
         },
       },
       {
@@ -128,28 +178,32 @@ export const POST = auth(async function POST(req) {
             $sum: [
               {
                 $cond: [
-                  { $eq: ["$graphical_appearance_name", appearanceValue] },
+                  { $eq: ["$graphical_appearance_name", appearance.label] },
                   1,
                   0,
                 ],
               },
               {
                 $cond: [
-                  { $eq: ["$colour_group_name", colourGroupValue] },
+                  { $eq: ["$colour_group_name", colourGroup.label] },
                   1,
                   0,
                 ],
               },
               {
                 $cond: [
-                  { $eq: ["$perceived_colour_value_name", colourValueValue] },
+                  {
+                    $eq: ["$perceived_colour_value_name", colourValue.label],
+                  },
                   1,
                   0,
                 ],
               },
               {
                 $cond: [
-                  { $eq: ["$perceived_colour_master_name", colourMasterValue] },
+                  {
+                    $eq: ["$perceived_colour_master_name", colourMaster.label],
+                  },
                   1,
                   0,
                 ],
@@ -161,6 +215,64 @@ export const POST = auth(async function POST(req) {
       { $sort: { matchScore: -1 } },
       { $limit: 10 },
     ]);
+
+    // Fallback — if no exact product_type match, broaden the search
+    if (similarProducts.length === 0) {
+      similarProducts = await Products.aggregate([
+        {
+          $addFields: {
+            matchScore: {
+              $sum: [
+                {
+                  $cond: [
+                    { $eq: ["$product_type_name", productType.label] },
+                    3,
+                    0,
+                  ],
+                },
+                {
+                  $cond: [
+                    { $eq: ["$graphical_appearance_name", appearance.label] },
+                    2,
+                    0,
+                  ],
+                },
+                {
+                  $cond: [
+                    { $eq: ["$colour_group_name", colourGroup.label] },
+                    1,
+                    0,
+                  ],
+                },
+                {
+                  $cond: [
+                    {
+                      $eq: ["$perceived_colour_value_name", colourValue.label],
+                    },
+                    1,
+                    0,
+                  ],
+                },
+                {
+                  $cond: [
+                    {
+                      $eq: [
+                        "$perceived_colour_master_name",
+                        colourMaster.label,
+                      ],
+                    },
+                    1,
+                    0,
+                  ],
+                },
+              ],
+            },
+          },
+        },
+        { $sort: { matchScore: -1 } },
+        { $limit: 10 },
+      ]);
+    }
 
     return NextResponse.json({
       message:
