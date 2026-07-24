@@ -17,11 +17,8 @@ import {
 import { NextResponse } from "next/server";
 import mongoose from "mongoose";
 
-type ZeroShotResult = {
-  label: string;
-  score: number;
-}[];
-const CONFIDENCE_THRESHOLD = 0.2;
+type ZeroShotResult = { label: string; score: number }[];
+const CONFIDENCE_THRESHOLD = 0.15;
 
 // Use globalThis for model caching — survives hot reloads & edge cold-starts better
 env.localModelPath = "./models";
@@ -45,24 +42,17 @@ function getClassifier(): Promise<ZeroShotImageClassificationPipeline> {
 }
 
 /**
- * Build a lookup so we can group classification results back to their category.
- */
-function buildLabelCategoryMap() {
-  const map: Record<string, string> = {};
-  ProductTypeName.forEach((l) => (map[l] = "productType"));
-  GraphicalAppearanceName.forEach((l) => (map[l] = "appearance"));
-  ColourGroupName.forEach((l) => (map[l] = "colourGroup"));
-  PerceivedColourValueName.forEach((l) => (map[l] = "colourValue"));
-  PerceivedColourMasterName.forEach((l) => (map[l] = "colourMaster"));
-  return map;
-}
-
-const LABEL_CATEGORY = buildLabelCategoryMap();
-const ALL_LABELS = Object.keys(LABEL_CATEGORY);
-
-/**
- * Run the model ONCE with every candidate label.
- * Because the image is encoded a single time this is ~5× faster than 5 separate calls.
+ * Classify the image across 3 focused model calls instead of 1 giant call with 96 labels.
+ *
+ * Why this matters: CLIP normalises scores across the labels it's given. When we throw
+ * all 96 labels from 5 categories together, the model spreads probability across
+ * unrelated options (e.g. comparing "Trousers" vs "Beige" vs "Denim"). This artificially
+ * suppresses per-category scores.
+ *
+ * By splitting into semantically-related groups, each call has fewer, more relevant
+ * labels — so confidence scores are higher and more meaningful.
+ *
+ * Performance: 3 model passes instead of 5 (original), each image-encodes once per pass.
  */
 async function classifyImage(
   clf: ZeroShotImageClassificationPipeline,
@@ -74,24 +64,40 @@ async function classifyImage(
   colourValue: { label: string; score: number };
   colourMaster: { label: string; score: number };
 }> {
-  const results = (await clf(image, ALL_LABELS)) as unknown as ZeroShotResult;
+  // Run 3 focused calls in parallel
+  const [[productType], [appearance], colourResults] = (await Promise.all([
+    clf(image, [...ProductTypeName]),
+    clf(image, [...GraphicalAppearanceName]),
+    clf(image, [
+      ...ColourGroupName,
+      ...PerceivedColourValueName,
+      ...PerceivedColourMasterName,
+    ]),
+  ])) as unknown as [ZeroShotResult, ZeroShotResult, ZeroShotResult];
 
-  // Group results by category and pick the highest-scoring label per category
-  const grouped: Record<string, { label: string; score: number }> = {};
-  for (const r of results) {
-    const cat = LABEL_CATEGORY[r.label];
-    // results come sorted descending from the pipeline, first hit per category wins
-    if (!grouped[cat]) {
-      grouped[cat] = { label: r.label, score: r.score };
+  // Colour set includes labels from 3 enums — pick the best in each
+  const colourSets: Record<string, Set<string>> = {
+    colourGroup: new Set(ColourGroupName),
+    colourValue: new Set(PerceivedColourValueName),
+    colourMaster: new Set(PerceivedColourMasterName),
+  };
+
+  const groupedColours: Record<string, { label: string; score: number }> = {};
+  for (const r of colourResults) {
+    for (const [key, set] of Object.entries(colourSets)) {
+      if (set.has(r.label) && !groupedColours[key]) {
+        groupedColours[key] = { label: r.label, score: r.score };
+        break;
+      }
     }
   }
 
   return {
-    productType: grouped.productType!,
-    appearance: grouped.appearance!,
-    colourGroup: grouped.colourGroup!,
-    colourValue: grouped.colourValue!,
-    colourMaster: grouped.colourMaster!,
+    productType,
+    appearance,
+    colourGroup: groupedColours.colourGroup!,
+    colourValue: groupedColours.colourValue!,
+    colourMaster: groupedColours.colourMaster!,
   };
 }
 
