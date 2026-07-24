@@ -7,6 +7,7 @@
 ## 1. Project Overview
 
 A full-stack fashion e-commerce platform with:
+
 - **Content-based AI recommendations** (TF-IDF + Cosine Similarity) that suggest personalized products based on user behavior (clicks, views, purchases)
 - **AI image classification** using CLIP zero-shot learning to find visually similar products from uploaded photos
 - **Full admin dashboard** for managing products, orders, users, and viewing analytics
@@ -16,18 +17,18 @@ A full-stack fashion e-commerce platform with:
 
 ## 2. Tech **Stack**
 
-| Layer          | Technology                                                                               |
-| -------------- | ---------------------------------------------------------------------------------------- |
-| Frontend       | Next.js (App Router) + Tailwind CSS                                                      |
-| Backend        | Next.js Route Handlers                                                                   |
-| Database       | MongoDB (Mongoose)                                                                       |
-| Auth           | Auth.js (NextAuth) — Credentials provider, role-based (user/admin)                       |
-| Language       | TypeScript (entire stack)                                                                |
-| AI Engine      | TF-IDF + Cosine Similarity (hand-rolled in TypeScript)                                   |
-| Image AI       | Transformers.js — CLIP zero-shot image classification (Xenova/clip-vit-base-patch32)     |
-| Image Hosting  | Cloudinary (signed uploads)                                                              |
-| Password       | bcrypt                                                                                   |
-| Deployment     | Persistent Node server (e.g. Render) — **not** serverless/edge, due to in-memory caching |
+| Layer         | Technology                                                                               |
+| ------------- | ---------------------------------------------------------------------------------------- |
+| Frontend      | Next.js (App Router) + Tailwind CSS                                                      |
+| Backend       | Next.js Route Handlers                                                                   |
+| Database      | MongoDB (Mongoose)                                                                       |
+| Auth          | Auth.js (NextAuth) — Credentials provider, role-based (user/admin)                       |
+| Language      | TypeScript (entire stack)                                                                |
+| AI Engine     | TF-IDF + Cosine Similarity (hand-rolled in TypeScript)                                   |
+| Image AI      | Transformers.js — CLIP zero-shot image classification (Xenova/clip-vit-base-patch32)     |
+| Image Hosting | Cloudinary (signed uploads)                                                              |
+| Password      | bcrypt                                                                                   |
+| Deployment    | Persistent Node server (e.g. Render) — **not** serverless/edge, due to in-memory caching |
 
 ---
 
@@ -126,38 +127,39 @@ A full-stack fashion e-commerce platform with:
 
 ### Public Routes
 
-| Route                        | Method | Purpose                                                      |
-| ---------------------------- | ------ | ------------------------------------------------------------ |
-| `/api/auth/[...nextauth]`    | —      | Login/session handling via Auth.js                           |
-| `/api/auth/register`         | POST   | Register a new user                                          |
-| `/api/products`              | GET    | List all products (optional `?limit=N`)                      |
-| `/api/products/[productId]`  | GET    | Get single product details                                   |
-| `/api/categories/[slug]`     | GET    | Get products by category slug (e.g. `t-shirt`, `trousers`)  |
-| `/api/sign-cloudinary`       | POST   | Generate Cloudinary upload signature for secure image uploads |
+| Route                       | Method | Purpose                                                       |
+| --------------------------- | ------ | ------------------------------------------------------------- |
+| `/api/auth/[...nextauth]`   | —      | Login/session handling via Auth.js                            |
+| `/api/auth/register`        | POST   | Register a new user                                           |
+| `/api/products`             | GET    | List all products (optional `?limit=N`)                       |
+| `/api/products/[productId]` | GET    | Get single product details                                    |
+| `/api/categories/[slug]`    | GET    | Get products by category slug (e.g. `t-shirt`, `trousers`)    |
+| `/api/sign-cloudinary`      | POST   | Generate Cloudinary upload signature for secure image uploads |
 
 ### Authenticated Routes (User)
 
-| Route                    | Method | Purpose                                                              |
-| ------------------------ | ------ | -------------------------------------------------------------------- |
-| `/api/cart`              | GET    | Fetch user's cart (populated with product data)                      |
-| `/api/cart`              | POST   | Add item to cart                                                     |
-| `/api/cart`              | PUT    | Update cart item quantity                                             |
-| `/api/cart`              | DELETE | Remove item from cart                                                |
-| `/api/checkout`          | POST   | Create order, log purchase interactions, clear cart                  |
-| `/api/orders`            | GET    | Fetch order history (sorted newest first)                            |
-| `/api/recommendations`   | GET    | Return personalized TF-IDF recommendations (or popularity fallback)  |
-| `/api/recommendations/classify` | POST | Upload an image → classify via CLIP → return visually similar products |
-| `/api/track-event`       | POST   | Log a click/view/purchase interaction (feeds recommendation engine)  |
+| Route                           | Method | Purpose                                                                |
+| ------------------------------- | ------ | ---------------------------------------------------------------------- |
+| `/api/cart`                     | GET    | Fetch user's cart (populated with product data)                        |
+| `/api/cart`                     | POST   | Add item to cart                                                       |
+| `/api/cart`                     | PUT    | Update cart item quantity                                              |
+| `/api/cart`                     | DELETE | Remove item from cart                                                  |
+| `/api/checkout`                 | POST   | Create order, log purchase interactions, clear cart                    |
+| `/api/orders`                   | GET    | Fetch order history (sorted newest first)                              |
+| `/api/recommendations`          | GET    | Return personalized TF-IDF recommendations (or popularity fallback)    |
+| `/api/recommendations/classify` | POST   | Upload an image → classify via CLIP → return visually similar products |
+| `/api/track-event`              | POST   | Log a click/view/purchase interaction (feeds recommendation engine)    |
 
 ### Admin Routes
 
-| Route                     | Method | Purpose                                              |
-| ------------------------- | ------ | ---------------------------------------------------- |
-| `/api/admin`              | GET    | Admin session verification endpoint                  |
-| `/api/admin/dashboard`    | GET    | Dashboard stats (total users, products, orders, revenue) |
-| `/api/admin/orders`       | GET    | List all orders (optional `?limit=N`)                |
-| `/api/admin/products`     | POST   | Create new product (with Cloudinary image upload)    |
-| `/api/admin/users`        | GET    | List all registered users                            |
+| Route                  | Method | Purpose                                                  |
+| ---------------------- | ------ | -------------------------------------------------------- |
+| `/api/admin`           | GET    | Admin session verification endpoint                      |
+| `/api/admin/dashboard` | GET    | Dashboard stats (total users, products, orders, revenue) |
+| `/api/admin/orders`    | GET    | List all orders (optional `?limit=N`)                    |
+| `/api/admin/products`  | POST   | Create new product (with Cloudinary image upload)        |
+| `/api/admin/products`  | DELETE | Delete product (removes from DB + Cloudinary image)      |
+| `/api/admin/users`     | GET    | List all registered users                                |
 
 ---
 
@@ -229,6 +231,7 @@ Sort products by similarity score descending, return top-N.
 ### Step 7 — Cold-Start Fallback (`popularity-fallback.ts`)
 
 If a user has zero interactions:
+
 - Query `interactions` collection via aggregation, group by `productId`, count occurrences across **all** users, sort descending, limit to top N.
 - `$lookup` against Products collection to return full product docs.
 - If the Interactions collection is also empty (brand-new app), a random subset of products is returned instead.
@@ -241,39 +244,39 @@ If a user has zero interactions:
 
 ### Pages
 
-| Route                            | Purpose                                              |
-| -------------------------------- | ---------------------------------------------------- |
-| `/admin`                         | Dashboard overview (stats, charts, recent orders)    |
-| `/admin/dashboard/orders`        | View and manage all orders (desktop + mobile views)  |
-| `/admin/dashboard/products`      | View all products + create new                       |
-| `/admin/dashboard/products/new`  | Add new product form with:                           |
-|                                  | • Basic info (name, price, description)              |
-|                                  | • Image upload (Cloudinary with preview)             |
-|                                  | • AI classification (auto-fills attributes from image) |
-| `/admin/dashboard/users`         | View all users (desktop + mobile views)              |
+| Route                           | Purpose                                                |
+| ------------------------------- | ------------------------------------------------------ |
+| `/admin`                        | Dashboard overview (stats, charts, recent orders)      |
+| `/admin/dashboard/orders`       | View and manage all orders (desktop + mobile views)    |
+| `/admin/dashboard/products`     | View all products + create new                         |
+| `/admin/dashboard/products/new` | Add new product form with:                             |
+|                                 | • Basic info (name, price, description)                |
+|                                 | • Image upload (Cloudinary with preview)               |
+|                                 | • AI classification (auto-fills attributes from image) |
+| `/admin/dashboard/users`        | View all users (desktop + mobile views)                |
 
 ### Components
 
-| Component                        | Purpose                                              |
-| -------------------------------- | ---------------------------------------------------- |
-| `AdminShell`                     | Admin layout shell                                   |
-| `AdminSidebar`                   | Navigation sidebar                                   |
-| `dashboard/stats.tsx`            | Summary stat cards (users, products, orders, revenue)|
-| `dashboard/header.tsx`           | Dashboard page header                                |
-| `dashboard/quickactions.tsx`     | Quick action shortcuts                               |
-| `dashboard/recentorders.tsx`     | Recent orders table                                  |
-| `dashboard/topproducts.tsx`      | Top products listing                                 |
-| `orders/desktop.tsx`             | Orders table (desktop view)                          |
-| `orders/mobile.tsx`              | Orders cards (mobile view)                           |
-| `users/desktop.tsx`              | Users table (desktop view)                           |
-| `users/mobile.tsx`               | Users cards (mobile view)                            |
-| `product/desktop.tsx`            | Products table (desktop view)                        |
-| `product/mobile.tsx`             | Products cards (mobile view)                         |
-| `product/header.tsx`             | Product management header                            |
-| `product/new/form.tsx`           | New product form wrapper                             |
-| `product/new/basicInfo.tsx`      | Product name, price, description fields              |
-| `product/new/classification.tsx` | Manual attribute dropdowns + AI classify trigger     |
-| `product/new/imageupload.tsx`    | Cloudinary upload with drag-and-drop + preview       |
+| Component                        | Purpose                                               |
+| -------------------------------- | ----------------------------------------------------- |
+| `AdminShell`                     | Admin layout shell                                    |
+| `AdminSidebar`                   | Navigation sidebar                                    |
+| `dashboard/stats.tsx`            | Summary stat cards (users, products, orders, revenue) |
+| `dashboard/header.tsx`           | Dashboard page header                                 |
+| `dashboard/quickactions.tsx`     | Quick action shortcuts                                |
+| `dashboard/recentorders.tsx`     | Recent orders table                                   |
+| `dashboard/topproducts.tsx`      | Top products listing                                  |
+| `orders/desktop.tsx`             | Orders table (desktop view)                           |
+| `orders/mobile.tsx`              | Orders cards (mobile view)                            |
+| `users/desktop.tsx`              | Users table (desktop view)                            |
+| `users/mobile.tsx`               | Users cards (mobile view)                             |
+| `product/desktop.tsx`            | Products table (desktop view)                         |
+| `product/mobile.tsx`             | Products cards (mobile view)                          |
+| `product/header.tsx`             | Product management header                             |
+| `product/new/form.tsx`           | New product form wrapper                              |
+| `product/new/basicInfo.tsx`      | Product name, price, description fields               |
+| `product/new/classification.tsx` | Manual attribute dropdowns + AI classify trigger      |
+| `product/new/imageupload.tsx`    | Cloudinary upload with drag-and-drop + preview        |
 
 ---
 
@@ -281,41 +284,41 @@ If a user has zero interactions:
 
 ### Public Pages
 
-| Route                 | Purpose                                              |
-| --------------------- | ---------------------------------------------------- |
-| `/`                   | Landing page — Hero, Categories, Recommendations, Catalog |
-| `/login`              | User login                                           |
-| `/register`           | User registration                                    |
-| `/catalog`            | Full product catalog with sidebar filters            |
-| `/category/[slug]`    | Products filtered by category                        |
-| `/category/[slug]/product/[id]` | Product detail page                        |
+| Route                           | Purpose                                                                                       |
+| ------------------------------- | --------------------------------------------------------------------------------------------- |
+| `/`                             | Landing page — Hero, Categories, Recommendations, Catalog                                     |
+| `/login`                        | User login                                                                                    |
+| `/register`                     | User registration                                                                             |
+| `/catalog`                      | Full product catalog with search bar + sidebar filters (by type, colour, pattern, department) |
+| `/category/[slug]`              | Products filtered by category                                                                 |
+| `/category/[slug]/product/[id]` | Product detail page                                                                           |
 
 ### Authenticated Pages (User)
 
-| Route                 | Purpose                                              |
-| --------------------- | ---------------------------------------------------- |
-| `/cart`               | Shopping cart with quantity controls                 |
-| `/cart/checkout`      | Checkout page (shipping + dummy payment form)        |
-| `/orders`             | Order history                                        |
-| `/recommendation`     | Personalized product recommendations                 |
+| Route             | Purpose                                       |
+| ----------------- | --------------------------------------------- |
+| `/cart`           | Shopping cart with quantity controls          |
+| `/cart/checkout`  | Checkout page (shipping + dummy payment form) |
+| `/orders`         | Order history                                 |
+| `/recommendation` | Personalized product recommendations          |
 
 ### Components
 
-| Component                       | Purpose                                              |
-| ------------------------------- | ---------------------------------------------------- |
-| `Navbar`                        | Responsive navigation with auth state                |
-| `Footer`                        | Site footer                                          |
-| `Hero`                          | Landing page hero section                            |
-| `Explainer`                     | Recommendation engine explainer (shown to guests)    |
-| `ProductCard`                   | Reusable product card with add-to-cart               |
-| `FilterPills`                   | Category filter pills                                |
-| `shopping/categories.tsx`       | Category grid section                                |
-| `shopping/recommended.tsx`      | Personalized recommendations section                 |
-| `shopping/rootcatalog.tsx`      | Landing page catalog section                         |
-| `shopping/catalog.tsx`          | Full catalog page                                    |
-| `shopping/catalog/filterSideBar.tsx` | Catalog filter sidebar (by type, colour, etc.) |
-| `shopping/checkout/leftOrderSummary.tsx`  | Checkout left panel — shipping + payment    |
-| `shopping/checkout/rightOrderSummary.tsx` | Checkout right panel — order summary       |
+| Component                                 | Purpose                                           |
+| ----------------------------------------- | ------------------------------------------------- |
+| `Navbar`                                  | Responsive navigation with auth state             |
+| `Footer`                                  | Site footer                                       |
+| `Hero`                                    | Landing page hero section                         |
+| `Explainer`                               | Recommendation engine explainer (shown to guests) |
+| `ProductCard`                             | Reusable product card with add-to-cart            |
+| `FilterPills`                             | Category filter pills                             |
+| `shopping/categories.tsx`                 | Category grid section                             |
+| `shopping/recommended.tsx`                | Personalized recommendations section              |
+| `shopping/rootcatalog.tsx`                | Landing page catalog section                      |
+| `shopping/catalog.tsx`                    | Full catalog page                                 |
+| `shopping/catalog/filterSideBar.tsx`      | Catalog filter sidebar (by type, colour, etc.)    |
+| `shopping/checkout/leftOrderSummary.tsx`  | Checkout left panel — shipping + payment          |
+| `shopping/checkout/rightOrderSummary.tsx` | Checkout right panel — order summary              |
 
 ---
 
@@ -387,14 +390,14 @@ npm run dev
 
 ### Environment Variables
 
-| Variable                            | Description                        |
-| ----------------------------------- | ---------------------------------- |
-| `DATABASE_URL`                      | MongoDB connection string          |
-| `AUTH_SECRET`                       | NextAuth.js secret                 |
+| Variable                            | Description                               |
+| ----------------------------------- | ----------------------------------------- |
+| `DATABASE_URL`                      | MongoDB connection string                 |
+| `AUTH_SECRET`                       | NextAuth.js secret                        |
 | `BASE_URL`                          | App base URL (e.g. http://localhost:3000) |
-| `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` | Cloudinary cloud name              |
-| `NEXT_PUBLIC_CLOUDINARY_API_KEY`    | Cloudinary API key                 |
-| `CLOUDINARY_API_SECRET`             | Cloudinary API secret              |
+| `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` | Cloudinary cloud name                     |
+| `NEXT_PUBLIC_CLOUDINARY_API_KEY`    | Cloudinary API key                        |
+| `CLOUDINARY_API_SECRET`             | Cloudinary API secret                     |
 
 ---
 
@@ -436,33 +439,31 @@ models/Xenova/               # Local CLIP model files
 
 ## 15. Build Status
 
-| Phase                                                                                       | Status       |
-| ------------------------------------------------------------------------------------------- | ------------ |
-| **Project setup** — Next.js + TypeScript + MongoDB (Mongoose) + Auth.js                     | ✅ Done      |
-| **Schemas** — `User`, `Product`, `Interaction`, `Cart`, `Order`                             | ✅ Done      |
-| **Auth** — registration, login, role-based access                                           | ✅ Done      |
-| **Product catalog** — listing, detail, category filtering                                   | ✅ Done      |
-| **Cart** — full CRUD API + frontend with quantity controls                                  | ✅ Done      |
-| **Checkout flow** — Dummy payment, order creation, cart clear                               | ✅ Done      |
-| **Order history** — API + `/orders` page with loading/empty states                          | ✅ Done      |
-| **Recommendation engine** — TF-IDF + cosine similarity + caching + cold-start fallback      | ✅ Done      |
-| **Image classification** — CLIP zero-shot (3 parallel calls, non-clothing detection)        | ✅ Done      |
-| **Visual similarity search** — Classify image → find similar products by attributes          | ✅ Done      |
-| **Admin dashboard** — Stats, recent orders, top products                                    | ✅ Done      |
-| **Admin product management** — Create products with image upload + AI auto-classify         | ✅ Done      |
-| **Admin orders management** — View all orders (desktop + mobile)                           | ✅ Done      |
-| **Admin users management** — View all users                                                 | ✅ Done      |
-| **Cloudinary integration** — Signed uploads for product images                              | ✅ Done      |
-| **Dark/Light theme** — Toggle theme support                                                 | ✅ Done      |
-| **Responsive design** — Desktop + mobile views throughout                                   | ✅ Done      |
-| **Track-event route** — Interaction logging from frontend                                   | ✅ Done      |
-| **Seed data scripts** — Kaggle dataset processing tools                                     | ✅ Done      |
-| **Product images** — Category thumbnail assets (24 product types)                           | ✅ Done      |
-| **PATCH/DELETE products** — Admin product editing/deletion                                  | ❌ Not built |
-| **Product search** — Text search across product names/descriptions                          | ❌ Not built |
-| **Wishlist** — Save items for later                                                         | ❌ Not built |
-| **Product reviews/ratings** — User reviews                                                  | ❌ Not built |
-| **Evaluation** — Precision@K, Recall@K, MAP for recommendation engine                      | ❌ Not built |
+| Phase                                                                                   | Status       |
+| --------------------------------------------------------------------------------------- | ------------ |
+| **Project setup** — Next.js + TypeScript + MongoDB (Mongoose) + Auth.js                 | ✅ Done      |
+| **Schemas** — `User`, `Product`, `Interaction`, `Cart`, `Order`                         | ✅ Done      |
+| **Auth** — registration, login, role-based access                                       | ✅ Done      |
+| **Product catalog** — listing, detail, category filtering                               | ✅ Done      |
+| **Cart** — full CRUD API + frontend with quantity controls                              | ✅ Done      |
+| **Checkout flow** — Dummy payment, order creation, cart clear                           | ✅ Done      |
+| **Order history** — API + `/orders` page with loading/empty states                      | ✅ Done      |
+| **Recommendation engine** — TF-IDF + cosine similarity + caching + cold-start fallback  | ✅ Done      |
+| **Image classification** — CLIP zero-shot (3 parallel calls, non-clothing detection)    | ✅ Done      |
+| **Visual similarity search** — Classify image → find similar products by attributes     | ✅ Done      |
+| **Admin dashboard** — Stats, recent orders, top products                                | ✅ Done      |
+| **Admin product management** — Create products with image upload + AI auto-classify     | ✅ Done      |
+| **Admin orders management** — View all orders (desktop + mobile)                        | ✅ Done      |
+| **Admin users management** — View all users                                             | ✅ Done      |
+| **Cloudinary integration** — Signed uploads for product images                          | ✅ Done      |
+| **Dark/Light theme** — Toggle theme support                                             | ✅ Done      |
+| **Responsive design** — Desktop + mobile views throughout                               | ✅ Done      |
+| **Track-event route** — Interaction logging from frontend                               | ✅ Done      |
+| **Seed data scripts** — Kaggle dataset processing tools                                 | ✅ Done      |
+| **Product images** — Category thumbnail assets (24 product types)                       | ✅ Done      |
+| **Admin delete products** — Delete products from admin panel (with Cloudinary cleanup)  | ✅ Done      |
+| **Product search & filters** — Text search + category/colour/pattern/department filters | ✅ Done      |
+| **Product reviews/ratings** — User reviews                                              | ❌ Not built |
 
 ---
 
@@ -471,7 +472,7 @@ models/Xenova/               # Local CLIP model files
 **In scope:**
 
 - User registration/login with roles (user/admin)
-- Product catalog with category filtering
+- Product catalog with text search and category/colour/pattern/department filters
 - Shopping cart (full CRUD)
 - Checkout with dummy payment simulation
 - Behavior tracking infrastructure (interaction logging)
@@ -479,6 +480,7 @@ models/Xenova/               # Local CLIP model files
 - Cold-start fallback via popularity ranking
 - AI image classification for visual similarity search
 - Admin dashboard and management panel
+- Admin product management (create, delete with Cloudinary cleanup)
 - Cloudinary image upload integration
 
 **Out of scope:**
@@ -488,6 +490,4 @@ models/Xenova/               # Local CLIP model files
 - Real-time social media trend analysis
 - Production-grade security/infrastructure
 - Logistics/delivery integration
-- Product search by text/keyword
-- Wishlist functionality
 - Product reviews and ratings
