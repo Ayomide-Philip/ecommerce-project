@@ -463,7 +463,7 @@ models/Xenova/               # Local CLIP model files
 | **Product images** — Category thumbnail assets (24 product types)                       | ✅ Done      |
 | **Admin delete products** — Delete products from admin panel (with Cloudinary cleanup)  | ✅ Done      |
 | **Product search & filters** — Text search + category/colour/pattern/department filters | ✅ Done      |
-| **Product reviews/ratings** — User reviews                                              | ❌ Not built |
+
 
 ---
 
