@@ -275,14 +275,7 @@ export default function RegisterPage() {
               className="mt-0.5 w-4 h-4 rounded border border-black/30 dark:border-white/30 bg-black/5 dark:bg-white/5 accent-accent cursor-pointer shrink-0"
             />
             <span className="text-[#151519]/70 dark:text-white/70">
-              I agree to the{" "}
-              <Link href="/terms" className="text-accent hover:underline">
-                Terms of Service
-              </Link>{" "}
-              and{" "}
-              <Link href="/privacy" className="text-accent hover:underline">
-                Privacy Policy
-              </Link>
+              I agree to the Terms of Service and Privacy Policy
             </span>
           </label>
 
@@ -302,17 +295,6 @@ export default function RegisterPage() {
             className="text-accent hover:text-accent/80 font-medium transition"
           >
             Sign in
-          </Link>
-        </p>
-
-        <p className="text-center text-[#151519]/50 dark:text-white/50 text-xs mt-6">
-          By creating an account, you agree to our{" "}
-          <Link href="/terms" className="text-accent hover:underline">
-            Terms of Service
-          </Link>{" "}
-          and{" "}
-          <Link href="/privacy" className="text-accent hover:underline">
-            Privacy Policy
           </Link>
         </p>
       </div>

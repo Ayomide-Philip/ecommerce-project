@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import Link from "next/link";
 
 const slides = [
   { img: "/images/dress.jpg", label: "Dresses" },
@@ -84,8 +85,8 @@ export default function Hero() {
           </p>
 
           <div className="flex justify-center pt-2">
-            <button
-              type="button"
+            <Link
+              href="/catalog"
               className="inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 font-mono text-xs uppercase tracking-[0.16em] text-cloud transition hover:brightness-110 focus-visible:ring-2 focus-visible:ring-accent"
             >
               New Collection
@@ -103,7 +104,7 @@ export default function Hero() {
                   d="M13 7l5 5m0 0l-5 5m5-5H6"
                 />
               </svg>
-            </button>
+            </Link>
           </div>
         </div>
 

@@ -169,12 +169,6 @@ export default function LoginPage() {
                 Remember me
               </span>
             </label>
-            <Link
-              href="/forgot-password"
-              className="text-accent hover:text-accent/80 transition font-medium"
-            >
-              Forgot password?
-            </Link>
           </div>
 
           <button
@@ -193,17 +187,6 @@ export default function LoginPage() {
             className="text-accent hover:text-accent/80 font-medium transition"
           >
             Sign up
-          </Link>
-        </p>
-
-        <p className="text-center text-[#151519]/50 dark:text-white/50 text-xs mt-6">
-          By signing in, you agree to our{" "}
-          <Link href="/terms" className="text-accent hover:underline">
-            Terms of Service
-          </Link>{" "}
-          and{" "}
-          <Link href="/privacy" className="text-accent hover:underline">
-            Privacy Policy
           </Link>
         </p>
       </div>
