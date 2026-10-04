@@ -65,7 +65,7 @@ export default function Recommended() {
           </div>
         </div>
         <a
-          href="#"
+          href="/recommendation"
           className="flex items-center gap-1 font-mono text-xs uppercase tracking-[0.16em] text-cloud/60 transition hover:text-accent"
         >
           See All
