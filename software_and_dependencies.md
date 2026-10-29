@@ -44,14 +44,15 @@ instructions live in [documentation_and_user_guide.md](./documentation_and_user_
 - **Windows 10/11** — primary development environment. Several data scripts contain absolute Windows paths
   (for example `KAGGLE_CMD` and `IMAGES_DIR`), which must be edited if the repository moves.
 - **Linux / macOS** — supported for running the application (`npm run dev`, `npm run build`, `npm start`).
-  The `.sh` data scripts are Unix-friendly; the `.py`/`.mjs` scripts need path edits.
+  The data scripts are not portable as written: `.sh` scripts use MSYS-style `/c/Users/...` paths, and the
+  `.py`/`.mjs` scripts embed Windows absolute paths. Edit those constants before use off Windows.
 
 ### 1.4 Hardware requirements
 
 | Resource | Minimum | Recommended | Notes |
 | --- | --- | --- | --- |
 | CPU | 2 cores | 4+ cores | CLIP inference is CPU-bound (`q8` quantized model). |
-| RAM | 4 GB | 8 GB+ | Next.js build plus CLIP/TensorFlow-adjacent runtime memory. |
+| RAM | 4 GB | 8 GB+ | Next.js build plus ONNX Runtime memory for CLIP inference. |
 | Disk | ~4 GB free | 6 GB+ free | `node_modules` (~0.9 GB), `.next` build/cache (up to ~1.7 GB locally), 147 MB model, and optional image dataset. |
 | Network | Required for first install and build | — | `npm install`, optional font fetch by `next/font/google`, Cloudinary uploads, and (if not pre-downloaded) model weights. |
 
@@ -323,8 +324,8 @@ Scripts provided by [package.json](./package.json):
 ### 8.1 `eslint-config-next` is the wrong package (blocking lint)
 
 - `package.json` declares `"eslint-config-next": "^0.2.4"`, which resolves to the third-party package
-  `mvila/eslint-config-next@0.2.4` (Babel-based, last published years ago), **not** the official
-  `eslint-config-next` maintained by Vercel.
+  `mvila/eslint-config-next@0.2.4` (an old Babel-based config), **not** the official `eslint-config-next`
+  maintained by Vercel.
 - [eslint.config.mjs](./eslint.config.mjs) imports `eslint-config-next/core-web-vitals` and
   `eslint-config-next/typescript`, which do not exist in that package. Verified failure:
 
